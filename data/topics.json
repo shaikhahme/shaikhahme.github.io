@@ -1,0 +1,17 @@
+[
+  {
+    "name": "Cybersecurity",
+    "desc": "The domain of computer science regarding to security, Some notable subfields include Application, Web, Software Security, Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+    "rank" : 8
+  },
+  {
+    "name": "Network Security",
+    "desc": "The domain of Cybersecurity related to networks and communication, this includes Web Security, Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+    "rank" : 7
+  },
+  {
+    "name": "Applocation Security",
+    "desc": "The domain of Cybersecurity related to applications typically not including web apps, this includes things like code scanning. some related fields include Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+    "rank" : 7
+  }
+]
