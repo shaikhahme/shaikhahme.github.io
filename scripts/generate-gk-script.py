@@ -24,7 +24,7 @@ tfidf_matrix = vectorizer.fit_transform(descriptions)
 sim_matrix = cosine_similarity(tfidf_matrix)
 
 # Create edges list (avoid self-loops, consider only one direction)
-threshold = 0.5
+threshold = 0.3
 edges = []
 
 for i in range(len(topics)):
