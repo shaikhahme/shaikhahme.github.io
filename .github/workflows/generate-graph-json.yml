@@ -6,6 +6,11 @@ on:
       - scripts/generate-graph.py
   schedule:
     - chron: 30 08 * * 1
+  workflow_dispatch:
+    input:
+      tags:
+        description: 'Test scenario tags'
+        required: false
 
 jobs:
   build:
