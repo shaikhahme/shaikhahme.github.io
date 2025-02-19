@@ -28,7 +28,7 @@ jobs:
         run: pip install scikit-learn numpy
 
       - name: Generate Graph JSON
-        run: python scripts/generate-graph.py
+        run: python scripts/generate-gk-script.py
 
       - name: Commit Generated JSON
         run: |
