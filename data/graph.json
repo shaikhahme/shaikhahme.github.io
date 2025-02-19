@@ -1,0 +1,50 @@
+{
+  "elements": {
+    "nodes": [
+      {
+        "data": {
+          "id": "Cybersecurity",
+          "label": "The domain of computer science regarding to security, Some notable subfields include Application, Web, Software Security, Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+          "size": 8
+        }
+      },
+      {
+        "data": {
+          "id": "Network Security",
+          "label": "The domain of Cybersecurity related to networks and communication, this includes Web Security, Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+          "size": 7
+        }
+      },
+      {
+        "data": {
+          "id": "Applocation Security",
+          "label": "The domain of Cybersecurity related to applications typically not including web apps, this includes things like code scanning. some related fields include Governance, Regulation, Risk Management, Auditing, Social Enginering, DevSecOps and Network security",
+          "size": 7
+        }
+      }
+    ],
+    "edges": [
+      {
+        "data": {
+          "source": "Cybersecurity",
+          "target": "Network Security",
+          "weight": 0.5451860474865103
+        }
+      },
+      {
+        "data": {
+          "source": "Cybersecurity",
+          "target": "Applocation Security",
+          "weight": 0.4011515236905336
+        }
+      },
+      {
+        "data": {
+          "source": "Network Security",
+          "target": "Applocation Security",
+          "weight": 0.5809618028278632
+        }
+      }
+    ]
+  }
+}
