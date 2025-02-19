@@ -2,7 +2,7 @@ name: Generate Cytoscape Graph JSON
 on:
   push:
     paths:
-      - data/topics.json
+      - docs/data/topics.json
       - scripts/generate-graph.py
   schedule:
     - cron: "30 08 * * 1"
@@ -39,6 +39,6 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add data/graph.json
+          git add docs/data/graph.json
           git commit -m "Update Cytoscape graph JSON"
           git push

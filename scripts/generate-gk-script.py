@@ -3,7 +3,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Load topics
-with open('data/topics.json', 'r') as f:
+with open('docs/data/topics.json', 'r') as f:
     topics = json.load(f)
 
 # Create nodes list
@@ -50,5 +50,5 @@ graph_json = {
 }
 
 # Save JSON file
-with open('data/graph.json', 'w') as f:
+with open('docs/data/graph.json', 'w') as f:
     json.dump(graph_json, f, indent=2)
