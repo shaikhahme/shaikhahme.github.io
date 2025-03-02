@@ -3,8 +3,11 @@
 <head>
     <meta charset="utf-8">
     <title>Shaikh it up?</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="script.js"></script>
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 <nav>
     <ul>
@@ -16,34 +19,66 @@
 </nav>
 
 <section id="about">
-    <h2>About Me</h2>
-    <p>This is the About Me section. Add your bio and personal details here.</p>
+    <h2>Humble(?) Brags</h2>
+    <p>
+    <strong> Ever wondered what happens when someone who loves learning and has a strong commitment to society (dodged the corporate supervillian timeline), stumbles upon engineering and psychology?</strong>
+    </p>
+    <p>
+        <img src="https://media.licdn.com/dms/image/v2/D4E03AQF8B6TCovOlGg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1666341885586?e=1746057600&v=beta&t=5Km6RqsDTNjK-G5OdbQHi92tSCRaY5uAcWuc3rTiRXI" id="profile-pic" alt="ProfilePic" width="300" height="300" style="float: right; margin-left: 10px;">
+        <br>
+        Apparently, you get someone like me!
+        <br>A passionate cybersecurity enthusiast with a strong interest in Defensive Security. <br>Following that path I also found myself interested in Information Security Management, Application Security, Network Security, USEC and most importantly Social Engineering!
+        <br>
+        <span class="more-text">
+        <br>
+        I knew Cybersecurity was my calling when I discovered it is the perfect intersection between all my major interests: engineering, psychology, and a personal responsibility to contribute to society. In all honesty, the personal responsibility came later, I spent my young teen years learning how to hack WIFIs, Games and social media accounts. However, since then I have matured, made a promise to use my skills for others and have been on an incredible journey of learning and growth both in the fields and personally.
+        <br><br>
+        <strong>Professional Growth:</strong> Currently, I’m part of the cybersecurity department at Cumulocity IoT, specifically with ISM and DevSecOps. Here I contribute to strengthening the security posture by implementing policies as code.
+        <br>
+        <strong>Research & Academia:</strong> My journey also led me to the city of lights, Paris, where I conducted research in Cyber Threat Intelligence and published my first academic paper in the IEEE journal. This milestone allowed me to present at the prestigious IWCMC 2024 by IEEE conference in Cyprus.
+        <br>
+        <strong>Leadership & Community:</strong> As a student council head and vice chair for two years, I honed my soft skills—cross-cultural communication, leadership, and collaboration—while giving back to my community.
+        </span>
+        <button class="read-more-btn">Read More</button>
+
+    </p>
+    <br><br>
+    <br><br>
+    <p style="text-align:centre;">
+    If you share my curiosity or want to learn more about my journey, motivation, or skills? Feel free to reach out via the <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/">LinkedIN</a> section
+    or <a href="mailto:shaikhahmed155@hotmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20after%20seeing%20your%20website!">Email Me</a>.
+    </p>
 </section>
 
-<!-- Knowledge Base Section -->
 <section id="knowledge">
     <h2>Knowledge Base</h2>
-    <p>This section is dedicated to your knowledge base. Share articles, tips, or any information you want to highlight.</p>
+    <p>This section is dedicated to my knowledge base. The aim is to track all of gained knowledge and to use it to fine tune an LLM. As of now you can see some topics of my knowledge and if you right click you'll see a short desc of the topic. However this is a simple a place-holder while I work on the actual project</p>
     <div id="cy"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
     <script src="app.js"></script>
 </section>
 
-<!-- Project Description Section (includes Cytoscape demo) -->
 <section id="project">
     <h2>Project Description</h2>
-    <p>Here you can describe your project in detail. Below is an interactive graph example using Cytoscape.</p>
+    <p>Here is a simple flow diagram to show the pipeline used to deploy this website. Phase 1 is currently being developed and is aimed to leverage AI and APIs to allow me to update my knowledge base from wherever</p>
+    <div style="position: relative;">
+        <iframe loading="lazy" style="position: relative; width: 100%; height: 50vh; top: 0; left: 0; border: 2px solid black; padding: 0;margin: 0;"
+                src="https://www.canva.com/design/DAGgkVQdtx4/wn_W_C_UwRmlfNZTaQ3XkA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
+        </iframe>
+    </div>
 </section>
 
-<!-- Contact Me Section -->
 <section id="contact">
     <h2>Contact Me</h2>
-    <p>Provide your contact information or a contact form here so visitors can reach out to you.</p>
+    <form class="contact-form" action="https://script.google.com/macros/s/AKfycbxHPyVFoB-ie9RqAz04k3MArKsVlXFDN39nJ6dK6w9bwyIcDhpJZHKUxYd6waHMCkc9/exec" method="POST">
+        <input type="email" name="entry.YOUR_EMAIL_ID" placeholder="Your Email" required>
+        <input type="text" name="entry.YOUR_SUBJECT_ID" placeholder="Subject" required>
+        <textarea name="entry.YOUR_MESSAGE_ID" rows="4" placeholder="Your Message" required></textarea>
+        <button type="submit">Send Message</button>
+    </form>
 </section>
-
-<!-- Optional Footer -->
 <footer>
-    <p>&copy; 2025 Your Shaikh Ahmed. All rights reserved.</p>
+    <p>&copy; 2025 Shaikh Ahmed. All rights reserved.</p>
 </footer>
 </body>
 </html>

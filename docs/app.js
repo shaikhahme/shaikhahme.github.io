@@ -52,7 +52,7 @@ fetch('./data/graph.json')
                      layout: {
                         name: 'concentric',
                         animate: true,
-                        animationDuration: 1000,
+                        animationDuration: 4000,
                         concentric: function(node) {
                         // Example: use node degree as the concentric value
                         return node.degree();
