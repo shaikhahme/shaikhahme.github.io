@@ -157,3 +157,10 @@ color: #333;
         color: red;
         font-size: 12px;
     }
+.contact-info{
+        background:#fff4e6;
+        padding: 1%;
+        border-radius: 8px;
+        width: 100%;
+        height: 5vh;
+}
