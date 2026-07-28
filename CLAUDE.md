@@ -78,4 +78,16 @@ issues:
    18. Create a small chatbot below the graph that allows you to talk to knowledge agent
 19. About Me
     20. Fix bugs
+
+--- Next Task
+0. Commmit Changes
+1. vinyl player shapes, once the last shape the dots are visible, they are always there
+2. vinyl player shapes, make the transition between the shapes a transform rather than a fade in
+3. projects: add a horzinatal score so more prokects can be seen
+4. knowledge graph: Add labels dynamically based on tthe zoom. use a more advance ghrpahing framework if needed cause this one seems  old school, allow the nodes to move to add some life to the page
+5. kg: highlighting a node highlights the nodes around it
+6. kg: i like the animation when you click  anode
+6. kg: make it part of the wbesite rather than inside a frame
+7. KG: shift the legend to teh side
+
     

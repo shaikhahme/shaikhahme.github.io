@@ -44,6 +44,8 @@
     }
 
     if ('IntersectionObserver' in window && sections.length) {
+        /* A thin trigger band near vertical center, not a % of the section itself
+           so very tall sections (e.g. the pinned About timeline) still register. */
         var sectionObserver = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -53,7 +55,7 @@
                     if (match) setActiveLink(match);
                 }
             });
-        }, { threshold: 0.5 });
+        }, { threshold: 0, rootMargin: '-45% 0px -45% 0px' });
 
         sections.forEach(function (s) { sectionObserver.observe(s); });
     }
@@ -100,7 +102,7 @@
             ringPathEl.setAttribute('d', d.trim());
         }
 
-        var SHAPE_SEQUENCE = ['dot', 'line', 'triangle', 'pyramid', 'cube', 'octahedron', 'sphere'];
+        var SHAPE_SEQUENCE = ['dot', 'line', 'triangle', 'diamond', 'cube', 'hexagon', 'sphere'];
 
         function shapeForIndex(idx, total) {
             return SHAPE_SEQUENCE[Math.min(SHAPE_SEQUENCE.length - 1, Math.floor(idx * SHAPE_SEQUENCE.length / total))];
@@ -152,6 +154,7 @@
 
                 var activeIndex = -1;
                 var ticking = false;
+                var fadeTimer = null;
                 var TOTAL_SPINS = 1;
                 var TONEARM_START = -30;
                 var TONEARM_END = -4;
@@ -175,15 +178,19 @@
                     var idx = Math.min(milestones.length - 1, Math.floor(progress * milestones.length));
                     if (idx !== activeIndex) {
                         activeIndex = idx;
+                        if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
                         ringTextEl.style.opacity = 0;
-                        setTimeout(function () {
-                            applyMilestone(activeIndex);
-                            ageEl.style.opacity = 1;
-                            textEl.style.opacity = 1;
-                            ringTextEl.style.opacity = 1;
-                        }, 140);
+                        fadeTimer = setTimeout(function (targetIdx) {
+                            return function () {
+                                applyMilestone(targetIdx);
+                                ageEl.style.opacity = 1;
+                                textEl.style.opacity = 1;
+                                ringTextEl.style.opacity = 1;
+                                fadeTimer = null;
+                            };
+                        }(idx), 140);
                     }
                 }
 
