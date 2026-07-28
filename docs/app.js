@@ -1,99 +1,120 @@
-fetch('./data/graph.json')
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-    })
-    .then(jsonData => {
-        var cy = cytoscape({
-                     container: document.getElementById('cy'),
+(function () {
+    'use strict';
 
-                     elements: jsonData.elements,
+    var container = document.getElementById('cy');
+    if (!container) return;
 
-                     style: [
-                          {
-                                 selector: 'node',
-                                 style: {
-                                     'label': 'data(label)',
-                                     'width': 'mapData(size, 0, 10, 0, 1000)',
-                                     'height': 'mapData(size, 0, 10, 0, 1000)',
-                                     'background-color': '#9966CC',
-                                     'color': 'white',  // Node label color
-                                     'text-valign': 'center',  // Center text vertically
-                                     'text-halign': 'center',  // Center text horizontally
-                                     'font-size': 'mapData(size, 0, 10, 12px, 100px)'  // Adjust font size if needed
-                                 }
-                             },
-                          {
-                                 selector: 'edge',
-                                 style: {
-                                     'width': 2,
-                                     'line-color': '#90EE90',  // Light green
-                                     'target-arrow-color': '#90EE90',  // Light green
-                                     'curve-style': 'bezier'
-                                 }
-                             },
-                          {
-                          selector: 'edge.highlighted',
-                          style: {
-                                'line-color': '#61bffc',
-                                'width': 20
-                              }
-                          },
-                          {
-                          selector: '.faded',
-                          style: {
-                              'opacity': 0.25,
-                              'text-opacity': 0.25
-                          }
-                          }
-                     ],
-                     layout: {
-                        name: 'concentric',
-                        animate: true,
-                        animationDuration: 4000,
-                        concentric: function(node) {
-                        // Example: use node degree as the concentric value
+    fetch('./data/graph.json')
+        .then(function (response) {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(function (jsonData) {
+            var cy = cytoscape({
+                container: container,
+                elements: jsonData.elements,
+
+                style: [
+                    {
+                        selector: 'node',
+                        style: {
+                            'label': 'data(label)',
+                            'width': 'mapData(size, 0, 10, 18, 140)',
+                            'height': 'mapData(size, 0, 10, 18, 140)',
+                            'background-color': '#1f1f21',
+                            'border-width': 2,
+                            'border-color': '#3a3a3a',
+                            'color': '#ece7e2',
+                            'text-valign': 'center',
+                            'text-halign': 'center',
+                            'font-family': 'JetBrains Mono, monospace',
+                            'font-size': 'mapData(size, 0, 10, 9px, 22px)',
+                            'text-outline-width': 2,
+                            'text-outline-color': '#0c0c0d',
+                            'transition-property': 'background-color, border-color',
+                            'transition-duration': '0.25s'
+                        }
+                    },
+                    {
+                        selector: 'edge',
+                        style: {
+                            'width': 1.5,
+                            'line-color': '#4a2426',
+                            'target-arrow-color': '#4a2426',
+                            'curve-style': 'bezier',
+                            'opacity': 0.55
+                        }
+                    },
+                    {
+                        selector: 'node:active',
+                        style: {
+                            'background-color': '#B3000B',
+                            'border-color': '#d81324'
+                        }
+                    },
+                    {
+                        selector: 'edge.highlighted',
+                        style: {
+                            'line-color': '#B3000B',
+                            'target-arrow-color': '#B3000B',
+                            'width': 3,
+                            'opacity': 1
+                        }
+                    },
+                    {
+                        selector: '.faded',
+                        style: {
+                            'opacity': 0.12
+                        }
+                    }
+                ],
+
+                layout: {
+                    name: 'concentric',
+                    animate: true,
+                    animationDuration: 1400,
+                    concentric: function (node) {
                         return node.degree();
-                        },
-                        levelWidth: function(nodes) {
+                    },
+                    levelWidth: function (nodes) {
                         return nodes.maxDegree() / 5;
-                        },
-                        padding: 2             // Start from a structured initial position if available
-                     }
-                 });
-
-         cy.ready(function() { //events block
-            let ogLabel = '';
-            cy.on('cxttapstart', 'node', function(e) {
-                 let node = e.target;  // Get the clicked node
-                 ogLabel=node.data('label')
-                 node.data('label',node.data('desc'));
-                 console.log("registered");
-             });
-            cy.on('cxttapend', 'node', function(e) {
-              let node = e.target;  // Get the clicked node
-              node.data('label',ogLabel);
-              console.log("registered");
+                    },
+                    padding: 30
+                }
             });
-            cy.on('mouseover', 'node', function(e) {
-                var node = e.target;
-                cy.elements().addClass('faded');
-                node.removeClass('faded');
-                var connectedEdges = node.connectedEdges();
-                connectedEdges.removeClass('faded');
-                connectedEdges.connectedNodes().removeClass('faded');
-                node.connectedEdges().addClass('highlighted');
-              });
-            cy.on('mouseout', 'node', function(e) {
-            var node = e.target;
-            cy.elements().removeClass('faded');
-            node.connectedEdges().removeClass('highlighted');
+
+            cy.ready(function () {
+                var originalLabel = '';
+
+                cy.on('cxttapstart', 'node', function (e) {
+                    var node = e.target;
+                    originalLabel = node.data('label');
+                    node.data('label', node.data('desc'));
+                });
+
+                cy.on('cxttapend', 'node', function (e) {
+                    e.target.data('label', originalLabel);
+                });
+
+                cy.on('mouseover', 'node', function (e) {
+                    var node = e.target;
+                    cy.elements().addClass('faded');
+                    node.removeClass('faded');
+                    var connectedEdges = node.connectedEdges();
+                    connectedEdges.removeClass('faded');
+                    connectedEdges.connectedNodes().removeClass('faded');
+                    connectedEdges.addClass('highlighted');
+                });
+
+                cy.on('mouseout', 'node', function (e) {
+                    cy.elements().removeClass('faded');
+                    e.target.connectedEdges().removeClass('highlighted');
+                });
             });
-          });
-
-    })
-    .catch(error => console.error('Error loading graph:', error));
-document.getElementById('cy').style.backgroundColor = 'black';
-
+        })
+        .catch(function (error) {
+            console.error('Error loading knowledge graph:', error);
+        });
+})();

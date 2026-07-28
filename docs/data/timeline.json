@@ -1,0 +1,52 @@
+[
+  {
+    "age": "Age 7",
+    "title": "The First Crack",
+    "text": "In India, my cousin taught me how to crack games."
+  },
+  {
+    "age": "Age 9",
+    "title": "Breaking In",
+    "text": "In Dubai, I learned how to brute force wifi networks unsuccessfully, but still broke into my neighbour's network to play Adobe Flash games."
+  },
+  {
+    "age": "Age 13",
+    "title": "Taking Down My Own Network",
+    "text": "Installed Kali Linux for the first time and took down my own internet trying to configure port forwarding for a trojan."
+  },
+  {
+    "age": "Age 13–16",
+    "title": "The Script Kiddie Era",
+    "text": "Did CTFs for the first time, taught myself programming, and became a script kiddie addicted to getting free Minecraft accounts."
+  },
+  {
+    "age": "Age 17",
+    "title": "Formalising the Obsession",
+    "text": "Moved to Germany and started my Bachelors in Electrical and Electronics Engineering with a focus on Networks, to formalise my education in networks and eventually cybersecurity."
+  },
+  {
+    "age": "Age 18",
+    "title": "Leading While Learning",
+    "text": "Received the Deutschlandstipendium, and took on a leadership position in the FSR and AStA, motivating engineers and restarting the community at the university."
+  },
+  {
+    "age": "Age 20",
+    "title": "Into the Industry",
+    "text": "Signed my contract with Cumulocity IoT, a SaaS company delivering IoT solutions, where I worked as a Werkstudent in backend, product security, red teaming, DevSecOps and vulnerability management."
+  },
+  {
+    "age": "Age 22",
+    "title": "Research Abroad",
+    "text": "Moved to France, worked as a researcher during my semester abroad focusing only on security subjects, and published my first paper at an IEEE conference on Cyber Threat Intelligence for IoT using NLP and ML filtering (CTIoT)."
+  },
+  {
+    "age": "Age 23 – Present",
+    "title": "Securing at Scale",
+    "text": "Graduated in Electrical Engineering, signed my contract with NavVis as an Information Security Manager working on ISO 27001, SOC 2, asset management, third party security and AI governance, and started my MSc at TUM focusing on AI alignment, security and governance."
+  },
+  {
+    "age": "Age 24",
+    "title": "Leading AI Automation",
+    "text": "Ran trainings on AI automation and AI security, and now lead a team for AI automation across the company."
+  }
+]

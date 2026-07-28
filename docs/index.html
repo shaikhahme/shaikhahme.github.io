@@ -2,93 +2,222 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Shaikh it up?</title>
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="script.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shaikh Ahmed — Portfolio</title>
+    <meta name="description" content="Shaikh Ahmed — Defensive Security, DevSecOps &amp; Cyber Threat Intelligence.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230c0c0d'/%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%233a3a3a' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23B3000B'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%230c0c0d'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-<nav>
-    <ul>
-        <li><a href="#about">About Me</a></li>
-        <li><a href="#knowledge">Knowledge Base</a></li>
-        <li><a href="#project">Project Description</a></li>
-        <li><a href="#contact">Contact Me</a></li>
-    </ul>
-</nav>
 
-<section id="about">
-    <h2>Humble(?) Beginings</h2>
-    <p>
-    <strong> Ever wondered what happens when someone who loves learning and has a strong commitment to society (dodged the supervillian timeline), stumbles upon engineering and psychology?</strong>
-    </p>
-    <p>
-        <img src="https://media.licdn.com/dms/image/v2/D4E03AQF8B6TCovOlGg/profile-displayphoto-shrink_800_800/profile-displayphoto-shrink_800_800/0/1666341885586?e=1746057600&v=beta&t=5Km6RqsDTNjK-G5OdbQHi92tSCRaY5uAcWuc3rTiRXI" id="profile-pic" alt="ProfilePic" width="300" height="300" style="float: right; margin-left: 10px;">
-        <br>
-        Apparently, you get someone like me!
-        <br>A passionate cybersecurity enthusiast with a strong interest in Defensive Security. <br>Following that path I also found myself interested in Information Security Management, Application Security, Network Security, USEC and most importantly Social Engineering!
-        <br>
-        <span class="more-text">
-        <br>
-        I knew Cybersecurity was my calling when I discovered it is the perfect intersection between all my major interests: engineering, psychology, and a personal responsibility to contribute to society. In all honesty, the personal responsibility came later, I spent my young teen years learning how to hack WIFIs, Games and social media accounts. However, since then I have matured, made a promise to use my skills for others and have been on an incredible journey of learning and growth both in the fields and personally.
-        <br><br>
-        <strong>Professional Growth:</strong> Currently, I’m part of the cybersecurity department at Cumulocity IoT, specifically with ISM and DevSecOps. Here I contribute to strengthening the security posture by implementing policies as code.
-        <br>
-        <strong>Research & Academia:</strong> My journey also led me to the city of lights, Paris, where I conducted research in Cyber Threat Intelligence and published my first academic paper in the IEEE journal. This milestone allowed me to present at the prestigious IWCMC 2024 by IEEE conference in Cyprus.
-        <br>
-        <strong>Leadership & Community:</strong> As a student council head and vice chair for two years, I honed my soft skills—cross-cultural communication, leadership, and collaboration—while giving back to my community.
-        </span>
-        <button class="read-more-btn">Read More</button>
+<div class="grain"></div>
+<div class="cursor-glow" id="cursorGlow"></div>
 
-    </p>
-    <br><br>
-    <br><br>
-    <p style="text-align:centre;">
-    If you share my curiosity or want to learn more about my journey, motivation, or skills? Feel free to reach out via the <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/">LinkedIN</a> section
-    or <a href="mailto:shaikhahmed155@hotmail.com?subject=Hello&body=I%20wanted%20to%20reach%20out%20after%20seeing%20your%20website!">Email Me</a>.
-    </p>
-</section>
+<header class="site-nav" id="siteNav">
+    <a class="nav-brand" href="#about" aria-label="Home">
+        <span class="brand-mark"></span>
+        <span class="brand-text">S.&nbsp;AHMED</span>
+    </a>
+    <nav aria-label="Primary">
+        <ul>
+            <li><a href="#about"><span class="idx">01</span>About</a></li>
+            <li><a href="#projects"><span class="idx">02</span>Projects</a></li>
+            <li><a href="#knowledge"><span class="idx">03</span>Knowledge</a></li>
+            <li><a href="#contact"><span class="idx">04</span>Contact</a></li>
+        </ul>
+        <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
+    </nav>
+</header>
 
-<section id="knowledge">
-    <h2>Knowledge Base</h2>
-    <p>This section is dedicated to my knowledge base. The aim is to track all of gained knowledge and to use it to fine tune an LLM. As of now you can see some topics of my knowledge and if you right click you'll see a short desc of the topic. However this is a simple a place-holder while I work on the actual project</p>
-    <div id="cy"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
-    <script src="app.js"></script>
-</section>
+<main>
 
-<section id="project">
-    <h2>Project Description</h2>
-    <p>Here is a simple flow diagram to show the pipeline used to deploy this website. Phase 1 is currently being developed and is aimed to leverage AI and APIs to allow me to update my knowledge base from wherever</p>
-    <div style="position: relative;">
-        <iframe loading="lazy" style="position: relative; width: 100%; height: 50vh; top: 0; left: 0; border: 2px solid black; padding: 0;margin: 0;"
-                src="https://www.canva.com/design/DAGgkVQdtx4/wn_W_C_UwRmlfNZTaQ3XkA/view?embed" allowfullscreen="allowfullscreen" allow="fullscreen">
-        </iframe>
-    </div>
-</section>
+    <section id="about" class="section hero">
 
-<section id="contact">
-    <h2>Contact Me</h2>
-    <div class="contact-info" style="display: flex; flex-direction: column; align-items: center; gap: 10px; font-size: 18px; font-family: Arial, sans-serif;">
-        <p style="display: flex; align-items: center; gap: 8px;">
-            <img src="https://img.icons8.com/ios-filled/50/000000/email.png" alt="Email Icon" width="20" height="20">
-            <a href="mailto:shaikhahmed155@hotmail.com" style="text-decoration: none; color: #0073b1;">shaikhahmed155@hotmail.com</a>
-            <img src="https://img.icons8.com/ios-filled/50/0073b1/linkedin.png" alt="LinkedIn Icon" width="20" height="20">
-            <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" style="text-decoration: none; color: #0073b1;">Linkedin</a>
+        <div class="hero-intro reveal">
+            <p class="eyebrow">Side&nbsp;A · Track&nbsp;01</p>
+            <h1>Shaikh Ahmed</h1>
+            <p class="tagline">Defensive Security &middot; DevSecOps &middot; Cyber&nbsp;Threat&nbsp;Intelligence</p>
+            <p class="scroll-hint">Scroll to play the record ↓</p>
+        </div>
+
+        <div class="timeline-pin" id="timelinePin">
+            <div class="timeline-stage" id="timelineStage">
+
+                <div class="timeline-motivation">
+                    <h3 class="timeline-motivation-title">What's your virtue?</h3>
+                    <p class="reflection">
+                        A mentor I looked up to once asked me what my virtue was, what drives me when nothing else
+                        does. I said learning, so quickly it almost didn't sound true. I sat with that answer for
+                        months before realising it really is at my core. When I look at what actually makes me
+                        happy, it comes down to a few simple things: learning something new, being part of a
+                        community, and helping that community grow. That, along with my love for technology and
+                        psychology, is what led me to cybersecurity, and especially to where it meets artificial
+                        intelligence. These days, AI alignment and safety is what holds my attention the most,
+                        since it feels like a problem that will only matter more to all of us.
+                    </p>
+                    <div class="cta-row">
+                        <a href="#contact" class="btn btn-primary sheen">Get in touch</a>
+                        <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
+                    </div>
+                </div>
+
+                <div class="timeline-visual-col">
+                    <p class="timeline-progress" aria-hidden="true"><span id="timelineIndex">01</span> / 10</p>
+
+                    <div class="timeline-visual">
+                        <svg class="ring-text" id="ringText" viewBox="0 0 100 100" aria-hidden="true">
+                            <path id="ringPath" d="M 10.5 35.6 A 42 42 0 1 1 89.5 35.6" fill="none"></path>
+                            <text>
+                                <textPath id="ringTextPath" href="#ringPath" startOffset="50%" text-anchor="middle">the first crack</textPath>
+                            </text>
+                        </svg>
+
+                        <div class="tonearm-base"></div>
+                        <div class="tonearm" id="tonearm"><span class="tonearm-head"></span></div>
+
+                        <div class="vinyl-record" id="vinylRecord">
+                            <div class="vinyl-shine"></div>
+                            <div class="vinyl-core">
+                                <div class="shape-stage" id="shapeStage">
+                                    <div class="shape shape-dot" data-shape="dot"></div>
+                                    <div class="shape shape-line" data-shape="line"></div>
+                                    <div class="shape shape-triangle" data-shape="triangle"></div>
+                                    <div class="shape shape-pyramid" data-shape="pyramid">
+                                        <span class="tri t1"></span><span class="tri t2"></span><span class="tri t3"></span><span class="tri t4"></span>
+                                    </div>
+                                    <div class="shape shape-cube" data-shape="cube">
+                                        <span class="face front"></span><span class="face back"></span>
+                                        <span class="face left"></span><span class="face right"></span>
+                                        <span class="face top"></span><span class="face bottom"></span>
+                                    </div>
+                                    <div class="shape shape-octahedron" data-shape="octahedron">
+                                        <span class="tri ot1"></span><span class="tri ot2"></span><span class="tri ot3"></span><span class="tri ot4"></span>
+                                        <span class="tri ob1"></span><span class="tri ob2"></span><span class="tri ob3"></span><span class="tri ob4"></span>
+                                    </div>
+                                    <div class="shape shape-sphere" id="shapeSphere" data-shape="sphere"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="timeline-caption">
+                        <p class="timeline-age" id="timelineAge">Age 7</p>
+                        <p class="timeline-text" id="timelineText">In India, my cousin taught me how to crack games.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <div class="groove-divider" aria-hidden="true"></div>
+
+    <section id="projects" class="section">
+        <p class="eyebrow reveal">Side&nbsp;A · Track&nbsp;02</p>
+        <h2 class="reveal">Projects &amp; Research</h2>
+        <p class="section-intro reveal">
+            This side of the record is still being pressed. Write-ups on my research, DevSecOps tooling, and
+            side projects are on their way — check back soon.
         </p>
-    </div>
-    <br>
-    <form class="contact-form" action="https://script.google.com/macros/s/AKfycbxHPyVFoB-ie9RqAz04k3MArKsVlXFDN39nJ6dK6w9bwyIcDhpJZHKUxYd6waHMCkc9/exec" method="POST">
-        <input type="email" name="entry.YOUR_EMAIL_ID" placeholder="Your Email" required>
-        <input type="text" name="entry.YOUR_SUBJECT_ID" placeholder="Subject" required>
-        <textarea name="entry.YOUR_MESSAGE_ID" rows="4" placeholder="Your Message" required></textarea>
-        <button type="submit">Send Message</button>
-    </form>
-</section>
+
+        <div class="track-list reveal">
+            <div class="track placeholder">
+                <span class="track-number">01</span>
+                <div class="track-info">
+                    <h3>Untitled Project</h3>
+                    <p>Coming soon</p>
+                </div>
+                <span class="track-duration">—:—</span>
+            </div>
+            <div class="track placeholder">
+                <span class="track-number">02</span>
+                <div class="track-info">
+                    <h3>Untitled Research</h3>
+                    <p>Coming soon</p>
+                </div>
+                <span class="track-duration">—:—</span>
+            </div>
+            <div class="track placeholder">
+                <span class="track-number">03</span>
+                <div class="track-info">
+                    <h3>Untitled Project</h3>
+                    <p>Coming soon</p>
+                </div>
+                <span class="track-duration">—:—</span>
+            </div>
+            <div class="track placeholder">
+                <span class="track-number">04</span>
+                <div class="track-info">
+                    <h3>Untitled Research</h3>
+                    <p>Coming soon</p>
+                </div>
+                <span class="track-duration">—:—</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="groove-divider" aria-hidden="true"></div>
+
+    <section id="knowledge" class="section">
+        <p class="eyebrow reveal">Side&nbsp;B · Track&nbsp;03</p>
+        <h2 class="reveal">Knowledge Base</h2>
+        <p class="section-intro reveal">
+            An evolving map of everything I've learned — sized by depth, linked by similarity. Right-click a node
+            for a quick description; hover to trace its connections. Placeholder for now while the real pipeline
+            (and eventually an LLM fine-tuned on it) takes shape.
+        </p>
+        <div id="cy" class="reveal"></div>
+    </section>
+
+    <div class="groove-divider" aria-hidden="true"></div>
+
+    <section id="contact" class="section">
+        <p class="eyebrow reveal">Side&nbsp;B · Track&nbsp;04</p>
+        <h2 class="reveal">Contact Me</h2>
+        <p class="section-intro reveal">Share my curiosity, or just want to talk shop? Drop a line below.</p>
+
+        <div class="contact-grid reveal">
+            <div class="contact-info">
+                <a class="contact-line" href="mailto:shaikhahmed155@hotmail.com">
+                    <span class="contact-icon" aria-hidden="true">✉</span>
+                    shaikhahmed155@hotmail.com
+                </a>
+                <a class="contact-line" href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener">
+                    <span class="contact-icon" aria-hidden="true">in</span>
+                    linkedin.com/in/shaikh-ahmed
+                </a>
+            </div>
+
+            <form class="contact-form sheen" action="https://script.google.com/macros/s/AKfycbxHPyVFoB-ie9RqAz04k3MArKsVlXFDN39nJ6dK6w9bwyIcDhpJZHKUxYd6waHMCkc9/exec" method="POST">
+                <label>
+                    <span>Your Email</span>
+                    <input type="email" name="entry.YOUR_EMAIL_ID" placeholder="you@example.com" required>
+                </label>
+                <label>
+                    <span>Subject</span>
+                    <input type="text" name="entry.YOUR_SUBJECT_ID" placeholder="What's this about?" required>
+                </label>
+                <label>
+                    <span>Message</span>
+                    <textarea name="entry.YOUR_MESSAGE_ID" rows="4" placeholder="Your message..." required></textarea>
+                </label>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+</main>
+
 <footer>
-    <p>&copy; 2025 Shaikh Ahmed. All rights reserved.</p>
+    <p>&copy; 2026 Shaikh Ahmed. All rights reserved.</p>
 </footer>
+
+<script src="script.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.21.1/cytoscape.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
-
