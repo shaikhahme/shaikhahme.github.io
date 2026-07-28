@@ -121,6 +121,25 @@
                 }).join('');
             }
 
+            var hoverNode = null;
+            var neighborIds = new Set();
+            var highlightLinks = new Set();
+            var FADE_COLOR = 'rgba(99,95,92,0.2)';
+            var BASE_LINK_COLOR = 'rgba(155,149,145,0.25)';
+            var HOT_LINK_COLOR = '#d81324';
+
+            function linkEndpointId(end) {
+                return typeof end === 'object' ? end.id : end;
+            }
+
+            function isHighlighted(node) {
+                return node === hoverNode || neighborIds.has(node.id);
+            }
+
+            var hasSpriteText = typeof SpriteText !== 'undefined';
+            var LABEL_ZOOM_DISTANCE = 140;
+            var labelsVisible = false;
+
             var Graph = ForceGraph3D()(container)
                 .width(container.clientWidth)
                 .height(container.clientHeight)
@@ -128,13 +147,42 @@
                 .backgroundColor('rgba(0,0,0,0)')
                 .nodeId('id')
                 .nodeVal('val')
-                .nodeColor('color')
                 .nodeOpacity(0.92)
                 .nodeLabel('label')
-                .nodeRelSize(3)
-                .linkColor(function () { return 'rgba(155,149,145,0.25)'; })
+                .nodeRelSize(3.4)
+                .nodeColor(function (node) {
+                    return hoverNode && !isHighlighted(node) ? FADE_COLOR : node.color;
+                })
+                .linkColor(function (link) {
+                    return highlightLinks.has(link) ? HOT_LINK_COLOR : BASE_LINK_COLOR;
+                })
                 .linkOpacity(0.35)
-                .linkWidth(0.6)
+                .linkWidth(function (link) { return highlightLinks.has(link) ? 2 : 0.6; })
+                .linkDirectionalParticles(function (link) { return highlightLinks.has(link) ? 2 : 0; })
+                .linkDirectionalParticleWidth(1.6)
+                .linkDirectionalParticleColor(function () { return HOT_LINK_COLOR; })
+                .cooldownTime(Infinity)
+                .onNodeHover(function (node) {
+                    hoverNode = node || null;
+                    neighborIds.clear();
+                    highlightLinks.clear();
+                    if (node) {
+                        rawLinks.forEach(function (link) {
+                            var srcId = linkEndpointId(link.source);
+                            var tgtId = linkEndpointId(link.target);
+                            if (srcId === node.id || tgtId === node.id) {
+                                highlightLinks.add(link);
+                                neighborIds.add(srcId);
+                                neighborIds.add(tgtId);
+                            }
+                        });
+                    }
+                    container.style.cursor = node ? 'pointer' : 'grab';
+                    Graph.nodeColor(Graph.nodeColor());
+                    Graph.linkColor(Graph.linkColor());
+                    Graph.linkWidth(Graph.linkWidth());
+                    Graph.linkDirectionalParticles(Graph.linkDirectionalParticles());
+                })
                 .onNodeClick(function (node) {
                     showInfo(node);
                     var distance = 90;
@@ -151,24 +199,73 @@
                     }
                 });
 
-            window.addEventListener('resize', function () {
-                Graph.width(container.clientWidth).height(container.clientHeight);
-            });
+            if (hasSpriteText) {
+                Graph.nodeThreeObjectExtend(true)
+                    .nodeThreeObject(function (node) {
+                        var sprite = new SpriteText(node.label);
+                        sprite.color = 'rgba(236,231,226,0.95)';
+                        sprite.textHeight = 2.4;
+                        sprite.backgroundColor = false;
+                        sprite.padding = 0;
+                        sprite.visible = false;
+                        return sprite;
+                    });
+            }
 
+            function syncSize() {
+                Graph.width(container.clientWidth).height(container.clientHeight);
+            }
+
+            if (typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(syncSize).observe(container);
+            } else {
+                window.addEventListener('resize', syncSize);
+            }
+
+            Graph.cameraPosition({ x: 0, y: 0, z: 240 }, undefined, 0);
+
+            /* Keep the graph gently alive instead of settling into a static pose,
+               and reveal node labels once the camera is close enough to read them. */
             if (Graph.controls) {
                 var controls = Graph.controls();
-                if (controls && !reduceMotion) {
-                    controls.autoRotate = true;
-                    controls.autoRotateSpeed = 0.6;
-                    var resumeTimer = null;
-                    controls.addEventListener('start', function () {
-                        controls.autoRotate = false;
-                        if (resumeTimer) clearTimeout(resumeTimer);
-                    });
-                    controls.addEventListener('end', function () {
-                        resumeTimer = setTimeout(function () { controls.autoRotate = true; }, 4000);
-                    });
+                if (controls) {
+                    if (!reduceMotion) {
+                        controls.autoRotate = true;
+                        controls.autoRotateSpeed = 0.6;
+                        var resumeTimer = null;
+                        controls.addEventListener('start', function () {
+                            controls.autoRotate = false;
+                            if (resumeTimer) clearTimeout(resumeTimer);
+                        });
+                        controls.addEventListener('end', function () {
+                            resumeTimer = setTimeout(function () { controls.autoRotate = true; }, 4000);
+                        });
+                    }
+
+                    if (hasSpriteText) {
+                        controls.addEventListener('change', function () {
+                            var camera = Graph.camera();
+                            var distance = camera.position.length();
+                            var shouldShow = distance < LABEL_ZOOM_DISTANCE;
+                            if (shouldShow !== labelsVisible) {
+                                labelsVisible = shouldShow;
+                                nodes.forEach(function (n) {
+                                    if (n.__threeObj) n.__threeObj.visible = labelsVisible;
+                                });
+                            }
+                        });
+                    }
                 }
+            }
+
+            if (!reduceMotion) {
+                setInterval(function () {
+                    nodes.forEach(function (n) {
+                        n.vx = (n.vx || 0) + (Math.random() - 0.5) * 0.6;
+                        n.vy = (n.vy || 0) + (Math.random() - 0.5) * 0.6;
+                        n.vz = (n.vz || 0) + (Math.random() - 0.5) * 0.6;
+                    });
+                }, 2600);
             }
         })
         .catch(function (error) {

@@ -144,11 +144,17 @@
                     ringTextPath.textContent = m.title;
                     var fontSize = Math.max(2.6, Math.min(4.4, RING_ARC_LEN / (m.title.length * 0.55)));
                     ringTextEl.setAttribute('font-size', fontSize.toFixed(2));
+                }
+
+                /* Shape swaps immediately (own CSS transition handles the crossfade) so it
+                   can never lag or get stuck behind the text fade timer below. */
+                function applyShape(idx) {
                     shapeStage.dataset.active = shapeForIndex(idx, milestones.length);
                 }
 
                 if (reduceMotion) {
                     applyMilestone(0);
+                    applyShape(0);
                     return;
                 }
 
@@ -178,6 +184,7 @@
                     var idx = Math.min(milestones.length - 1, Math.floor(progress * milestones.length));
                     if (idx !== activeIndex) {
                         activeIndex = idx;
+                        applyShape(idx);
                         if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
@@ -202,6 +209,7 @@
                 }
 
                 applyMilestone(0);
+                applyShape(0);
                 update();
                 window.addEventListener('scroll', onScroll, { passive: true });
                 window.addEventListener('resize', onScroll);

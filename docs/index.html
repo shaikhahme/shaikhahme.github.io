@@ -158,6 +158,38 @@
                     <h3 class="album-title">Untitled Research</h3>
                     <p class="album-desc">Coming soon</p>
                 </a>
+                <a class="album placeholder" href="#">
+                    <div class="album-cover" style="--hue: 18deg;">
+                        <span class="album-groove"></span>
+                        <span class="album-mark">05</span>
+                    </div>
+                    <h3 class="album-title">Untitled Project</h3>
+                    <p class="album-desc">Coming soon</p>
+                </a>
+                <a class="album placeholder" href="#">
+                    <div class="album-cover" style="--hue: -18deg;">
+                        <span class="album-groove"></span>
+                        <span class="album-mark">06</span>
+                    </div>
+                    <h3 class="album-title">Untitled Research</h3>
+                    <p class="album-desc">Coming soon</p>
+                </a>
+                <a class="album placeholder" href="#">
+                    <div class="album-cover" style="--hue: 4deg;">
+                        <span class="album-groove"></span>
+                        <span class="album-mark">07</span>
+                    </div>
+                    <h3 class="album-title">Untitled Project</h3>
+                    <p class="album-desc">Coming soon</p>
+                </a>
+                <a class="album placeholder" href="#">
+                    <div class="album-cover" style="--hue: -24deg;">
+                        <span class="album-groove"></span>
+                        <span class="album-mark">08</span>
+                    </div>
+                    <h3 class="album-title">Untitled Research</h3>
+                    <p class="album-desc">Coming soon</p>
+                </a>
             </div>
         </div>
 
@@ -178,16 +210,18 @@
         </p>
 
         <div class="graph-wrap reveal">
-            <div id="cy" class="graph-canvas" role="img" aria-label="3D interactive knowledge graph of topics I have learned, clustered by domain and sized by depth"></div>
+            <div class="graph-layout">
+                <div id="cy" class="graph-canvas" role="img" aria-label="3D interactive knowledge graph of topics I have learned, clustered by domain and sized by depth"></div>
+
+                <aside class="graph-sidebar">
+                    <div class="graph-legend" id="graphLegend" aria-hidden="true"></div>
+                    <div class="graph-info" id="graphInfo" aria-live="polite">
+                        <p class="graph-info-placeholder">Select a node to see what it is.</p>
+                    </div>
+                </aside>
+            </div>
 
             <p class="graph-hint">Drag to rotate &middot; Scroll to zoom &middot; Click a node for details</p>
-
-            <div class="graph-panel">
-                <div class="graph-legend" id="graphLegend" aria-hidden="true"></div>
-                <div class="graph-info" id="graphInfo" aria-live="polite">
-                    <p class="graph-info-placeholder">Select a node to see what it is.</p>
-                </div>
-            </div>
 
             <ul class="sr-only" id="graphFallbackList"></ul>
         </div>
@@ -237,6 +271,8 @@
 </footer>
 
 <script src="script.js"></script>
+<script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
+<script src="https://unpkg.com/three-spritetext@1.9.4/dist/three-spritetext.min.js"></script>
 <script src="https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js"></script>
 <script src="app.js"></script>
 </body>

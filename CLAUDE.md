@@ -79,15 +79,32 @@ issues:
 19. About Me
     20. Fix bugs
 
---- Next Task
-0. Commmit Changes
-1. vinyl player shapes, once the last shape the dots are visible, they are always there
-2. vinyl player shapes, make the transition between the shapes a transform rather than a fade in
-3. projects: add a horzinatal score so more prokects can be seen
-4. knowledge graph: Add labels dynamically based on tthe zoom. use a more advance ghrpahing framework if needed cause this one seems  old school, allow the nodes to move to add some life to the page
-5. kg: highlighting a node highlights the nodes around it
-6. kg: i like the animation when you click  anode
-6. kg: make it part of the wbesite rather than inside a frame
-7. KG: shift the legend to teh side
+--- Next Task (generated from testing, iteration 1 follow-ups)
+0. Commit changes
+1. Knowledge graph: the fixed camera z=240 start distance and nodeRelSize=3.4 are tuned by eye for the
+   current ~73-node dataset. If topics.json grows a lot, re-check framing (or compute the initial camera
+   distance from node count instead of a hardcoded constant).
+2. Knowledge graph: node labels currently all show/hide together at one global camera-distance threshold
+   (LABEL_ZOOM_DISTANCE). With many nodes this gets crowded when zoomed in - consider per-node distance
+   checks or only labeling larger-rank nodes first.
+3. Knowledge graph: console shows a harmless "Multiple instances of Three.js being imported" warning
+   (three.js loaded standalone for three-spritetext, while 3d-force-graph bundles its own copy). Works
+   fine, but could be cleaned up later via matching ESM builds if it ever causes a real conflict.
+4. Knowledge graph: the periodic gentle node-drift (small random velocity nudge every ~2.6s, needed since
+   cooldownTime is Infinity) has only been watched for a couple minutes - worth a longer soak test to
+   confirm nodes don't drift apart or destabilize over a long-lived tab.
+5. Confirm responsive layouts on an actual narrow/mobile viewport - both the About two-column
+   (motivation + vinyl, stacks under 900px) and the Knowledge graph sidebar (stacks under 900px) were
+   built with media queries but not visually verified on a real small screen this session.
+6. Projects tiles use CSS-generated placeholder cover art (gradient + groove pattern), not real images -
+   swap in real project screenshots/artwork once available.
+7. Projects "See more on GitHub" button points to https://github.com/shaikhahme, inferred from the
+   shaikhahme.github.io repo naming convention - please confirm this is the right profile/URL.
+8. Projects: the "vinyl covers pulled out of a box" full drag-out animation was explicitly deferred as
+   future work; only a lighter hover lift/tilt + horizontal scroll was built. Revisit if you want the
+   fuller physical-pull interaction.
+9. Knowledge Agent + chatbot (still blocked): need GitHub URL/repo to index, Joplin access method
+   (Web Clipper API token + port, or local sync folder), and an LLM/embeddings provider before this can
+   be built - see item 8 in the completed task list above for full context.
 
     

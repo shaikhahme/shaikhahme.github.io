@@ -555,8 +555,10 @@ main {
     inset: 0;
     margin: auto;
     opacity: 0;
+    --sc: 0.35;
+    transform: scale(var(--sc));
     transform-style: preserve-3d;
-    transition: opacity 0.4s ease;
+    transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
     pointer-events: none;
 }
 
@@ -568,6 +570,7 @@ main {
 #shapeStage[data-active="hexagon"] .shape-hexagon,
 #shapeStage[data-active="sphere"] .shape-sphere {
     opacity: 1;
+    --sc: 1;
 }
 
 .shape-dot {
@@ -599,7 +602,7 @@ main {
     height: clamp(30px, 6.6vw, 46px);
     background: linear-gradient(135deg, var(--accent-hot), var(--mahogany));
     border: 1px solid rgba(255, 255, 255, 0.1);
-    transform: rotate(45deg);
+    transform: scale(var(--sc)) rotate(45deg);
 }
 
 .shape-cube {
@@ -861,16 +864,19 @@ main {
     margin-top: 2rem;
 }
 
+.graph-layout {
+    display: grid;
+    grid-template-columns: 1fr 260px;
+    gap: 1.8rem;
+    align-items: stretch;
+}
+
 .graph-canvas {
     width: 100%;
+    min-width: 0;
     height: 56vh;
     min-height: 380px;
-    border-radius: 14px;
-    border: 1px solid var(--line-soft);
-    background:
-        radial-gradient(circle at 30% 20%, rgba(179, 0, 11, 0.08), transparent 55%),
-        var(--bg-raised);
-    overflow: hidden;
+    background: radial-gradient(circle at 30% 20%, rgba(179, 0, 11, 0.06), transparent 60%);
     cursor: grab;
 }
 
@@ -879,7 +885,7 @@ main {
 }
 
 .graph-hint {
-    margin: 0.9rem 0 0;
+    margin: 1.1rem 0 0;
     font-family: var(--font-mono);
     font-size: 0.78rem;
     letter-spacing: 0.04em;
@@ -887,27 +893,22 @@ main {
     text-align: center;
 }
 
-.graph-panel {
+.graph-sidebar {
     display: flex;
-    flex-wrap: wrap;
-    gap: 1.4rem;
-    margin-top: 1.4rem;
-    align-items: flex-start;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 1.2rem;
 }
 
 .graph-legend {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1.1rem;
-    flex: 1 1 260px;
-    padding-top: 0.3rem;
+    flex-direction: column;
+    gap: 0.6rem;
 }
 
 .graph-legend-item {
     display: inline-flex;
     align-items: center;
-    gap: 0.45rem;
+    gap: 0.5rem;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.03em;
@@ -922,8 +923,7 @@ main {
 }
 
 .graph-info {
-    flex: 1 1 280px;
-    max-width: 360px;
+    flex: 1;
     background: var(--bg-card);
     border: 1px solid var(--line-soft);
     border-radius: 12px;
@@ -1072,6 +1072,16 @@ footer {
 @media (max-width: 900px) {
     .contact-grid {
         grid-template-columns: 1fr;
+    }
+
+    .graph-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .graph-legend {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 0.5rem 1.1rem;
     }
 
     .site-nav ul {
