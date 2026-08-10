@@ -138,7 +138,6 @@
 
             var hasSpriteText = typeof SpriteText !== 'undefined';
             var LABEL_ZOOM_DISTANCE = 140;
-            var labelsVisible = false;
 
             var Graph = ForceGraph3D()(container)
                 .width(container.clientWidth)
@@ -222,7 +221,10 @@
                 window.addEventListener('resize', syncSize);
             }
 
-            Graph.cameraPosition({ x: 0, y: 0, z: 240 }, undefined, 0);
+            /* Nodes roughly fill a 3D volume as the count grows, so scale distance by
+               the cube root of node count rather than a size tuned to today's dataset. */
+            var initialCameraDistance = Math.max(120, Math.min(500, 58 * Math.cbrt(nodes.length)));
+            Graph.cameraPosition({ x: 0, y: 0, z: initialCameraDistance }, undefined, 0);
 
             /* Keep the graph gently alive instead of settling into a static pose,
                and reveal node labels once the camera is close enough to read them. */
@@ -243,17 +245,18 @@
                     }
 
                     if (hasSpriteText) {
-                        controls.addEventListener('change', function () {
-                            var camera = Graph.camera();
-                            var distance = camera.position.length();
-                            var shouldShow = distance < LABEL_ZOOM_DISTANCE;
-                            if (shouldShow !== labelsVisible) {
-                                labelsVisible = shouldShow;
-                                nodes.forEach(function (n) {
-                                    if (n.__threeObj) n.__threeObj.visible = labelsVisible;
-                                });
-                            }
-                        });
+                        /* Checked on an interval (not just camera 'change') since node
+                           positions also drift on their own from the perpetual-motion nudge. */
+                        setInterval(function () {
+                            var camPos = Graph.camera().position;
+                            nodes.forEach(function (n) {
+                                if (!n.__threeObj) return;
+                                var dx = (n.x || 0) - camPos.x;
+                                var dy = (n.y || 0) - camPos.y;
+                                var dz = (n.z || 0) - camPos.z;
+                                n.__threeObj.visible = Math.sqrt(dx * dx + dy * dy + dz * dz) < LABEL_ZOOM_DISTANCE;
+                            });
+                        }, 400);
                     }
                 }
             }
