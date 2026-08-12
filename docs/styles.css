@@ -536,130 +536,12 @@ main {
     width: 40%;
     aspect-ratio: 1;
     border-radius: 50%;
-    background: radial-gradient(circle at 36% 30%, var(--teal-black-1), var(--teal-black-2) 75%);
+    background: radial-gradient(circle at 36% 30%, var(--core-color, var(--teal-black-1)), var(--core-color-dark, var(--teal-black-2)) 75%);
     box-shadow:
         inset 0 0 0 1px rgba(0, 0, 0, 0.4),
-        0 0 26px rgba(179, 0, 11, 0.22),
+        0 0 26px var(--core-glow, rgba(179, 0, 11, 0.22)),
         0 4px 18px rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-/* --- Center 3D shape stage --- */
-
-.shape-stage {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    perspective: 640px;
-    transform-style: preserve-3d;
-    will-change: transform;
-}
-
-.shape {
-    position: absolute;
-    inset: 0;
-    margin: auto;
-    opacity: 0;
-    --sc: 0.35;
-    transform: scale(var(--sc));
-    transform-style: preserve-3d;
-    transition: opacity 0.4s ease, transform 0.4s var(--ease-out);
-    pointer-events: none;
-}
-
-#shapeStage[data-active="dot"] .shape-dot,
-#shapeStage[data-active="line"] .shape-line,
-#shapeStage[data-active="triangle"] .shape-triangle,
-#shapeStage[data-active="diamond"] .shape-diamond,
-#shapeStage[data-active="cube"] .shape-cube,
-#shapeStage[data-active="hexagon"] .shape-hexagon,
-#shapeStage[data-active="sphere"] .shape-sphere {
-    opacity: 1;
-    --sc: 1;
-}
-
-.shape-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--accent-hot);
-    box-shadow: 0 0 16px 3px rgba(179, 0, 11, 0.65);
-}
-
-.shape-line {
-    width: 3px;
-    height: clamp(30px, 7vw, 52px);
-    border-radius: 3px;
-    background: linear-gradient(var(--accent-hot), var(--mahogany));
-}
-
-.shape-triangle {
-    width: 0;
-    height: 0;
-    border-left: clamp(14px, 3.4vw, 24px) solid transparent;
-    border-right: clamp(14px, 3.4vw, 24px) solid transparent;
-    border-bottom: clamp(24px, 5.8vw, 40px) solid var(--accent-hot);
-    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
-    margin-top: clamp(-12px, -2.9vw, -20px);
-}
-
-.shape-diamond {
-    width: clamp(30px, 6.6vw, 46px);
-    height: clamp(30px, 6.6vw, 46px);
-    background: linear-gradient(135deg, var(--accent-hot), var(--mahogany));
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transform: scale(var(--sc)) rotate(45deg);
-}
-
-.shape-cube {
-    --cs: clamp(30px, 6.6vw, 46px);
-    width: var(--cs);
-    height: var(--cs);
-}
-
-.shape-cube .face {
-    position: absolute;
-    width: var(--cs);
-    height: var(--cs);
-    background: linear-gradient(135deg, var(--accent-hot), var(--mahogany));
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    opacity: 0.92;
-}
-
-.shape-cube .front  { transform: translateZ(calc(var(--cs) / 2)); }
-.shape-cube .back   { transform: rotateY(180deg) translateZ(calc(var(--cs) / 2)); }
-.shape-cube .right  { transform: rotateY(90deg) translateZ(calc(var(--cs) / 2)); }
-.shape-cube .left   { transform: rotateY(-90deg) translateZ(calc(var(--cs) / 2)); }
-.shape-cube .top    { transform: rotateX(90deg) translateZ(calc(var(--cs) / 2)); }
-.shape-cube .bottom { transform: rotateX(-90deg) translateZ(calc(var(--cs) / 2)); }
-
-.shape-hexagon {
-    width: clamp(32px, 7vw, 48px);
-    height: clamp(28px, 6vw, 42px);
-    background: linear-gradient(160deg, var(--accent-hot), var(--mahogany));
-    clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-}
-
-.shape-sphere {
-    width: 0;
-    height: 0;
-}
-
-.sphere-dot {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    margin: -2.5px 0 0 -2.5px;
-    border-radius: 50%;
-    background: var(--accent-hot);
-    box-shadow: 0 0 6px rgba(179, 0, 11, 0.6);
+    transition: background 0.7s ease, box-shadow 0.7s ease;
 }
 
 /* --- Tonearm --- */
@@ -873,9 +755,9 @@ main {
 
 .graph-wrap {
     margin-top: 2rem;
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    margin-right: calc(50% - 50vw);
+    width: 94vw;
+    margin-left: calc(50% - 47vw);
+    margin-right: calc(50% - 47vw);
     padding: 0 clamp(1rem, 3vw, 2rem);
 }
 
@@ -889,8 +771,8 @@ main {
 .graph-canvas {
     width: 100%;
     min-width: 0;
-    height: 70vh;
-    min-height: 500px;
+    height: 62vh;
+    min-height: 440px;
     background: radial-gradient(circle at 30% 20%, rgba(179, 0, 11, 0.06), transparent 60%);
     cursor: grab;
 }

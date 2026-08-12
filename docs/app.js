@@ -11,52 +11,52 @@
     var CLUSTERS = {
         security: {
             name: 'Security',
-            color: '#B3000B',
+            color: '#FF4136',
             labels: ['Cybersecurity', 'Network Security', 'Application Security', 'ssh', 'TSL', 'X506', 'OPCUA']
         },
         languages: {
             name: 'Languages',
-            color: '#E0A458',
+            color: '#FF9F1C',
             labels: ['Programming', 'JAVA', 'Python', 'Bash', 'YAML', 'C++', 'javascript', 'HTML', 'sql']
         },
         theory: {
             name: 'CS Theory',
-            color: '#8A8FBF',
+            color: '#B388FF',
             labels: ['Data strcutures', 'Functions', 'Conditions', 'OOP', 'Recursive', 'Algorithms',
                 'Dysktras Algorithm', 'Discrete Maths', 'Linear Algebra and Graph Theory']
         },
         aiData: {
             name: 'AI & Data',
-            color: '#4FB0A5',
+            color: '#2EC4B6',
             labels: ['Machine Learning', 'NLP', 'Data Analysis', 'Audio and Speech processing',
                 'Signal processing', 'databases', 'postgres', 'mongodb', 'Visulisation', 'GFX']
         },
         devops: {
             name: 'DevOps & Cloud',
-            color: '#D9739F',
+            color: '#FF3D81',
             labels: ['Docker', 'K4s', 'AWS', 'Github Actions', 'Automation', 'Scripting', 'Virtual Machines',
                 'Github', 'Git', 'Github Pages', 'Jira', 'Slack', 'Google Workspaces', 'Powershell', 'postman', 'APIS']
         },
         networking: {
             name: 'Networking & IoT',
-            color: '#6FA8DC',
+            color: '#3D8BFD',
             labels: ['Networks', 'OSI network model', 'TCP', 'UDP', 'HTTP(S)', 'Radio communications', 'IoT',
                 'Lwm2m', 'COAP', 'Microcontroller Programmimg', 'Mobile Information Devices', 'Rasberry Pi',
                 'Arduino', 'PID controllers']
         },
         tools: {
             name: 'Tools',
-            color: '#C9C9C9',
+            color: '#C9F24B',
             labels: ['VIM', 'IntelliJ', 'Maven', 'Spring', 'Matlab']
         },
         os: {
             name: 'Operating Systems',
-            color: '#8C6E54',
+            color: '#4CAF50',
             labels: ['linux', 'windows', 'macOS']
         }
     };
 
-    var DEFAULT_CLUSTER = { name: 'Other', color: '#635f5c' };
+    var DEFAULT_CLUSTER = { name: 'Other', color: '#8a8580' };
 
     var labelToCluster = {};
     Object.keys(CLUSTERS).forEach(function (key) {
@@ -137,7 +137,6 @@
             }
 
             var hasSpriteText = typeof SpriteText !== 'undefined';
-            var LABEL_ZOOM_DISTANCE = 140;
 
             var Graph = ForceGraph3D()(container)
                 .width(container.clientWidth)
@@ -222,8 +221,10 @@
             }
 
             /* Nodes roughly fill a 3D volume as the count grows, so scale distance by
-               the cube root of node count rather than a size tuned to today's dataset. */
-            var initialCameraDistance = Math.max(120, Math.min(500, 58 * Math.cbrt(nodes.length)));
+               the cube root of node count rather than a size tuned to today's dataset.
+               Starts pulled back further than the graph's natural scale so the full
+               cluster is visible at a glance instead of opening on a dense close-up. */
+            var initialCameraDistance = Math.max(160, Math.min(700, 85 * Math.cbrt(nodes.length)));
             Graph.cameraPosition({ x: 0, y: 0, z: initialCameraDistance }, undefined, 0);
 
             /* Keep the graph gently alive instead of settling into a static pose,
@@ -246,7 +247,13 @@
 
                     if (hasSpriteText) {
                         /* Checked on an interval (not just camera 'change') since node
-                           positions also drift on their own from the perpetual-motion nudge. */
+                           positions also drift on their own from the perpetual-motion nudge.
+                           Reveal distance scales with each node's importance (val), so the
+                           handful of highest-rank topics stay labeled even at the zoomed-out
+                           starting view, while minor nodes only label up close - keeps the
+                           graph legible without labeling all 70+ nodes at once. */
+                        var LABEL_BASE_DISTANCE = 50;
+                        var LABEL_VAL_SCALE = 45;
                         setInterval(function () {
                             var camPos = Graph.camera().position;
                             nodes.forEach(function (n) {
@@ -254,7 +261,8 @@
                                 var dx = (n.x || 0) - camPos.x;
                                 var dy = (n.y || 0) - camPos.y;
                                 var dz = (n.z || 0) - camPos.z;
-                                n.__threeObj.visible = Math.sqrt(dx * dx + dy * dy + dz * dz) < LABEL_ZOOM_DISTANCE;
+                                var threshold = LABEL_BASE_DISTANCE + n.val * LABEL_VAL_SCALE;
+                                n.__threeObj.visible = Math.sqrt(dx * dx + dy * dy + dz * dz) < threshold;
                             });
                         }, 400);
                     }

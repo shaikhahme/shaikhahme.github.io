@@ -66,29 +66,51 @@
         if (active) setActiveLink(active);
     });
 
+    /* ---- Shared: turn a horizontally-scrollable row into an infinite loop.
+       Triples the content and silently snaps back by one set-width whenever the
+       scroll position drifts into either outer copy, so both drag-scrolling and
+       programmatic scrollTo() feel endless in both directions. ---- */
+    function makeInfiniteLoop(container) {
+        if (!container || !container.children.length) return null;
+
+        container.innerHTML = container.innerHTML + container.innerHTML + container.innerHTML;
+        var setWidth = container.scrollWidth / 3;
+        container.scrollLeft = setWidth;
+
+        container.addEventListener('scroll', function () {
+            if (container.scrollLeft < setWidth * 0.5) {
+                container.scrollLeft += setWidth;
+            } else if (container.scrollLeft > setWidth * 1.5) {
+                container.scrollLeft -= setWidth;
+            }
+        }, { passive: true });
+
+        return setWidth;
+    }
+
     /* ---- Scroll-pinned vinyl timeline (About section) ---- */
     (function initTimeline() {
         var pin = document.getElementById('timelinePin');
         var stage = document.getElementById('timelineStage');
         var vinyl = document.getElementById('vinylRecord');
+        var vinylCore = document.getElementById('vinylCore');
         var tonearm = document.getElementById('tonearm');
-        var shapeStage = document.getElementById('shapeStage');
-        var sphereEl = document.getElementById('shapeSphere');
         var ageEl = document.getElementById('timelineAge');
         var textEl = document.getElementById('timelineText');
         var indexEl = document.getElementById('timelineIndex');
         var ringTextPath = document.getElementById('ringTextPath');
 
-        if (!pin || !stage || !vinyl || !shapeStage || !ringTextPath) return;
+        if (!pin || !stage || !vinyl || !vinylCore || !ringTextPath) return;
 
         var ringTextEl = ringTextPath.parentNode;
         var ringPathEl = document.getElementById('ringPath');
 
-        /* Build a shallow "dome" arc (sampled, avoids SVG arc-flag ambiguity) that sits
-           in its own dedicated strip directly below the disc, so the curved title never
-           overlaps the vinyl itself. */
-        var RING_CX = 50, RING_CY = 90, RING_R = 90;
-        var RING_START_DEG = 239, RING_END_DEG = 301;
+        /* Build a shallow arc (sampled, avoids SVG arc-flag ambiguity) that sits in its
+           own dedicated strip directly below the disc. It curves the same way as the
+           vinyl's own rim (dips away from the disc at the center, tucks back up toward
+           it at the edges) rather than mirroring away from it. */
+        var RING_CX = 50, RING_CY = -68.6, RING_R = 82.6;
+        var RING_START_DEG = 124, RING_END_DEG = 56;
         var RING_ARC_LEN = RING_R * Math.abs(RING_END_DEG - RING_START_DEG) * Math.PI / 180;
 
         if (ringPathEl) {
@@ -104,30 +126,15 @@
             ringPathEl.setAttribute('d', d.trim());
         }
 
-        var SHAPE_SEQUENCE = ['dot', 'line', 'triangle', 'diamond', 'cube', 'hexagon', 'sphere'];
-
-        function shapeForIndex(idx, total) {
-            return SHAPE_SEQUENCE[Math.min(SHAPE_SEQUENCE.length - 1, Math.floor(idx * SHAPE_SEQUENCE.length / total))];
-        }
-
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
-        /* Build the particle sphere once, using a Fibonacci sphere distribution */
-        var SPHERE_COUNT = 34;
-        var SPHERE_RADIUS = 24;
-        if (sphereEl && !sphereEl.childElementCount) {
-            var goldenAngle = Math.PI * (3 - Math.sqrt(5));
-            for (var i = 0; i < SPHERE_COUNT; i++) {
-                var y = 1 - (i / (SPHERE_COUNT - 1)) * 2;
-                var radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
-                var theta = goldenAngle * i;
-                var x = Math.cos(theta) * radiusAtY;
-                var z = Math.sin(theta) * radiusAtY;
-                var dot = document.createElement('span');
-                dot.className = 'sphere-dot';
-                dot.style.transform = 'translate3d(' + (x * SPHERE_RADIUS).toFixed(1) + 'px, ' + (y * SPHERE_RADIUS).toFixed(1) + 'px, ' + (z * SPHERE_RADIUS).toFixed(1) + 'px)';
-                sphereEl.appendChild(dot);
-            }
+        /* Center label recolors per milestone instead of morphing through shapes -
+           a smooth hue rotation around the color wheel, one stop per chapter. */
+        function applyColor(idx, total) {
+            var hue = Math.round((idx / total) * 360);
+            vinylCore.style.setProperty('--core-color', 'hsl(' + hue + ', 68%, 42%)');
+            vinylCore.style.setProperty('--core-color-dark', 'hsl(' + hue + ', 55%, 18%)');
+            vinylCore.style.setProperty('--core-glow', 'hsla(' + hue + ', 75%, 50%, 0.35)');
         }
 
         fetch('./data/timeline.json')
@@ -148,15 +155,9 @@
                     ringTextEl.setAttribute('font-size', fontSize.toFixed(2));
                 }
 
-                /* Shape swaps immediately (own CSS transition handles the crossfade) so it
-                   can never lag or get stuck behind the text fade timer below. */
-                function applyShape(idx) {
-                    shapeStage.dataset.active = shapeForIndex(idx, milestones.length);
-                }
-
                 if (reduceMotion) {
                     applyMilestone(0);
-                    applyShape(0);
+                    applyColor(0, milestones.length);
                     return;
                 }
 
@@ -176,7 +177,6 @@
 
                     var deg = progress * TOTAL_SPINS * 360;
                     vinyl.style.transform = 'rotate(' + deg.toFixed(2) + 'deg)';
-                    shapeStage.style.transform = 'rotateX(14deg) rotateY(' + (progress * 4 * 360).toFixed(2) + 'deg)';
 
                     if (tonearm) {
                         var tonearmDeg = TONEARM_START + (TONEARM_END - TONEARM_START) * progress;
@@ -186,7 +186,7 @@
                     var idx = Math.min(milestones.length - 1, Math.floor(progress * milestones.length));
                     if (idx !== activeIndex) {
                         activeIndex = idx;
-                        applyShape(idx);
+                        applyColor(idx, milestones.length);
                         if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
@@ -211,7 +211,7 @@
                 }
 
                 applyMilestone(0);
-                applyShape(0);
+                applyColor(0, milestones.length);
                 update();
                 window.addEventListener('scroll', onScroll, { passive: true });
                 window.addEventListener('resize', onScroll);
@@ -221,7 +221,7 @@
             });
     })();
 
-    /* ---- Projects: fetch and render from JSON ---- */
+    /* ---- Projects: fetch and render from JSON, then loop infinitely ---- */
     (function initProjects() {
         var row = document.getElementById('projectsRow');
         if (!row) return;
@@ -253,27 +253,26 @@
                         '</a>';
                 }
                 row.innerHTML = html;
+                makeInfiniteLoop(row);
             })
             .catch(function (error) {
                 console.error('Error loading projects:', error);
             });
     })();
 
-    /* ---- Testimonials carousel: auto-scroll with hover pause ---- */
+    /* ---- Testimonials carousel: infinite loop, auto-scroll, pauses on hover ---- */
     (function initTestimonials() {
         var carousel = document.getElementById('testimonialCarousel');
         if (!carousel) return;
+
+        makeInfiniteLoop(carousel);
 
         var scrollTimer = null;
 
         function nextScroll() {
             var cardEl = carousel.querySelector('.testimonial-card');
             var step = cardEl ? cardEl.getBoundingClientRect().width + 24 : 300;
-            var atEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 4;
-            carousel.scrollTo({
-                left: atEnd ? 0 : carousel.scrollLeft + step,
-                behavior: 'smooth'
-            });
+            carousel.scrollTo({ left: carousel.scrollLeft + step, behavior: 'smooth' });
         }
 
         function start() {
