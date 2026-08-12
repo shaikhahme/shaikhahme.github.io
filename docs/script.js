@@ -77,9 +77,32 @@
         var ageEl = document.getElementById('timelineAge');
         var textEl = document.getElementById('timelineText');
         var indexEl = document.getElementById('timelineIndex');
-        var titleEl = document.getElementById('milestoneTitle');
+        var ringTextPath = document.getElementById('ringTextPath');
 
-        if (!pin || !stage || !vinyl || !shapeStage || !titleEl) return;
+        if (!pin || !stage || !vinyl || !shapeStage || !ringTextPath) return;
+
+        var ringTextEl = ringTextPath.parentNode;
+        var ringPathEl = document.getElementById('ringPath');
+
+        /* Build a shallow "dome" arc (sampled, avoids SVG arc-flag ambiguity) that sits
+           in its own dedicated strip directly below the disc, so the curved title never
+           overlaps the vinyl itself. */
+        var RING_CX = 50, RING_CY = 90, RING_R = 90;
+        var RING_START_DEG = 239, RING_END_DEG = 301;
+        var RING_ARC_LEN = RING_R * Math.abs(RING_END_DEG - RING_START_DEG) * Math.PI / 180;
+
+        if (ringPathEl) {
+            var steps = 48;
+            var d = '';
+            for (var p = 0; p <= steps; p++) {
+                var deg = RING_START_DEG + (RING_END_DEG - RING_START_DEG) * (p / steps);
+                var rad = deg * Math.PI / 180;
+                var px = RING_CX + RING_R * Math.cos(rad);
+                var py = RING_CY + RING_R * Math.sin(rad);
+                d += (p === 0 ? 'M ' : 'L ') + px.toFixed(2) + ' ' + py.toFixed(2) + ' ';
+            }
+            ringPathEl.setAttribute('d', d.trim());
+        }
 
         var SHAPE_SEQUENCE = ['dot', 'line', 'triangle', 'diamond', 'cube', 'hexagon', 'sphere'];
 
@@ -120,7 +143,9 @@
                     ageEl.textContent = m.age;
                     textEl.textContent = m.text;
                     if (indexEl) indexEl.textContent = pad(idx + 1);
-                    titleEl.textContent = m.title;
+                    ringTextPath.textContent = m.title;
+                    var fontSize = Math.max(3, Math.min(6.5, RING_ARC_LEN / (m.title.length * 0.62)));
+                    ringTextEl.setAttribute('font-size', fontSize.toFixed(2));
                 }
 
                 /* Shape swaps immediately (own CSS transition handles the crossfade) so it
@@ -165,13 +190,13 @@
                         if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
-                        titleEl.style.opacity = 0;
+                        ringTextEl.style.opacity = 0;
                         fadeTimer = setTimeout(function (targetIdx) {
                             return function () {
                                 applyMilestone(targetIdx);
                                 ageEl.style.opacity = 1;
                                 textEl.style.opacity = 1;
-                                titleEl.style.opacity = 1;
+                                ringTextEl.style.opacity = 1;
                                 fadeTimer = null;
                             };
                         }(idx), 140);

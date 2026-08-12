@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
 
@@ -73,30 +73,37 @@
                     <p class="timeline-progress" aria-hidden="true"><span id="timelineIndex">01</span> / 10</p>
 
                     <div class="timeline-visual">
-                        <div class="tonearm-base"></div>
-                        <div class="tonearm" id="tonearm"><span class="tonearm-head"></span></div>
+                        <div class="timeline-disc">
+                            <div class="tonearm-base"></div>
+                            <div class="tonearm" id="tonearm"><span class="tonearm-head"></span></div>
 
-                        <div class="vinyl-record" id="vinylRecord">
-                            <div class="vinyl-shine"></div>
-                            <div class="vinyl-core">
-                                <div class="shape-stage" id="shapeStage">
-                                    <div class="shape shape-dot" data-shape="dot"></div>
-                                    <div class="shape shape-line" data-shape="line"></div>
-                                    <div class="shape shape-triangle" data-shape="triangle"></div>
-                                    <div class="shape shape-diamond" data-shape="diamond"></div>
-                                    <div class="shape shape-cube" data-shape="cube">
-                                        <span class="face front"></span><span class="face back"></span>
-                                        <span class="face left"></span><span class="face right"></span>
-                                        <span class="face top"></span><span class="face bottom"></span>
+                            <div class="vinyl-record" id="vinylRecord">
+                                <div class="vinyl-shine"></div>
+                                <div class="vinyl-core">
+                                    <div class="shape-stage" id="shapeStage">
+                                        <div class="shape shape-dot" data-shape="dot"></div>
+                                        <div class="shape shape-line" data-shape="line"></div>
+                                        <div class="shape shape-triangle" data-shape="triangle"></div>
+                                        <div class="shape shape-diamond" data-shape="diamond"></div>
+                                        <div class="shape shape-cube" data-shape="cube">
+                                            <span class="face front"></span><span class="face back"></span>
+                                            <span class="face left"></span><span class="face right"></span>
+                                            <span class="face top"></span><span class="face bottom"></span>
+                                        </div>
+                                        <div class="shape shape-hexagon" data-shape="hexagon"></div>
+                                        <div class="shape shape-sphere" id="shapeSphere" data-shape="sphere"></div>
                                     </div>
-                                    <div class="shape shape-hexagon" data-shape="hexagon"></div>
-                                    <div class="shape shape-sphere" id="shapeSphere" data-shape="sphere"></div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <p class="milestone-title" id="milestoneTitle">The First Crack</p>
+                        <svg class="ring-text" id="ringText" viewBox="0 0 100 24" aria-hidden="true">
+                            <path id="ringPath" fill="none"></path>
+                            <text>
+                                <textPath id="ringTextPath" href="#ringPath" startOffset="50%" text-anchor="middle">the first crack</textPath>
+                            </text>
+                        </svg>
+                    </div>
 
                     <div class="timeline-caption">
                         <p class="timeline-age" id="timelineAge">Age 7</p>
@@ -249,7 +256,7 @@
     <p>&copy; 2026 Shaikh Ahmed. All rights reserved.</p>
 </footer>
 
-<script src="script.js"></script>
+<script src="script.js?v=3"></script>
 <script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three-spritetext@1.9.4/dist/three-spritetext.min.js"></script>
 <script src="https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js"></script>

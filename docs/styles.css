@@ -462,19 +462,32 @@ main {
 }
 
 .timeline-visual {
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     width: clamp(180px, min(30vw, 42vh), 380px);
+}
+
+.timeline-disc {
+    position: relative;
+    width: 100%;
     aspect-ratio: 1;
 }
 
-.milestone-title {
-    margin: 1.1rem 0 0;
-    text-align: center;
+.ring-text {
+    width: 88%;
+    height: auto;
+    aspect-ratio: 100 / 24;
+    overflow: visible;
+    margin-top: -2%;
+}
+
+.ring-text text {
+    fill: var(--accent-hot);
     font-family: var(--font-mono);
-    font-size: clamp(0.85rem, 1.4vw, 1rem);
-    letter-spacing: 0.08em;
+    font-size: 6px;
+    letter-spacing: 0.05em;
     text-transform: uppercase;
-    color: var(--accent-hot);
     transition: opacity 0.25s ease;
 }
 
@@ -860,6 +873,10 @@ main {
 
 .graph-wrap {
     margin-top: 2rem;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding: 0 clamp(1rem, 3vw, 2rem);
 }
 
 .graph-layout {
