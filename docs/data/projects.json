@@ -1,0 +1,50 @@
+[
+  {
+    "name": "CTIoT: Cyber Threat Intelligence for IoT",
+    "description": "IEEE-published research on NLP and ML filtering for IoT cyber threats",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "AI Security & Governance Framework",
+    "description": "Enterprise framework for AI alignment, safety, and governance",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "Red Team Operations",
+    "description": "Offensive security assessments and penetration testing engagements",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "Vulnerability Management Pipeline",
+    "description": "Automated vulnerability detection, prioritization, and remediation tracking",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "AI Automation Training Program",
+    "description": "Internal training on AI automation, security, and team leadership",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "Third-Party Security Assessment",
+    "description": "Vendor risk assessment and supply chain security framework",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "ISO 27001 & SOC 2 Compliance",
+    "description": "Information security management and compliance certification",
+    "link": "#",
+    "image": ""
+  },
+  {
+    "name": "DevSecOps Infrastructure",
+    "description": "Security-first CI/CD pipelines and infrastructure hardening",
+    "link": "#",
+    "image": ""
+  }
+]

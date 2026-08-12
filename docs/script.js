@@ -77,30 +77,9 @@
         var ageEl = document.getElementById('timelineAge');
         var textEl = document.getElementById('timelineText');
         var indexEl = document.getElementById('timelineIndex');
-        var ringTextPath = document.getElementById('ringTextPath');
+        var titleEl = document.getElementById('milestoneTitle');
 
-        if (!pin || !stage || !vinyl || !shapeStage || !ringTextPath) return;
-
-        var ringTextEl = ringTextPath.parentNode;
-        var ringPathEl = document.getElementById('ringPath');
-
-        /* Build the ring path as a sampled arc (avoids SVG arc-flag ambiguity) */
-        var RING_CX = 50, RING_CY = 50, RING_R = 42;
-        var RING_START_DEG = 200, RING_END_DEG = 340;
-        var RING_ARC_LEN = RING_R * Math.abs(RING_END_DEG - RING_START_DEG) * Math.PI / 180;
-
-        if (ringPathEl) {
-            var steps = 48;
-            var d = '';
-            for (var p = 0; p <= steps; p++) {
-                var deg = RING_START_DEG + (RING_END_DEG - RING_START_DEG) * (p / steps);
-                var rad = deg * Math.PI / 180;
-                var px = RING_CX + RING_R * Math.cos(rad);
-                var py = RING_CY + RING_R * Math.sin(rad);
-                d += (p === 0 ? 'M ' : 'L ') + px.toFixed(2) + ' ' + py.toFixed(2) + ' ';
-            }
-            ringPathEl.setAttribute('d', d.trim());
-        }
+        if (!pin || !stage || !vinyl || !shapeStage || !titleEl) return;
 
         var SHAPE_SEQUENCE = ['dot', 'line', 'triangle', 'diamond', 'cube', 'hexagon', 'sphere'];
 
@@ -141,9 +120,7 @@
                     ageEl.textContent = m.age;
                     textEl.textContent = m.text;
                     if (indexEl) indexEl.textContent = pad(idx + 1);
-                    ringTextPath.textContent = m.title;
-                    var fontSize = Math.max(2.6, Math.min(4.4, RING_ARC_LEN / (m.title.length * 0.55)));
-                    ringTextEl.setAttribute('font-size', fontSize.toFixed(2));
+                    titleEl.textContent = m.title;
                 }
 
                 /* Shape swaps immediately (own CSS transition handles the crossfade) so it
@@ -188,13 +165,13 @@
                         if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
-                        ringTextEl.style.opacity = 0;
+                        titleEl.style.opacity = 0;
                         fadeTimer = setTimeout(function (targetIdx) {
                             return function () {
                                 applyMilestone(targetIdx);
                                 ageEl.style.opacity = 1;
                                 textEl.style.opacity = 1;
-                                ringTextEl.style.opacity = 1;
+                                titleEl.style.opacity = 1;
                                 fadeTimer = null;
                             };
                         }(idx), 140);
@@ -217,6 +194,80 @@
             .catch(function (error) {
                 console.error('Error loading timeline:', error);
             });
+    })();
+
+    /* ---- Projects: fetch and render from JSON ---- */
+    (function initProjects() {
+        var row = document.getElementById('projectsRow');
+        if (!row) return;
+
+        fetch('./data/projects.json')
+            .then(function (response) {
+                if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
+                return response.json();
+            })
+            .then(function (projects) {
+                if (!projects || !projects.length) return;
+
+                var html = '';
+                for (var i = 0; i < projects.length; i++) {
+                    var p = projects[i];
+                    var hue = (i * 45) % 360;
+                    var num = (i + 1 < 10 ? '0' : '') + (i + 1);
+                    var cover = p.image
+                        ? '<img src="' + p.image + '" alt="">'
+                        : '<span class="album-groove"></span>';
+
+                    html += '<a class="album" href="' + p.link + '" target="_blank" rel="noopener">' +
+                        '<div class="album-cover" style="--hue: ' + hue + 'deg;">' +
+                        cover +
+                        '<span class="album-mark">' + num + '</span>' +
+                        '</div>' +
+                        '<h3 class="album-title">' + p.name + '</h3>' +
+                        '<p class="album-desc">' + p.description + '</p>' +
+                        '</a>';
+                }
+                row.innerHTML = html;
+            })
+            .catch(function (error) {
+                console.error('Error loading projects:', error);
+            });
+    })();
+
+    /* ---- Testimonials carousel: auto-scroll with hover pause ---- */
+    (function initTestimonials() {
+        var carousel = document.getElementById('testimonialCarousel');
+        if (!carousel) return;
+
+        var scrollTimer = null;
+
+        function nextScroll() {
+            var cardEl = carousel.querySelector('.testimonial-card');
+            var step = cardEl ? cardEl.getBoundingClientRect().width + 24 : 300;
+            var atEnd = carousel.scrollLeft + carousel.clientWidth >= carousel.scrollWidth - 4;
+            carousel.scrollTo({
+                left: atEnd ? 0 : carousel.scrollLeft + step,
+                behavior: 'smooth'
+            });
+        }
+
+        function start() {
+            stop();
+            scrollTimer = setInterval(nextScroll, 4000);
+        }
+
+        function stop() {
+            if (scrollTimer) {
+                clearInterval(scrollTimer);
+                scrollTimer = null;
+            }
+        }
+
+        if (!reduceMotion) {
+            carousel.addEventListener('mouseenter', stop);
+            carousel.addEventListener('mouseleave', start);
+            start();
+        }
     })();
 
     /* ---- Cursor glow (desktop only) ---- */
