@@ -1108,12 +1108,31 @@ footer {
 
 .crate-album-cover {
     position: relative;
+    width: 100%;
     aspect-ratio: 1;
     border-radius: 8px;
     overflow: hidden;
-    background: var(--tile-color);
+    background-color: var(--tile-color);
+    background-image: var(--tile-img, none);
+    background-size: cover;
+    background-position: center;
     box-shadow: 0 22px 42px -18px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.4);
     transition: box-shadow 0.4s ease;
+}
+
+.crate-album-cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-radial-gradient(
+        circle at 50% 50%,
+        transparent 0px,
+        transparent 3px,
+        rgba(0, 0, 0, 0.16) 4px,
+        rgba(0, 0, 0, 0.16) 4.4px
+    );
+    mix-blend-mode: overlay;
+    opacity: 0.6;
 }
 
 .crate-album-cover::after {
@@ -1128,15 +1147,30 @@ footer {
 }
 
 .crate-album-title {
-    margin: 1.1rem 0 0.3rem;
-    font-size: 1.05rem;
-    font-weight: 600;
+    margin: 1.2rem 0 0.4rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
     color: var(--text);
+    text-shadow: 0 0 22px color-mix(in srgb, var(--tile-color) 55%, transparent);
+}
+
+.crate-album-title::after {
+    content: '';
+    display: block;
+    width: 26px;
+    height: 2px;
+    margin: 0.55rem auto 0;
+    background: var(--tile-color);
+    opacity: 0.85;
 }
 
 .crate-album-desc {
     margin: 0;
     font-size: 0.8rem;
+    font-style: italic;
     color: var(--text-faint);
 }
 
