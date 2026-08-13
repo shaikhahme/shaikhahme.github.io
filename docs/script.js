@@ -129,16 +129,19 @@
 
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
-        /* Center label recolors per milestone instead of morphing through shapes -
-           a smooth hue rotation around the color wheel, one stop per chapter. */
-        function applyColor(idx, total) {
-            var hue = Math.round((idx / total) * 360);
+        /* Center label recolors continuously with scroll progress instead of morphing
+           through shapes or snapping per milestone - a smooth hue rotation around the
+           color wheel that tracks the disc's own rotation, one full loop per scroll. */
+        function applyColor(progress) {
+            var hue = Math.round(((progress % 1) + 1) % 1 * 360);
             vinylCore.style.setProperty('--core-color', 'hsl(' + hue + ', 68%, 42%)');
             vinylCore.style.setProperty('--core-color-dark', 'hsl(' + hue + ', 55%, 18%)');
             vinylCore.style.setProperty('--core-glow', 'hsla(' + hue + ', 75%, 50%, 0.35)');
         }
 
-        fetch('/data/timeline.json')
+        var timelineSlug = window.location.pathname.split('/').filter(Boolean)[0] || 'ai-security';
+
+        fetch('/data/timeline-' + timelineSlug + '.json')
             .then(function (response) {
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
                 return response.json();
@@ -159,7 +162,7 @@
 
                 if (reduceMotion) {
                     applyMilestone(0);
-                    applyColor(0, milestones.length);
+                    applyColor(0);
                     return;
                 }
 
@@ -179,6 +182,7 @@
 
                     var deg = progress * TOTAL_SPINS * 360;
                     vinyl.style.transform = 'rotate(' + deg.toFixed(2) + 'deg)';
+                    applyColor(progress * TOTAL_SPINS);
 
                     if (tonearm) {
                         var tonearmDeg = TONEARM_START + (TONEARM_END - TONEARM_START) * progress;
@@ -188,7 +192,6 @@
                     var idx = Math.min(milestones.length - 1, Math.floor(progress * milestones.length));
                     if (idx !== activeIndex) {
                         activeIndex = idx;
-                        applyColor(idx, milestones.length);
                         if (fadeTimer) clearTimeout(fadeTimer);
                         ageEl.style.opacity = 0;
                         textEl.style.opacity = 0;
@@ -213,7 +216,7 @@
                 }
 
                 applyMilestone(0);
-                applyColor(0, milestones.length);
+                applyColor(0);
                 update();
                 window.addEventListener('scroll', onScroll, { passive: true });
                 window.addEventListener('resize', onScroll);
@@ -223,10 +226,13 @@
             });
     })();
 
-    /* ---- Projects: fetch and render from JSON, then loop infinitely ---- */
+    /* ---- Projects: fetch and render from JSON, most relevant to this page's
+       specialty first (via each project's `tags`), then loop infinitely ---- */
     (function initProjects() {
         var row = document.getElementById('projectsRow');
         if (!row) return;
+
+        var slug = window.location.pathname.split('/').filter(Boolean)[0];
 
         fetch('/data/projects.json')
             .then(function (response) {
@@ -235,6 +241,12 @@
             })
             .then(function (projects) {
                 if (!projects || !projects.length) return;
+
+                projects = projects.slice().sort(function (a, b) {
+                    var aRelevant = a.tags && a.tags.indexOf(slug) !== -1 ? 1 : 0;
+                    var bRelevant = b.tags && b.tags.indexOf(slug) !== -1 ? 1 : 0;
+                    return bRelevant - aRelevant;
+                });
 
                 var html = '';
                 for (var i = 0; i < projects.length; i++) {
@@ -329,8 +341,8 @@
     /* ---- Specialty page prose: fetch per-page and shared copy from JSON ---- */
     (function initSpecialtyContent() {
         var heroTagline = document.getElementById('heroTagline');
-        var virtueParagraphs = document.getElementById('virtueParagraphs');
-        if (!heroTagline && !virtueParagraphs) return;
+        var passionParagraphs = document.getElementById('passionParagraphs');
+        if (!heroTagline && !passionParagraphs) return;
 
         var slug = window.location.pathname.split('/').filter(Boolean)[0];
 
@@ -353,8 +365,8 @@
                 if (metaDesc && data.metaDescription) metaDesc.setAttribute('content', data.metaDescription);
 
                 setText('heroTagline', data.tagline);
-                setText('virtueTitle', data.virtueTitle);
-                setText('virtueCtaBtn', data.virtueCta);
+                setText('passionTitle', data.passionTitle);
+                setText('passionCtaBtn', data.passionCta);
                 setText('projectsIntro', data.projectsIntro);
                 setText('knowledgeIntro', data.knowledgeIntro);
                 setText('contactIntro', data.contactIntro);
@@ -363,18 +375,19 @@
                 function eyebrow(side, track) {
                     return data.specialtyLabel + NBSP + MIDDOT + NBSP + 'Side' + NBSP + side + NBSP + MIDDOT + NBSP + 'Track' + NBSP + track;
                 }
-                setText('eyebrowAbout', eyebrow('A', '01'));
+                setText('eyebrowAbout', eyebrow('A', data.heroTrack || '01'));
                 setText('eyebrowProjects', eyebrow('A', '02'));
                 setText('eyebrowKnowledge', eyebrow('B', '03'));
-                setText('eyebrowContact', eyebrow('B', '04'));
+                setText('eyebrowPassion', eyebrow('B', '04'));
+                setText('eyebrowContact', eyebrow('B', '05'));
 
-                if (virtueParagraphs && data.virtueParagraphs) {
-                    virtueParagraphs.innerHTML = '';
-                    data.virtueParagraphs.forEach(function (text) {
+                if (passionParagraphs && data.passionParagraphs) {
+                    passionParagraphs.innerHTML = '';
+                    data.passionParagraphs.forEach(function (text) {
                         var p = document.createElement('p');
-                        p.className = 'reflection';
+                        p.className = 'passion-text';
                         p.textContent = text;
-                        virtueParagraphs.appendChild(p);
+                        passionParagraphs.appendChild(p);
                     });
                 }
             }

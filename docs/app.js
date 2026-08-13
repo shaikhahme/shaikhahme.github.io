@@ -227,6 +227,30 @@
             var initialCameraDistance = Math.max(160, Math.min(700, 85 * Math.cbrt(nodes.length)));
             Graph.cameraPosition({ x: 0, y: 0, z: initialCameraDistance }, undefined, 0);
 
+            /* Each specialty page anchors the graph on its own most-relevant node once
+               the force layout has had a moment to cluster related topics together,
+               easing the camera in from the default overview to that node. */
+            var ANCHOR_LABELS = { 'ai-alignment': 'AI Alignment', 'ai-security': 'AI Security', 'cybersecurity': 'Cybersecurity' };
+            var pageSlug = window.location.pathname.split('/').filter(Boolean)[0];
+            var anchorLabel = ANCHOR_LABELS[pageSlug];
+            var anchorNode = anchorLabel ? nodes.find(function (n) { return n.label === anchorLabel; }) : null;
+
+            if (anchorNode && !reduceMotion) {
+                setTimeout(function () {
+                    var ax = anchorNode.x || 0, ay = anchorNode.y || 0, az = anchorNode.z || 1;
+                    var distance = 130;
+                    var ratio = 1 + distance / Math.max(1, Math.hypot(ax, ay, az));
+                    Graph.cameraPosition(
+                        { x: ax * ratio, y: ay * ratio, z: az * ratio },
+                        anchorNode,
+                        1400
+                    );
+                    showInfo(anchorNode);
+                }, 1200);
+            } else if (anchorNode) {
+                showInfo(anchorNode);
+            }
+
             /* Keep the graph gently alive instead of settling into a static pose,
                and reveal node labels once the camera is close enough to read them. */
             if (Graph.controls) {

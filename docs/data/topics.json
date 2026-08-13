@@ -6,6 +6,20 @@
     "longDesc": "Cybersecurity is a broad field within computer science dedicated to protecting systems, networks, and data from malicious attacks. It falls under the umbrella of information security and risk management. As a parent domain, it encompasses subfields such as network security, application security, digital forensics, and threat intelligence. Popular tools and technologies in this domain include firewalls, intrusion detection systems, antivirus software, and encryption standards like SSL/TLS. Its principles are applied across industries such as finance, healthcare, and government to ensure data confidentiality, integrity, and availability."
   },
   {
+    "label": "AI Alignment",
+    "desc": "Making sure powerful AI systems stay pointed at what we actually want.",
+    "rank": 10,
+    "longDesc": "AI Alignment is the field concerned with ensuring that artificial intelligence systems pursue goals and values that match human intent, even as those systems become more capable and autonomous. It falls under the artificial intelligence, machine learning, and AI safety domains. It serves as a parent field for topics such as interpretability, reward modeling, and scalable oversight. Popular research areas include reinforcement learning from human feedback, mechanistic interpretability, and governance frameworks for frontier models. AI Alignment is increasingly critical as machine learning systems are deployed in high-stakes settings, making it essential to ensure they remain safe, controllable, and beneficial.",
+    "placeholder": true
+  },
+  {
+    "label": "AI Security",
+    "desc": "Securing AI systems, models, and the pipelines that ship them.",
+    "rank": 10,
+    "longDesc": "AI Security is the practice of protecting machine learning models, training pipelines, and AI-powered applications from adversarial attacks, data poisoning, and misuse. It falls under the cybersecurity, machine learning, and AI safety domains. It serves as a parent field for topics such as adversarial robustness, model red-teaming, and secure MLOps. Popular tools and techniques include adversarial example testing, prompt injection defenses, and AI governance frameworks integrated into DevSecOps pipelines. AI Security is essential as organizations race to ship AI systems, ensuring those systems are resilient against attackers just as traditional software must be.",
+    "placeholder": true
+  },
+  {
     "label": "Network Security",
     "desc": "The domain of Cybersecurity related to networks and communication",
     "rank": 6,

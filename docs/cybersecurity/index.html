@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css?v=7">
+    <link rel="stylesheet" href="/styles.css?v=8">
 </head>
 <body>
 
@@ -46,15 +46,6 @@
         <div class="timeline-pin" id="timelinePin">
             <div class="timeline-stage" id="timelineStage">
 
-                <div class="timeline-motivation">
-                    <h3 class="timeline-motivation-title" id="virtueTitle"></h3>
-                    <div id="virtueParagraphs"></div>
-                    <div class="cta-row">
-                        <a href="#contact" class="btn btn-primary sheen" id="virtueCtaBtn"></a>
-                        <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
-                    </div>
-                </div>
-
                 <div class="timeline-visual-col">
                     <p class="timeline-progress" aria-hidden="true"><span id="timelineIndex">01</span> / <span id="timelineTotal">10</span></p>
 
@@ -63,6 +54,7 @@
                             <div class="tonearm-base"></div>
                             <div class="tonearm" id="tonearm"><span class="tonearm-head"></span></div>
 
+                            <div class="vinyl-shadow" aria-hidden="true"></div>
                             <div class="vinyl-record" id="vinylRecord">
                                 <div class="vinyl-shine"></div>
                                 <div class="vinyl-core" id="vinylCore"></div>
@@ -140,6 +132,21 @@
 
     <div class="groove-divider" aria-hidden="true"></div>
 
+    <section id="passion" class="section">
+        <p class="eyebrow reveal" id="eyebrowPassion"></p>
+        <h2 class="reveal" id="passionTitle"></h2>
+
+        <div class="passion-body reveal">
+            <div id="passionParagraphs"></div>
+            <div class="cta-row">
+                <a href="#contact" class="btn btn-primary sheen" id="passionCtaBtn"></a>
+                <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
+            </div>
+        </div>
+    </section>
+
+    <div class="groove-divider" aria-hidden="true"></div>
+
     <section id="contact" class="section">
         <p class="eyebrow reveal" id="eyebrowContact"></p>
         <h2 class="reveal">Contact Me</h2>
@@ -192,10 +199,10 @@
     <p>&copy; 2026 Shaikh Ahmed. All rights reserved.</p>
 </footer>
 
-<script src="/script.js?v=7"></script>
+<script src="/script.js?v=8"></script>
 <script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three-spritetext@1.9.4/dist/three-spritetext.min.js"></script>
 <script src="https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js"></script>
-<script src="/app.js?v=7"></script>
+<script src="/app.js?v=8"></script>
 </body>
 </html>

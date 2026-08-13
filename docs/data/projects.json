@@ -3,48 +3,56 @@
     "name": "CTIoT: Cyber Threat Intelligence for IoT",
     "description": "IEEE-published research on NLP and ML filtering for IoT cyber threats",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity", "ai-security"]
   },
   {
     "name": "AI Security & Governance Framework",
     "description": "Enterprise framework for AI alignment, safety, and governance",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["ai-security", "ai-alignment"]
   },
   {
     "name": "Red Team Operations",
     "description": "Offensive security assessments and penetration testing engagements",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity"]
   },
   {
     "name": "Vulnerability Management Pipeline",
     "description": "Automated vulnerability detection, prioritization, and remediation tracking",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity"]
   },
   {
     "name": "AI Automation Training Program",
     "description": "Internal training on AI automation, security, and team leadership",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["ai-security", "ai-alignment"]
   },
   {
     "name": "Third-Party Security Assessment",
     "description": "Vendor risk assessment and supply chain security framework",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity"]
   },
   {
     "name": "ISO 27001 & SOC 2 Compliance",
     "description": "Information security management and compliance certification",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity"]
   },
   {
     "name": "DevSecOps Infrastructure",
     "description": "Security-first CI/CD pipelines and infrastructure hardening",
     "link": "#",
-    "image": ""
+    "image": "",
+    "tags": ["cybersecurity", "ai-security"]
   }
 ]
