@@ -4,107 +4,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal portfolio site for Shaikh Ahmed, served via GitHub Pages from the `docs/` directory at https://shaikhahme.github.io/. There is no build step, package manager, or test suite — it's static HTML/CSS/JS plus a one-off Python data-prep script.
+Personal portfolio site for Shaikh Ahmed, deployed on Vercel from the `docs/` directory (previously GitHub Pages, at https://shaikhahme.github.io/). There is no build step, package manager, or test suite — it's static HTML/CSS/vanilla JS plus a one-off Python data-prep script. Visual theme is a vintage vinyl record: black/red palette by default, grain overlay, a cursor spotlight effect, and per-section "Side A/B · Track NN" framing.
+
+The site is four pages: a landing page, and three themed "pressings" of the same portfolio (About/Projects/Knowledge/Contact), each recolored and re-worded around a specialty — AI Alignment (green), AI Security (red, the default palette), Cybersecurity (blue). Same person, same story, three lenses.
 
 ## Architecture
 
-- `docs/index.html` — single-page site with anchor-linked sections (`#about`, `#knowledge`, `#project`, `#contact`). Loads jQuery, `script.js`, `styles.css`, Cytoscape.js, and `app.js` directly via `<script>`/`<link>` tags — no bundler.
-- `docs/script.js` — jQuery behavior for the main page: fades sections into view on scroll (`in-view` class) and toggles "Read More/Less" text in the About section.
-- `docs/app.js` — renders an interactive knowledge-graph visualization in the `#knowledge` section using Cytoscape.js, fetching `docs/data/graph.json`. Nodes are topics (sized/labeled by `size`/`label`), edges represent topic similarity. Hovering highlights connected edges/nodes; right-click (`cxttapstart`/`cxttapend`) swaps a node's label for its `desc` field.
-- `docs/data/topics.json` — source list of knowledge-base topics, each with `label`, `desc` (short), `longDesc` (used for similarity), and `rank` (drives node size).
-- `docs/data/graph.json` — generated Cytoscape elements (`nodes`/`edges`) consumed by `app.js`. Regenerate it from `topics.json` rather than hand-editing.
+- `docs/index.html` — the landing page. Wooden-crate CSS background holding three album tiles (colored placeholder squares — swap in real cover art via each tile's `--tile-color` inline style when available) linking to the three specialty pages below. No knowledge-graph libraries loaded here (nothing on this page needs them).
+- `docs/ai-alignment/index.html`, `docs/ai-security/index.html`, `docs/cybersecurity/index.html` — three full copies of the portfolio page, each `<html data-theme="...">`-tagged (`green` / `red` / `blue`) and with its own hero tagline, About "virtue" closing paragraph, and Projects/Knowledge/Contact intro copy tailored to that specialty. Timeline milestones, the projects list, the knowledge graph, and testimonials are identical across all three (shared data files) — only the framing prose and accent color differ. Structurally each is: a centered nav (brand links back to `/`; About/Projects/Knowledge/Contact links are same-page anchors) over four anchor-linked sections (`#about`, `#projects`, `#knowledge`, `#contact`) plus a bonus `#testimonials` section. No jQuery, no Cytoscape — loads `/script.js`, `/styles.css`, then (for the knowledge graph) `three.js`, `three-spritetext`, and `3d-force-graph` from unpkg, then `/app.js`.
+- All four HTML pages reference shared assets via **root-relative paths** (`/styles.css`, `/script.js`, `/app.js`, `/data/*.json`) rather than relative ones, since three of the pages live one directory level down from `docs/`. This only resolves correctly when `docs/` is served as the site root (true for both the Vercel config and GitHub Pages' classic branch deploy) — don't switch these back to relative paths without accounting for the subfolder pages.
+- `docs/styles.css` — all styling, shared by all four pages: crate/landing visuals, vinyl/record visuals, nav, scroll-driven About animation, project album tiles, knowledge graph layout, contact form, testimonials carousel, responsive breakpoints (stacks under 900px). Theming is CSS custom properties: `--accent`/`--accent-dim` are `var()` references onto `--molten-lava`/`--brick-ember`/`--mahogany`/`--accent-hot`, which the `:root` block sets to the red palette and `[data-theme="green"]`/`[data-theme="blue"]` blocks override — so accent-derived glows/shadows/gradients elsewhere in the file are written as `color-mix(in srgb, var(--accent) X%, transparent)` rather than hardcoded rgba, letting them re-theme automatically. Add a new specialty page by adding one more `[data-theme="..."]` block with those four variables.
+- `docs/script.js` — vanilla JS behavior shared by all four pages. Each `init*` function no-ops if its target DOM elements aren't present, so it's safe to include on the landing page even though most sections don't exist there:
+  - Scroll-reveal (`in-view` class) for `.reveal` elements.
+  - **About section**: scroll-pinned vinyl record animation. As the user scrolls through `#about`, a tonearm/vinyl assembly is pinned in place and steps through the timeline (fetched from `/data/timeline.json`) — age, title, and body text update per step, along with a curved ring-title (`ringText`/`ringPath` SVG `textPath`) below the disc. The center label recolors per milestone (color fade) rather than morphing through 3D shapes — the earlier shape-morph approach was reworked because it wasn't reversible/centered.
+  - **Projects section**: fetches `/data/projects.json` and renders album-style tiles into `#projectsRow` (image, title, short description), replacing the static placeholder tile in the HTML. Horizontal scroll row with hover lift/tilt; CSS-generated placeholder cover art (gradient + groove pattern) until real project images are supplied. "See more on GitHub" button links to `https://github.com/shaikhahme` (unconfirmed — inferred from repo naming).
+  - **Testimonials**: infinite-loop auto-scrolling carousel, pauses on hover.
+  - Cursor spotlight glow, nav active-section indicator (both work generically, no page-specific handling needed).
+- `docs/app.js` — renders an interactive **3D** knowledge-graph visualization in `#knowledge` (on the three specialty pages only) using `3d-force-graph` (Three.js-based, not Cytoscape), fetching `/data/graph.json` into the `#cy` canvas. Drag to rotate, scroll to zoom, click a node for details (shown in the `.graph-sidebar`). Camera start distance scales with node count and label visibility scales per-node by rank — `nodeRelSize` is still a flat constant.
+- `docs/data/topics.json` — source list of knowledge-base topics, each with `label`, `desc` (short), `longDesc` (used for similarity), and `rank` (drives node size). Shared across all three specialty pages.
+- `docs/data/graph.json` — generated force-graph elements (`nodes`/`edges`) consumed by `app.js`. Regenerate it from `topics.json` rather than hand-editing.
+- `docs/data/timeline.json` — About-section milestones (`age`, `title`, `text`) driving the scroll-pinned vinyl animation. Shared, identical across all three specialty pages.
+- `docs/data/projects.json` — Projects-section entries (`name`, `description`, `link`, `image`); `image` is currently empty for all entries (placeholder art used instead). Shared.
 - `scripts/generate-gk-script.py` — builds `docs/data/graph.json` from `docs/data/topics.json`: TF-IDF vectorizes each topic's `longDesc`, computes pairwise cosine similarity, and adds an edge between two topics when similarity exceeds `0.2`. Requires `scikit-learn`. Run from the repo root:
   ```
   python scripts/generate-gk-script.py
   ```
-- The "Project Description" section embeds an external Canva iframe; the "Contact Me" form POSTs to a Google Apps Script endpoint — both are external integrations, not part of this repo's code.
+  This is still the plain data-prep script described below under "Planned: Knowledge Agent" — it has not yet been reworked into an agent.
+- The Contact form (present on each specialty page, all pointing at the same endpoint) POSTs to a Google Apps Script endpoint — external integration, not part of this repo's code.
 
 ## Working in this repo
 
-- Changes to `docs/` deploy automatically via GitHub Pages on push to `main` — there is no CI/build pipeline to run first.
-- When editing knowledge-base topics, update `topics.json` and regenerate `graph.json` with the script above rather than editing the generated file directly.
+- Changes to `docs/` deploy automatically via Vercel on push to `main` — there is no CI/build pipeline to run first. The repo has no `vercel.json`; Vercel project settings (root/output directory pointed at `docs/`) live in the Vercel dashboard, not in-repo.
+- There used to be a GitHub Actions workflow (`static.yml`) deploying to GitHub Pages; it's been removed now that Vercel is the deploy target. If GitHub Pages is still enabled in the repo settings, disable it there to avoid two live copies of the site — that's a dashboard setting, not something fixable from this repo.
+- When editing knowledge-base topics, update `topics.json` and regenerate `graph.json` with the script above rather than editing the generated file directly. `.github/workflows/generate-graph-json.yml` also does this automatically on a weekly cron and on pushes to `topics.json` or the script itself — this workflow is unrelated to deployment and still runs.
+- Bump the `?v=N` query param on the `styles.css`/`script.js`/`app.js` `<script>`/`<link>` tags **in all four HTML pages** when shipping changes to those shared files, for cache-busting — they must all carry the same version number or pages will disagree on which copy they're using.
+- When editing the timeline, projects, or knowledge-graph content, edit it once in `docs/data/` — all three specialty pages read the same files. Only edit HTML directly when the change is specific to one specialty (hero tagline, About closing paragraph, section intros).
 
-# TASK
-Help me rehaul the entire portfolio, i want to be heavily animated, proffesional but personal portfolio, it should have 4 Sections, About Me, Projects/Research, Knowldege, Contact Me.
-The theme inspiration should be the vintage Vinyl with Black, Red Rings, etc. the cursor should be move like a spotlight. Feel free to use animations for online libraries of animations
+## Current status
 
-1. About Me
-scrollable animation. Scrolling (top view) Rotates a vinyl record with a animation in the midddle and the text surrounds the disc.
-the centre animation shoudl go from a dot,to a line, triangle, pyramid, Cube,and so on with 3D Shapes.
+The site is now a four-page structure: a wooden-crate landing page at `docs/index.html`, and three themed specialty pages (`docs/ai-alignment/`, `docs/ai-security/`, `docs/cybersecurity/`) that each carry the full About/Projects/Knowledge/Contact experience, recolored and re-worded per specialty. Recent work (see git log) covered a full visual/interaction overhaul of the original single page — nav centering + underline fixes, About readability and scroll-sensitivity fixes, the vinyl center animation reworked from 3D shape-morphing to a color fade, Projects converted to album tiles fed by JSON, the Knowledge graph rebuilt from 2D Cytoscape to an interactive 3D force graph, infinite-loop testimonial/album carousels — followed by the landing-page + specialty-page split described above.
 
-The text here should be
-Age 7: In India, Cousin taught me how to crack games
-Age 9: In Dubai learnt how to brute force wifi networks unsuccesfully but still broke into my neighbours network to play adobe flash games
-Age 13:  Installed KALI linux for the first time and took down my own internet try to configure port forwarding for a trojan
-Age 13-16: Did CTFs for the first time, taught myself programming, became a script kiddie addict to get free minecraft accounts
-Age 17: Moved to Germany and Started my Bachelors in Electrical and Electronics Engineering with a focus on Networks to formalise my education about networks and eventually Cybersecurity
-Age 18: Recieved Deutschland Stipendium, Leadership position in the FSR and AStA motivating engineers and restarting the communicty for the university
-Age 20:  Signed my contract with Cumulocity IoT, a SaaS company delivering IoT solutions where I worked as werkstudent in backend, product security, red teaming, devsecops and vulnerability management
-Age 22: Moved to France, worked as a researcher and did my semester abroad focusing only on security subjects - published my first paper via an IEEE conference on Cyber Threat Intelligence for IoTs using NLP and ML filtering (CTIoT)
-Age 23 - Present: Graduated from Electrical Engineering, Signed my Contract with NavVis as an Information Security Manager where I work on ISO 27001, SOC 2, Asset Management, Third Party Security, AI Governance. Started studying my MSc. in TUM focusing on AI Allginment, Security and Governance
-Age 24: Conducted Trainigs on AI Automation, AI Security and Leading a team for AI Automation across the company
+### Open items / known gaps
 
-Under the Record should be this text but make it sound slightly better, do not lose the human touch, do not add any big words, or dashes, etfc.
-A mentor i looked upto once asked me what is your virtue, what drives you when nothing does - and i replied learning, maybe too fast to be believable. I sat with that response for months before realising that it is true to my core. At the end of the day, the the things that bring me joy can be boiled down to learning new things, being in a community and helping that community. This paired with my affinity to tech and psychology led me to cybersecurity, specially cybersecurity's intersection with Artifical Intellignece. Today - AI Allignment and Safety, a space that is only becoming bigger of an issue to our society has caught my interest. 
-
-Create the first section adn use placeholders for the others, Ask me any questions about the first section before moving on.
-
-
-issues:
-1. Nav Bar
-   2. Centre the buttons
-   3. About Section never gets the red underline, fix bug
-2. About Me
-   3. Whats your virtue, paragraphed better for readability
-   4. make the buttons stacked below that para, rewrite the text to Contact me -> "Tell me about your virtue?"
-   5. Increase the senstivity of the scoll, curerently it takes too long to get to the end of the scroll animation of the vinyl
-   6. Rework the shape animation in the centree its not reveersable in the scroll, some shapes are not centred, weird dots on it after a certain number, use clean simple 3d shapes if that requires too much work, use clean simple 2d shapes
-   7. The disc moves based on the size of the text make it stuck 
-5. Projects
-   6. Tiles instead of a list, tiles are side by side
-   7. Each tile has an image, a name below it, some short description. should feel similar to vinyl albumbs
-   7. button on the bottom that takkes them to my github
-   8. Future work(if easy animate now): The tiles should feel like Vinyl Covers being pulled out of a box, horizontal scroll bar on the bottom to allow scrolling
-9. Knolwedge Base
-   10. Rework the python script 
-       11. Python script should be reworked as an AI Agent called the Knowledge Agent. its Job is to 
-       12. Read my knowledge sources (for now joplin and one github repo)
-       13. Store it as a vector database locally
-       13. Process it and store it in the format according to the data directory
-       14. this agent also is based on the AA Protocol developed by google so it can be communicated with via other agents.
-   15. Rework Graph visualtion
-       16. Better melded with the website
-       17. Use Front end libraries that are relevant to create a 3D Interactable Dynamic graph, cluster according to labels, see the graph.json to creata a accesbile graph.
-   18. Create a small chatbot below the graph that allows you to talk to knowledge agent
-19. About Me
-    20. Fix bugs
-
---- Next Task (generated from testing, iteration 1 follow-ups)
-0. Commit changes
-1. Knowledge graph: the fixed camera z=240 start distance and nodeRelSize=3.4 are tuned by eye for the
-   current ~73-node dataset. If topics.json grows a lot, re-check framing (or compute the initial camera
-   distance from node count instead of a hardcoded constant).
-2. Knowledge graph: node labels currently all show/hide together at one global camera-distance threshold
-   (LABEL_ZOOM_DISTANCE). With many nodes this gets crowded when zoomed in - consider per-node distance
-   checks or only labeling larger-rank nodes first.
-3. Knowledge graph: console shows a harmless "Multiple instances of Three.js being imported" warning
-   (three.js loaded standalone for three-spritetext, while 3d-force-graph bundles its own copy). Works
-   fine, but could be cleaned up later via matching ESM builds if it ever causes a real conflict.
-4. Knowledge graph: the periodic gentle node-drift (small random velocity nudge every ~2.6s, needed since
-   cooldownTime is Infinity) has only been watched for a couple minutes - worth a longer soak test to
-   confirm nodes don't drift apart or destabilize over a long-lived tab.
-5. Confirm responsive layouts on an actual narrow/mobile viewport - both the About two-column
-   (motivation + vinyl, stacks under 900px) and the Knowledge graph sidebar (stacks under 900px) were
-   built with media queries but not visually verified on a real small screen this session.
-6. Projects tiles use CSS-generated placeholder cover art (gradient + groove pattern), not real images -
-   swap in real project screenshots/artwork once available.
-7. Projects "See more on GitHub" button points to https://github.com/shaikhahme, inferred from the
-   shaikhahme.github.io repo naming convention - please confirm this is the right profile/URL.
-8. Projects: the "vinyl covers pulled out of a box" full drag-out animation was explicitly deferred as
-   future work; only a lighter hover lift/tilt + horizontal scroll was built. Revisit if you want the
-   fuller physical-pull interaction.
-9. Knowledge Agent + chatbot (still blocked): need GitHub URL/repo to index, Joplin access method
-   (Web Clipper API token + port, or local sync folder), and an LLM/embeddings provider before this can
-   be built - see item 8 in the completed task list above for full context.
-
-    
+1. **Knowledge Agent (blocked, not started)**: the plan is to rework `scripts/generate-gk-script.py` from a one-off TF-IDF script into an "AI Agent" that reads knowledge sources (Joplin + one GitHub repo), embeds/stores them in a local vector database, outputs data in the existing `docs/data/` format, and exposes itself over Google's Agent-to-Agent (A2A) protocol so other agents can talk to it. A chatbot UI below the knowledge graph would let visitors query it. Blocked on: which GitHub repo to index, Joplin access method (Web Clipper API token + port, or local sync folder), and an LLM/embeddings provider.
+2. **Knowledge graph tuning**: camera start distance scales with node count (`85 * cbrt(nodeCount)`, clamped 160–700) and label visibility scales per-node by rank (`val`), so both no longer need re-tuning as `topics.json` grows — only `nodeRelSize=3.4` is still a flat constant. Harmless "Multiple instances of Three.js" console warning (standalone three.js for three-spritetext vs. the copy bundled in 3d-force-graph) — cosmetic only. The periodic gentle node-drift keep-alive (needed since `cooldownTime` is Infinity) has only been soak-tested briefly.
+3. **Projects**: tile art is CSS-generated placeholders (gradient + groove pattern) — swap in real screenshots/artwork via the `image` field in `projects.json` once available (shared across all three specialty pages). The GitHub CTA URL (`github.com/shaikhahme`) is unconfirmed. The "vinyl covers pulled out of a box" full drag-out interaction was deferred in favor of a lighter hover lift/tilt + horizontal scroll; revisit if the fuller physical-pull animation is wanted.
+4. **Responsive/mobile**: About two-column layout, Knowledge graph sidebar, and the new crate landing page all have sub-900px/640px stacking media queries but haven't been visually verified on a real small-screen device (no browser tooling was available this session — verification so far is static/code-level only: HTML well-formedness, CSS brace balance, and HTTP 200s on every route via a local static server).
+5. **Landing-page cover art**: the three crate album tiles use flat color swatches (`--tile-color`) as placeholders, matching each specialty's accent color, per explicit instruction — swap in real images later the same way `projects.json`'s `image` field is meant to be used.
+6. **Specialty-page copy**: hero tagline, About's closing "virtue" paragraph, and the Projects/Knowledge/Contact section intros are hand-written per specialty (deep customization, by request) and will drift out of sync with each other over time since there's no shared template — when editing shared facts (job history, timeline, project list), remember to check whether the change also affects prose baked into the other two pages.

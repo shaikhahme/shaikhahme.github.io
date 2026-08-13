@@ -93,7 +93,7 @@
             '<p class="graph-info-desc">' + node.desc + '</p>';
     }
 
-    fetch('./data/graph.json')
+    fetch('/data/graph.json')
         .then(function (response) {
             if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
             return response.json();

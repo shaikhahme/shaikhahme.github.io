@@ -3,13 +3,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Shaikh Ahmed — Portfolio</title>
-    <meta name="description" content="Shaikh Ahmed — Cybersecurity, AI Security &amp; AI Alignment.">
+    <title>Shaikh Ahmed</title>
+    <meta name="description" content="Shaikh Ahmed — Cybersecurity, AI Security &amp; AI Alignment. Pick a side of the record.">
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%230c0c0d'/%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%233a3a3a' stroke-width='1.5'/%3E%3Ccircle cx='32' cy='32' r='12' fill='%23B3000B'/%3E%3Ccircle cx='32' cy='32' r='3' fill='%230c0c0d'/%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link rel="stylesheet" href="/styles.css?v=5">
 </head>
 <body>
 
@@ -17,223 +17,42 @@
 <div class="cursor-glow" id="cursorGlow"></div>
 
 <header class="site-nav" id="siteNav">
-    <a class="nav-brand" href="#about" aria-label="Home">
+    <a class="nav-brand" href="/" aria-label="Home">
         <span class="brand-mark"></span>
         <span class="brand-text">S.&nbsp;AHMED</span>
     </a>
-    <nav aria-label="Primary">
-        <ul>
-            <li><a href="#about"><span class="idx">01</span>About</a></li>
-            <li><a href="#projects"><span class="idx">02</span>Projects</a></li>
-            <li><a href="#knowledge"><span class="idx">03</span>Knowledge</a></li>
-            <li><a href="#contact"><span class="idx">04</span>Contact</a></li>
-        </ul>
-        <span class="nav-indicator" id="navIndicator" aria-hidden="true"></span>
-    </nav>
 </header>
 
 <main>
 
-    <section id="about" class="section hero">
+    <section class="section crate-hero">
 
-        <div class="hero-intro reveal">
-            <p class="eyebrow">Side&nbsp;A · Track&nbsp;01</p>
+        <div class="crate-intro reveal">
+            <p class="eyebrow">The Full Sleeve</p>
             <h1>Shaikh Ahmed</h1>
-            <p class="tagline">Cybersecurity &middot; AI Security &middot; AI&nbsp;Alignment</p>
-            <p class="scroll-hint">Scroll to play the record ↓</p>
+            <p class="tagline">Cybersecurity, AI security, and AI alignment sit on the same shelf. Pick the one you came for.</p>
         </div>
 
-        <div class="timeline-pin" id="timelinePin">
-            <div class="timeline-stage" id="timelineStage">
-
-                <div class="timeline-motivation">
-                    <h3 class="timeline-motivation-title">What's your virtue?</h3>
-                    <p class="reflection">
-                        A mentor I looked up to once asked me what my virtue was, what drives me when nothing else
-                        does. I said learning, so quickly it almost didn't sound true.
-                    </p>
-                    <p class="reflection">
-                        I sat with that answer for months before realising it really is at my core. When I look at
-                        what actually makes me happy, it comes down to a few simple things: learning something new,
-                        being part of a community, and helping that community grow.
-                    </p>
-                    <p class="reflection">
-                        That, along with my love for technology and psychology, is what led me to cybersecurity,
-                        and especially to where it meets artificial intelligence. These days, AI alignment and
-                        safety is what holds my attention the most, since it feels like a problem that will only
-                        matter more to all of us.
-                    </p>
-                    <div class="cta-row">
-                        <a href="#contact" class="btn btn-primary sheen">Tell me about your virtue?</a>
-                        <a href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener" class="btn btn-ghost">LinkedIn ↗</a>
-                    </div>
-                </div>
-
-                <div class="timeline-visual-col">
-                    <p class="timeline-progress" aria-hidden="true"><span id="timelineIndex">01</span> / 10</p>
-
-                    <div class="timeline-visual">
-                        <div class="timeline-disc">
-                            <div class="tonearm-base"></div>
-                            <div class="tonearm" id="tonearm"><span class="tonearm-head"></span></div>
-
-                            <div class="vinyl-record" id="vinylRecord">
-                                <div class="vinyl-shine"></div>
-                                <div class="vinyl-core" id="vinylCore"></div>
-                            </div>
-                        </div>
-
-                        <svg class="ring-text" id="ringText" viewBox="0 0 100 24" aria-hidden="true">
-                            <path id="ringPath" fill="none"></path>
-                            <text>
-                                <textPath id="ringTextPath" href="#ringPath" startOffset="50%" text-anchor="middle">the first crack</textPath>
-                            </text>
-                        </svg>
-                    </div>
-
-                    <div class="timeline-caption">
-                        <p class="timeline-age" id="timelineAge">Age 7</p>
-                        <p class="timeline-text" id="timelineText">In India, my cousin taught me how to crack games.</p>
-                    </div>
-                </div>
-
-            </div>
+        <div class="crate-box reveal" role="list" aria-label="Choose a specialty">
+            <a class="crate-album" href="/ai-alignment/" role="listitem">
+                <div class="crate-album-cover" style="--tile-color: #12924f;"></div>
+                <h2 class="crate-album-title">AI Alignment</h2>
+                <p class="crate-album-desc">Keeping powerful systems pointed at what we actually want.</p>
+            </a>
+            <a class="crate-album" href="/ai-security/" role="listitem">
+                <div class="crate-album-cover" style="--tile-color: #B3000B;"></div>
+                <h2 class="crate-album-title">AI Security</h2>
+                <p class="crate-album-desc">Securing the AI systems and pipelines everyone's racing to ship.</p>
+            </a>
+            <a class="crate-album" href="/cybersecurity/" role="listitem">
+                <div class="crate-album-cover" style="--tile-color: #1768d1;"></div>
+                <h2 class="crate-album-title">Cybersecurity</h2>
+                <p class="crate-album-desc">Where it started. Networks, systems, and thinking like the person trying to break in.</p>
+            </a>
         </div>
 
-    </section>
+        <p class="crate-hint reveal">Pick a record ↑</p>
 
-    <div class="groove-divider" aria-hidden="true"></div>
-
-    <section id="projects" class="section">
-        <p class="eyebrow reveal">Side&nbsp;A · Track&nbsp;02</p>
-        <h2 class="reveal">Projects &amp; Research</h2>
-        <p class="section-intro reveal">
-            This side of the record is still being pressed. Write-ups on my research, DevSecOps tooling, and
-            side projects are on their way — check back soon.
-        </p>
-
-        <div class="album-shelf reveal">
-            <div class="album-row" id="projectsRow">
-                <a class="album placeholder" href="#">
-                    <div class="album-cover" style="--hue: 0deg;">
-                        <span class="album-groove"></span>
-                        <span class="album-mark">01</span>
-                    </div>
-                    <h3 class="album-title">Untitled Project</h3>
-                    <p class="album-desc">Coming soon</p>
-                </a>
-            </div>
-        </div>
-
-        <div class="projects-cta reveal">
-            <a href="https://github.com/shaikhahme" target="_blank" rel="noopener" class="btn btn-ghost sheen">See more on GitHub ↗</a>
-        </div>
-    </section>
-
-    <div class="groove-divider" aria-hidden="true"></div>
-
-    <section id="knowledge" class="section">
-        <p class="eyebrow reveal">Side&nbsp;B · Track&nbsp;03</p>
-        <h2 class="reveal">Knowledge Base</h2>
-        <p class="section-intro reveal">
-            An evolving map of everything I've learned, sized by depth and clustered by domain. Drag to rotate,
-            scroll to zoom, click a node for details. Placeholder for now while the real pipeline (and eventually
-            an agent trained on it) takes shape.
-        </p>
-
-        <div class="graph-wrap reveal">
-            <div class="graph-layout">
-                <div id="cy" class="graph-canvas" role="img" aria-label="3D interactive knowledge graph of topics I have learned, clustered by domain and sized by depth"></div>
-
-                <aside class="graph-sidebar">
-                    <div class="graph-legend" id="graphLegend" aria-hidden="true"></div>
-                    <div class="graph-info" id="graphInfo" aria-live="polite">
-                        <p class="graph-info-placeholder">Select a node to see what it is.</p>
-                    </div>
-                </aside>
-            </div>
-
-            <p class="graph-hint">Drag to rotate &middot; Scroll to zoom &middot; Click a node for details</p>
-
-            <ul class="sr-only" id="graphFallbackList"></ul>
-        </div>
-    </section>
-
-    <div class="groove-divider" aria-hidden="true"></div>
-
-    <section id="contact" class="section">
-        <p class="eyebrow reveal">Side&nbsp;B · Track&nbsp;04</p>
-        <h2 class="reveal">Contact Me</h2>
-        <p class="section-intro reveal">Share my curiosity, or just want to talk shop? Drop a line below.</p>
-
-        <div class="contact-grid reveal">
-            <div class="contact-info">
-                <a class="contact-line" href="mailto:shaikhahmed155@hotmail.com">
-                    <span class="contact-icon" aria-hidden="true">✉</span>
-                    shaikhahmed155@hotmail.com
-                </a>
-                <a class="contact-line" href="https://www.linkedin.com/in/shaikh-ahmed-5199a122b/" target="_blank" rel="noopener">
-                    <span class="contact-icon" aria-hidden="true">in</span>
-                    linkedin.com/in/shaikh-ahmed
-                </a>
-            </div>
-
-            <form class="contact-form sheen" action="https://script.google.com/macros/s/AKfycbxHPyVFoB-ie9RqAz04k3MArKsVlXFDN39nJ6dK6w9bwyIcDhpJZHKUxYd6waHMCkc9/exec" method="POST">
-                <label>
-                    <span>Your Email</span>
-                    <input type="email" name="entry.YOUR_EMAIL_ID" placeholder="you@example.com" required>
-                </label>
-                <label>
-                    <span>Subject</span>
-                    <input type="text" name="entry.YOUR_SUBJECT_ID" placeholder="What's this about?" required>
-                </label>
-                <label>
-                    <span>Message</span>
-                    <textarea name="entry.YOUR_MESSAGE_ID" rows="4" placeholder="Your message..." required></textarea>
-                </label>
-                <button type="submit" class="btn btn-primary">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <div class="groove-divider" aria-hidden="true"></div>
-
-    <section id="testimonials" class="section">
-        <p class="eyebrow reveal">Bonus Track</p>
-        <h2 class="reveal">How Others See Me</h2>
-
-        <div class="testimonials-wrap reveal">
-            <div class="testimonials-carousel" id="testimonialCarousel">
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"Shaikh is such a quick learner."</p>
-                    <p class="testimonial-credit">My English teacher, during ASL self-learning</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"You do such a good job at explaining complicated topics with clarity."</p>
-                    <p class="testimonial-credit">Coworker at NavVis</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"You've done way above my expectations. You have a bright future ahead of you."</p>
-                    <p class="testimonial-credit">Mentor at Cumulocity</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"You can understand and implement changes and advice really fast, even when it's ambiguous."</p>
-                    <p class="testimonial-credit">Research lead</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"Congratulations on your new job! The first thing you told me about yourself is that you love cybersecurity."</p>
-                    <p class="testimonial-credit">A friend's sister</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"One thing I struggle to understand about you is the source of your ambition."</p>
-                    <p class="testimonial-credit">My best friend</p>
-                </div>
-                <div class="testimonial-card">
-                    <p class="testimonial-quote">"It's been a pleasure working with you, and thank you for leading the project."</p>
-                    <p class="testimonial-credit">University colleague</p>
-                </div>
-            </div>
-        </div>
     </section>
 
 </main>
@@ -242,10 +61,6 @@
     <p>&copy; 2026 Shaikh Ahmed. All rights reserved.</p>
 </footer>
 
-<script src="script.js?v=4"></script>
-<script src="https://unpkg.com/three@0.149.0/build/three.min.js"></script>
-<script src="https://unpkg.com/three-spritetext@1.9.4/dist/three-spritetext.min.js"></script>
-<script src="https://unpkg.com/3d-force-graph@1.73.3/dist/3d-force-graph.min.js"></script>
-<script src="app.js?v=4"></script>
+<script src="/script.js?v=5"></script>
 </body>
 </html>

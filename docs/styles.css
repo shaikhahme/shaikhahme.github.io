@@ -31,6 +31,25 @@
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Theme variants: same design, different accent. --accent and --accent-dim are
+   var() references (not literal colors) so overriding the four tokens below is
+   enough to re-tint every glow/shadow/gradient that derives from them. Applied
+   via [data-theme] on <html> from the AI Alignment / Cybersecurity pages; the
+   default (no attribute, or data-theme="red") is AI Security's home turf. */
+[data-theme="green"] {
+    --molten-lava: #063d22;
+    --brick-ember: #12924f;
+    --mahogany: #04170d;
+    --accent-hot: #39d98a;
+}
+
+[data-theme="blue"] {
+    --molten-lava: #0a2c61;
+    --brick-ember: #1768d1;
+    --mahogany: #071a3a;
+    --accent-hot: #4fa8ff;
+}
+
 /* ---------------------------------------------------------------------- */
 /* Reset & base                                                           */
 /* ---------------------------------------------------------------------- */
@@ -98,7 +117,7 @@ section {
     margin-left: -190px;
     margin-top: -190px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(179, 0, 11, 0.10) 0%, rgba(179, 0, 11, 0) 70%);
+    background: radial-gradient(circle, color-mix(in srgb, var(--accent) 10%, transparent) 0%, transparent 70%);
     pointer-events: none;
     z-index: 1;
     transform: translate3d(-500px, -500px, 0);
@@ -214,7 +233,7 @@ section {
     height: 2px;
     width: 0;
     background: var(--accent);
-    box-shadow: 0 0 8px 1px rgba(179, 0, 11, 0.6);
+    box-shadow: 0 0 8px 1px color-mix(in srgb, var(--accent) 60%, transparent);
     transition: transform 0.45s var(--ease-out), width 0.45s var(--ease-out);
 }
 
@@ -361,11 +380,11 @@ main {
 .btn-primary {
     background: linear-gradient(135deg, var(--brick-ember), var(--mahogany));
     color: #fff;
-    box-shadow: 0 8px 24px -8px rgba(179, 0, 11, 0.55);
+    box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
 .btn-primary:hover {
-    box-shadow: 0 12px 30px -8px rgba(179, 0, 11, 0.75);
+    box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--accent) 75%, transparent);
 }
 
 .btn-ghost {
@@ -539,7 +558,7 @@ main {
     background: radial-gradient(circle at 36% 30%, var(--core-color, var(--teal-black-1)), var(--core-color-dark, var(--teal-black-2)) 75%);
     box-shadow:
         inset 0 0 0 1px rgba(0, 0, 0, 0.4),
-        0 0 26px var(--core-glow, rgba(179, 0, 11, 0.22)),
+        0 0 26px var(--core-glow, color-mix(in srgb, var(--accent) 22%, transparent)),
         0 4px 18px rgba(0, 0, 0, 0.5);
     transition: background 0.7s ease, box-shadow 0.7s ease;
 }
@@ -614,12 +633,6 @@ main {
     transition: opacity 0.25s ease;
 }
 
-/* --- Reflection --- */
-
-.reflection {
-    font-size: 1.05rem;
-}
-
 /* ---------------------------------------------------------------------- */
 /* Projects / album tiles                                                 */
 /* ---------------------------------------------------------------------- */
@@ -681,7 +694,7 @@ main {
 }
 
 .album:hover .album-cover {
-    box-shadow: 0 28px 54px -16px rgba(179, 0, 11, 0.5), 0 0 0 1px var(--accent);
+    box-shadow: 0 28px 54px -16px color-mix(in srgb, var(--accent) 50%, transparent), 0 0 0 1px var(--accent);
 }
 
 .album-groove {
@@ -773,7 +786,7 @@ main {
     min-width: 0;
     height: 62vh;
     min-height: 440px;
-    background: radial-gradient(circle at 30% 20%, rgba(179, 0, 11, 0.06), transparent 60%);
+    background: radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--accent) 6%, transparent), transparent 60%);
     cursor: grab;
 }
 
@@ -941,7 +954,7 @@ main {
 .contact-form textarea:focus {
     outline: none;
     border-color: var(--accent);
-    box-shadow: 0 0 0 3px rgba(179, 0, 11, 0.18);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .contact-form button {
@@ -1028,6 +1041,115 @@ footer {
 }
 
 /* ---------------------------------------------------------------------- */
+/* Crate home page                                                        */
+/* ---------------------------------------------------------------------- */
+
+.crate-hero {
+    position: relative;
+    min-height: calc(100vh - var(--nav-h));
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: clamp(2.5rem, 6vh, 4rem);
+    padding-bottom: clamp(2rem, 6vh, 4rem);
+}
+
+.crate-intro h1 {
+    font-size: clamp(2.6rem, 6vw, 4.6rem);
+    background: linear-gradient(100deg, #fff 20%, var(--text) 55%, var(--accent) 130%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.crate-intro .tagline {
+    max-width: 42ch;
+    margin: 0.9rem auto 0;
+}
+
+.crate-box {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(1rem, 3vw, 2.2rem);
+    padding: clamp(2rem, 5vw, 3rem) clamp(1.5rem, 4vw, 3rem) 1.4rem;
+    border: 6px solid #241408;
+    border-radius: 10px;
+    background:
+        repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.14) 0px, transparent 2px, transparent 118px, rgba(0, 0, 0, 0.14) 120px),
+        repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.025) 0px, transparent 3px, transparent 7px),
+        linear-gradient(160deg, #5a3a22 0%, #4a2e1a 45%, #3a2414 100%);
+    box-shadow:
+        inset 0 14px 34px rgba(0, 0, 0, 0.55),
+        inset 0 -6px 14px rgba(0, 0, 0, 0.35),
+        0 34px 64px -24px rgba(0, 0, 0, 0.75);
+}
+
+.crate-album {
+    flex: 0 0 clamp(150px, 22vw, 230px);
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    transform: rotate(var(--tilt, 0deg));
+    transition: transform 0.4s var(--ease-out), box-shadow 0.4s ease;
+}
+
+.crate-album:nth-child(1) { --tilt: -4deg; }
+.crate-album:nth-child(2) { --tilt: 0deg; }
+.crate-album:nth-child(3) { --tilt: 4deg; }
+
+.crate-album:hover,
+.crate-album:focus-visible {
+    transform: rotate(0deg) translateY(-16px);
+}
+
+.crate-album-cover {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--tile-color);
+    box-shadow: 0 22px 42px -18px rgba(0, 0, 0, 0.75), 0 0 0 1px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.4s ease;
+}
+
+.crate-album-cover::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(155deg, rgba(255, 255, 255, 0.22), transparent 55%);
+}
+
+.crate-album:hover .crate-album-cover {
+    box-shadow: 0 30px 54px -16px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.3);
+}
+
+.crate-album-title {
+    margin: 1.1rem 0 0.3rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.crate-album-desc {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+}
+
+.crate-hint {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin: 0;
+}
+
+/* ---------------------------------------------------------------------- */
 /* Responsive                                                              */
 /* ---------------------------------------------------------------------- */
 
@@ -1080,6 +1202,22 @@ footer {
 
     .tonearm {
         height: 5px;
+    }
+
+    .crate-box {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .crate-album {
+        flex: 0 0 auto;
+        width: min(60vw, 230px);
+        transform: none;
+    }
+
+    .crate-album:hover,
+    .crate-album:focus-visible {
+        transform: translateY(-8px);
     }
 }
 

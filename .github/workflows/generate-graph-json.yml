@@ -3,7 +3,7 @@ on:
   push:
     paths:
       - docs/data/topics.json
-      - scripts/generate-graph.py
+      - scripts/generate-gk-script.py
   schedule:
     - cron: "30 08 * * 1"
   workflow_dispatch:

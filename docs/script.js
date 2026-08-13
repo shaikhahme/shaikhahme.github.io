@@ -98,6 +98,7 @@
         var ageEl = document.getElementById('timelineAge');
         var textEl = document.getElementById('timelineText');
         var indexEl = document.getElementById('timelineIndex');
+        var totalEl = document.getElementById('timelineTotal');
         var ringTextPath = document.getElementById('ringTextPath');
 
         if (!pin || !stage || !vinyl || !vinylCore || !ringTextPath) return;
@@ -137,13 +138,14 @@
             vinylCore.style.setProperty('--core-glow', 'hsla(' + hue + ', 75%, 50%, 0.35)');
         }
 
-        fetch('./data/timeline.json')
+        fetch('/data/timeline.json')
             .then(function (response) {
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
                 return response.json();
             })
             .then(function (milestones) {
                 if (!milestones || !milestones.length) return;
+                if (totalEl) totalEl.textContent = milestones.length;
 
                 function applyMilestone(idx) {
                     var m = milestones[idx];
@@ -226,7 +228,7 @@
         var row = document.getElementById('projectsRow');
         if (!row) return;
 
-        fetch('./data/projects.json')
+        fetch('/data/projects.json')
             .then(function (response) {
                 if (!response.ok) throw new Error('Network response was not ok ' + response.statusText);
                 return response.json();
