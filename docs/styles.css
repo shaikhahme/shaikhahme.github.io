@@ -277,6 +277,22 @@ main {
     font-size: 1.05rem;
 }
 
+.virtue-body {
+    max-width: 640px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.virtue-text {
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem;
+}
+
+.virtue-text:last-of-type {
+    margin-bottom: 0;
+}
+
 .groove-divider {
     height: 64px;
     max-width: 1180px;

@@ -367,6 +367,8 @@
                 setText('heroTagline', data.tagline);
                 setText('passionTitle', data.passionTitle);
                 setText('passionCtaBtn', data.passionCta);
+                setText('virtueTitle', data.virtueTitle);
+                setText('virtueCtaBtn', data.virtueCta);
                 setText('projectsIntro', data.projectsIntro);
                 setText('knowledgeIntro', data.knowledgeIntro);
                 setText('contactIntro', data.contactIntro);
@@ -378,7 +380,8 @@
                 setText('eyebrowAbout', eyebrow('A', data.heroTrack || '01'));
                 setText('eyebrowProjects', eyebrow('A', '02'));
                 setText('eyebrowKnowledge', eyebrow('B', '03'));
-                setText('eyebrowContact', eyebrow('B', '04'));
+                setText('eyebrowVirtue', eyebrow('B', '04'));
+                setText('eyebrowContact', eyebrow('B', '05'));
 
                 if (passionParagraphs && data.passionParagraphs) {
                     passionParagraphs.innerHTML = '';
@@ -387,6 +390,17 @@
                         p.className = 'passion-text';
                         p.textContent = text;
                         passionParagraphs.appendChild(p);
+                    });
+                }
+
+                var virtueParagraphs = document.getElementById('virtueParagraphs');
+                if (virtueParagraphs && data.virtueParagraphs) {
+                    virtueParagraphs.innerHTML = '';
+                    data.virtueParagraphs.forEach(function (text) {
+                        var p = document.createElement('p');
+                        p.className = 'virtue-text';
+                        p.textContent = text;
+                        virtueParagraphs.appendChild(p);
                     });
                 }
             }

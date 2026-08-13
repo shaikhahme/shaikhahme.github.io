@@ -10,6 +10,13 @@
       "Placeholder — swap this in with your own answer for why AI alignment specifically pulls you in, versus security or tech in general."
     ],
     "passionCta": "Tell me what you're passionate about?",
+    "virtueTitle": "What's your virtue?",
+    "virtueParagraphs": [
+      "A mentor I looked up to once asked me what my virtue was, what drives me when nothing else does. I said learning, so quickly it almost didn't sound true.",
+      "I sat with that answer for months before realising it really is at my core. When I look at what actually makes me happy, it comes down to a few simple things: learning something new, being part of a community, and helping that community grow.",
+      "That, along with my love for technology and psychology, is what led me to cybersecurity, and now to the question that keeps pulling me back: how do we make sure the systems we build actually want what we want, even as they get smarter than us. That question is only going to matter more, and I would rather be one of the people trying to answer it early."
+    ],
+    "virtueCta": "Tell me about your virtue?",
     "projectsIntro": "This side of the record is still being pressed. Notes on alignment research, interpretability reading, and the odd side project exploring how to keep AI systems honest are on their way — check back soon.",
     "knowledgeIntro": "An evolving map of everything I've learned, sized by depth and clustered by domain, from alignment theory down to the maths underneath it. Drag to rotate, scroll to zoom, click a node for details. The agent that will keep this updated on its own is still being built.",
     "contactIntro": "If AI alignment is something you think about too, I would like to hear from you."
@@ -25,6 +32,13 @@
       "Placeholder — swap this in with your own answer for why AI security specifically pulls you in, versus alignment or cybersecurity in general."
     ],
     "passionCta": "Tell me what you're passionate about?",
+    "virtueTitle": "What's your virtue?",
+    "virtueParagraphs": [
+      "A mentor I looked up to once asked me what my virtue was, what drives me when nothing else does. I said learning, so quickly it almost didn't sound true.",
+      "I sat with that answer for months before realising it really is at my core. When I look at what actually makes me happy, it comes down to a few simple things: learning something new, being part of a community, and helping that community grow.",
+      "That, along with my love for technology and psychology, is what led me to cybersecurity, and now to defending the AI systems companies are racing to build. Every model that ships is a new thing worth breaking into, and I would rather be the one who finds the gap before someone with worse intentions does."
+    ],
+    "virtueCta": "Tell me about your virtue?",
     "projectsIntro": "This side of the record is still being pressed. Write-ups on securing AI pipelines, red-teaming models, and the DevSecOps tooling I build to keep them honest are on their way — check back soon.",
     "knowledgeIntro": "An evolving map of everything I've learned, sized by depth and clustered by domain, from red teaming to the infrastructure that has to hold under attack. Drag to rotate, scroll to zoom, click a node for details. The agent that will keep this updated on its own is still being built.",
     "contactIntro": "If you're hiring, building, or breaking AI systems, let's talk shop."
@@ -40,6 +54,13 @@
       "Placeholder — swap this in with your own answer for why cybersecurity specifically pulls you in, versus AI security or alignment."
     ],
     "passionCta": "Tell me what you're passionate about?",
+    "virtueTitle": "What's your virtue?",
+    "virtueParagraphs": [
+      "A mentor I looked up to once asked me what my virtue was, what drives me when nothing else does. I said learning, so quickly it almost didn't sound true.",
+      "I sat with that answer for months before realising it really is at my core. When I look at what actually makes me happy, it comes down to a few simple things: learning something new, being part of a community, and helping that community grow.",
+      "That, along with my love for technology and psychology, is what led me to cybersecurity itself: the habit of taking a system apart to understand it, then putting it back together a little harder to break. Everything else I have picked up since, AI included, still comes back to that same way of thinking."
+    ],
+    "virtueCta": "Tell me about your virtue?",
     "projectsIntro": "This side of the record is still being pressed. Write-ups on my security research, old CTFs, and the DevSecOps tooling I build along the way are on their way — check back soon.",
     "knowledgeIntro": "An evolving map of everything I've learned, sized by depth and clustered by domain, from the first CTF to the standards I work with today. Drag to rotate, scroll to zoom, click a node for details. The agent that will keep this updated on its own is still being built.",
     "contactIntro": "Share my curiosity, or just want to talk shop? Drop a line below."
