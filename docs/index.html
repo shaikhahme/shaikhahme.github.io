@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/styles.css?v=6">
+    <link rel="stylesheet" href="/styles.css?v=7">
 </head>
 <body>
 
@@ -28,30 +28,14 @@
     <section class="section crate-hero">
 
         <div class="crate-intro reveal">
-            <p class="eyebrow">The Full Sleeve</p>
-            <h1>Shaikh Ahmed</h1>
-            <p class="tagline">Cybersecurity, AI security, and AI alignment sit on the same shelf. Pick the one you came for.</p>
+            <p class="eyebrow" id="landingEyebrow"></p>
+            <h1 id="landingName">Shaikh Ahmed</h1>
+            <p class="tagline" id="landingTagline"></p>
         </div>
 
-        <div class="crate-box reveal" role="list" aria-label="Choose a specialty">
-            <a class="crate-album" href="/ai-alignment/" role="listitem" style="--tile-color: #12924f; --tile-img: url('/images/ai-alignment.png');">
-                <div class="crate-album-cover"></div>
-                <h2 class="crate-album-title">AI Alignment</h2>
-                <p class="crate-album-desc">With great power comes great responsibility.</p>
-            </a>
-            <a class="crate-album" href="/ai-security/" role="listitem" style="--tile-color: #B3000B; --tile-img: url('/images/ai-security.png');">
-                <div class="crate-album-cover"></div>
-                <h2 class="crate-album-title">AI Security</h2>
-                <p class="crate-album-desc">Modern problems require modern solutions.</p>
-            </a>
-            <a class="crate-album" href="/cybersecurity/" role="listitem" style="--tile-color: #1768d1; --tile-img: url('/images/cybersecurity.png');">
-                <div class="crate-album-cover"></div>
-                <h2 class="crate-album-title">Cybersecurity</h2>
-                <p class="crate-album-desc">Help one person, help the world.</p>
-            </a>
-        </div>
+        <div class="crate-box reveal" role="list" aria-label="Choose a specialty" id="crateBox"></div>
 
-        <p class="crate-hint reveal">Pick a record ↑</p>
+        <p class="crate-hint reveal" id="landingHint"></p>
 
     </section>
 
@@ -61,6 +45,6 @@
     <p>&copy; 2026 Shaikh Ahmed. All rights reserved.</p>
 </footer>
 
-<script src="/script.js?v=6"></script>
+<script src="/script.js?v=7"></script>
 </body>
 </html>

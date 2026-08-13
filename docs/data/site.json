@@ -1,0 +1,66 @@
+{
+  "contact": {
+    "email": "shaikhahmed155@hotmail.com",
+    "linkedinUrl": "https://www.linkedin.com/in/shaikh-ahmed-5199a122b/",
+    "linkedinLabel": "linkedin.com/in/shaikh-ahmed"
+  },
+  "testimonials": [
+    {
+      "quote": "Shaikh is such a quick learner.",
+      "credit": "My English teacher, during ASL self-learning"
+    },
+    {
+      "quote": "You do such a good job at explaining complicated topics with clarity.",
+      "credit": "Coworker at NavVis"
+    },
+    {
+      "quote": "You've done way above my expectations. You have a bright future ahead of you.",
+      "credit": "Mentor at Cumulocity"
+    },
+    {
+      "quote": "You can understand and implement changes and advice really fast, even when it's ambiguous.",
+      "credit": "Research lead"
+    },
+    {
+      "quote": "Congratulations on your new job! The first thing you told me about yourself is that you love cybersecurity.",
+      "credit": "A friend's sister"
+    },
+    {
+      "quote": "One thing I struggle to understand about you is the source of your ambition.",
+      "credit": "My best friend"
+    },
+    {
+      "quote": "It's been a pleasure working with you, and thank you for leading the project.",
+      "credit": "University colleague"
+    }
+  ],
+  "landing": {
+    "eyebrow": "The Full Sleeve",
+    "name": "Shaikh Ahmed",
+    "tagline": "Cybersecurity, AI security, and AI alignment sit on the same shelf. Pick the one you came for.",
+    "hint": "Pick a record ↑",
+    "tiles": [
+      {
+        "page": "ai-alignment",
+        "title": "AI Alignment",
+        "description": "With great power comes great responsibility.",
+        "color": "#12924f",
+        "image": "/images/ai-alignment.png"
+      },
+      {
+        "page": "ai-security",
+        "title": "AI Security",
+        "description": "Modern problems require modern solutions.",
+        "color": "#B3000B",
+        "image": "/images/ai-security.png"
+      },
+      {
+        "page": "cybersecurity",
+        "title": "Cybersecurity",
+        "description": "Help one person, help the world.",
+        "color": "#1768d1",
+        "image": "/images/cybersecurity.png"
+      }
+    ]
+  }
+}
