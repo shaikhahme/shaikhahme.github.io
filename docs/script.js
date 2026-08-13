@@ -378,8 +378,7 @@
                 setText('eyebrowAbout', eyebrow('A', data.heroTrack || '01'));
                 setText('eyebrowProjects', eyebrow('A', '02'));
                 setText('eyebrowKnowledge', eyebrow('B', '03'));
-                setText('eyebrowPassion', eyebrow('B', '04'));
-                setText('eyebrowContact', eyebrow('B', '05'));
+                setText('eyebrowContact', eyebrow('B', '04'));
 
                 if (passionParagraphs && data.passionParagraphs) {
                     passionParagraphs.innerHTML = '';
