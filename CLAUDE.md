@@ -37,6 +37,44 @@ The site is four pages: a landing page, and three themed "pressings" of the same
   This is still the plain data-prep script described below under "Planned: Knowledge Agent" — it has not yet been reworked into an agent.
 - The Contact form (present on each specialty page, all pointing at the same endpoint) POSTs to a Google Apps Script endpoint — external integration, not part of this repo's code.
 
+## Book-version prototype (this branch only)
+
+This `book-version` branch is exploring an **alternate homepage concept**, separate from and not yet wired into the vinyl-themed site described above. It lives entirely at `docs/book-preview/` (`index.html`, `book.css`, `book.js`) and is not linked from `docs/index.html` or any other page — reachable only by visiting `/book-preview/` directly. Nothing here has replaced anything in the main architecture yet; treat it as a sandboxed design sample until the user decides to promote it.
+
+### The vibe / brief
+
+A personal bookshelf as the homepage. Stained-glass background behind wooden shelves; each specialty gets its own book with a title on the spine (`AI Alignment`, `AI Security`, `Cybersecurity`, `My Story`), shelved unevenly among generic filler books (`Book 1`, `Book 2`, ...) across 4 labeled shelf layers, 3–4 books per layer. Clicking a spine pulls the book off the shelf and opens it — angled, never fully flat, with the page content (an iframe) tilted to match for depth. A bottom slider is synced to the current page/spread; clicking the right page flips forward, clicking the left page flips backward, clicking above the open book closes it back into its exact shelf slot.
+
+### Design decisions already made (asked and answered by the user)
+
+- **Art style**: both pixel-art and stitched-fabric skins should exist so they can be compared side by side, rather than committing to one — hence the live toggle in the top bar rather than two separate pages.
+- **Stained-glass background behavior**: cursor-reactive — a soft light glow tracks the mouse over the glass panels (`mix-blend-mode: overlay`), echoing the existing vinyl site's cursor-spotlight effect but applied to the glass instead.
+- **Shelf layer labels**: left to Claude's judgment as placeholders, not yet user-approved copy. Currently `"Currently Reading"`, `"AI & Alignment"`, `"Security"`, `"Archives"` in `book.js`'s `SHELVES` array — revisit/replace freely.
+- **Book page content**: should be genuinely book-formatted mini pages (paginated chapter-style content rendered inside each page's iframe via `srcdoc`), *not* the existing full vinyl-themed specialty pages embedded as-is. All page text currently in `book.js`'s `BOOKS` object is placeholder ("Placeholder foreword...", lorem ipsum for filler books) — real chapter copy still needs to be written per book.
+
+### Architecture
+
+- `docs/book-preview/index.html` — page shell: stained-glass SVG background + light-overlay div, top bar with the pixel/fabric skin toggle, `#shelfWrap` (populated by JS), and the hidden `#bookOverlay` (the open-book view: two `.page` divs each holding an iframe, a `.flip-leaf` element used for the page-turn animation, the bottom slider, and the close zone).
+- `docs/book-preview/book.css` — shared base layout (shelf, spines, open-book 3D positioning, slider) plus two skin blocks selected by `html[data-skin="pixel"]` / `html[data-skin="fabric"]` (fonts, borders, textures, shadows only — layout/behavior is skin-agnostic). Toggling skin just flips the `data-skin` attribute on `<html>`; no re-render needed except the glass mosaic (see below).
+- `docs/book-preview/book.js` — all data and behavior, single IIFE, no external dependencies (deliberately not sharing the main site's `script.js`/`data/*.json`, since this is a different concept still being evaluated):
+  - `BOOKS` — one entry per book (`id`, `title`, `real`, `color`, `pages[]`); `pages[]` holds `{title, body}` objects rendered into iframe `srcdoc` via `pageDoc()`. Filler books (`book1`..`book10`) get generic lorem-ipsum pages from `FILLER_PAGES()`.
+  - `SHELVES` — 4 shelf layers, each an ordered list of book ids (mixes real + filler on purpose, per the "don't need to be neatly packed" brief).
+  - `renderShelves()` — builds the spine buttons with seeded-random width/height/tilt/vertical-offset (`mulberry32` PRNG, seed `1337`, so the uneven layout is stable across reloads rather than jittering).
+  - `openBook()` / `closeBook()` — a hand-rolled FLIP animation: capture the clicked spine's `getBoundingClientRect()`, position `#bookStage` there via an inline `transform`, then transition it to the centered/angled resting transform (and reverse on close, animating back to that exact spine's rect — no library used).
+  - `goTo()` / `playFlip()` — page-turn animation: a `.flip-leaf` clone of the moving page rotates via CSS `rotateY` + `backface-visibility: hidden` while fading out over the second half of the transition (timed via `setTimeout`, not `transitionend`, since two properties transition on different schedules); the underlying page content is swapped at the animation midpoint so it's already correct by the time the leaf finishes fading.
+  - **Click-through-iframe trick**: since a genuine DOM click inside an `<iframe>` never bubbles out to the parent document, each page's injected `srcdoc` script calls `window.parent.bookApi.next()` / `.prev()` directly on click — this works because `srcdoc` iframes inherit the embedding document's origin, so `window.parent` access needs no `postMessage`. `window.bookApi` is exposed as a global specifically for this.
+  - `buildGlass(mode)` — generates the stained-glass SVG: an axis-aligned pixel grid for the pixel skin, jittered irregular polygons for the fabric skin. Regenerated (not just re-skinned via CSS) whenever the skin toggle is clicked, since the shape language itself differs between the two, not just the palette/fonts.
+  - Mouse-tracked `--mx`/`--my` CSS custom properties on `#lightOverlay` drive the cursor-reactive glass glow.
+
+### Open items / known gaps
+
+1. **Never visually verified in a browser.** No browser tooling was available in the session that built this — everything was checked statically only (JS syntax via `node --check`, HTML element-id cross-references via grep, HTTP 200s via a local `python3 -m http.server`). The FLIP open/close animation, the page-flip leaf animation, and the OSC-52-unrelated Option-drag stuff all need an actual look before trusting the feel/timing (durations, easing, rotation angles in `book.css`/`book.js` are first-guess values).
+2. **All book page content is placeholder.** Both the 4 real books' chapter text and the filler books' lorem ipsum need to be replaced with real copy once the concept is approved.
+3. **Shelf labels are placeholder**, not user-approved — see above.
+4. **Not integrated with the rest of the site.** No link from `docs/index.html` (the current landing page) or anywhere else points at `/book-preview/`; it's reachable only by direct URL. Wiring it in (or deciding it replaces the current landing page) is a separate future step.
+5. **No responsive/mobile pass.** Shelf and open-book layout have not been checked below desktop widths.
+6. **Skin fidelity is CSS-approximated, not real artwork.** "Pixel art" currently means blocky borders/fonts/mosaic tiling done in CSS, not actual pixel-sprite assets; "stitched fabric" means dashed borders/handwriting fonts, not real cloth textures. Both would benefit from real image assets (sprite sheets / fabric photos or SVG textures) if the direction is kept.
+
 ## Working in this repo
 
 - Changes to `docs/` deploy automatically via Vercel on push to `main` — there is no CI/build pipeline to run first. The repo has no `vercel.json`; Vercel project settings (root/output directory pointed at `docs/`) live in the Vercel dashboard, not in-repo.
