@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en" data-skin="pixel">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Shelf — book-version preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Caveat:wght@500;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="book.css?v=1">
+</head>
+<body>
+
+<div class="glass-bg" aria-hidden="true">
+  <svg id="glassSvg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"></svg>
+</div>
+<div class="light-overlay" id="lightOverlay" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">📖</span>
+    <span class="brand-text">The Shelf</span>
+    <span class="brand-sub">a portfolio, shelved</span>
+  </div>
+  <div class="skin-toggle" role="group" aria-label="Visual style">
+    <button type="button" class="skin-btn active" data-skin-btn="pixel">Pixel Art</button>
+    <button type="button" class="skin-btn" data-skin-btn="fabric">Stitched Fabric</button>
+  </div>
+</header>
+
+<main class="shelf-wrap" id="shelfWrap">
+  <!-- shelves rendered by book.js -->
+</main>
+
+<p class="hint-line">Click a spine to pull it off the shelf. Once open: click the right page to go forward, the left page to go back, drag the strip below to jump around, or click the space above the book to close it.</p>
+
+<div class="book-overlay" id="bookOverlay" hidden>
+  <div class="book-backdrop" id="bookBackdrop"></div>
+  <div class="book-close-zone" id="closeZone" title="Close book">
+    <span class="close-hint">▲ close</span>
+  </div>
+
+  <div class="book-stage" id="bookStage">
+    <div class="book-3d" id="book3d">
+      <div class="page page-left" id="pageLeft">
+        <iframe id="iframeLeft" title="left page"></iframe>
+      </div>
+      <div class="book-gutter" aria-hidden="true"></div>
+      <div class="page page-right" id="pageRight">
+        <iframe id="iframeRight" title="right page"></iframe>
+      </div>
+      <div class="flip-leaf" id="flipLeaf" aria-hidden="true">
+        <div class="leaf-face leaf-front"><iframe id="iframeLeaf" title="turning page"></iframe></div>
+      </div>
+    </div>
+    <div class="book-title-plate" id="bookTitlePlate"></div>
+  </div>
+
+  <div class="page-slider-wrap">
+    <button type="button" class="page-nav" id="prevBtn" aria-label="Previous page">‹</button>
+    <input type="range" id="pageSlider" min="0" max="0" value="0" step="1" aria-label="Page position">
+    <button type="button" class="page-nav" id="nextBtn" aria-label="Next page">›</button>
+    <span class="page-indicator" id="pageIndicator"></span>
+  </div>
+</div>
+
+<script src="book.js?v=1"></script>
+</body>
+</html>
