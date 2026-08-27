@@ -205,6 +205,10 @@ body { position: relative; }
   justify-content: center;
 }
 
+.book-overlay[hidden] {
+  display: none;
+}
+
 .book-backdrop {
   position: absolute;
   inset: 0;
