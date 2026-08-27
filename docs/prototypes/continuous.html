@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Shaikh's Virtues — Scroll Animation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/prototypes/shared.css">
+    <style>
+        #stage {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #webgl, #css2d {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #css2d {
+            pointer-events: none;
+        }
+        #spacer {
+            height: 550vh;
+        }
+    </style>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+</head>
+<body>
+    <div class="proto-badge">
+        Shaikh's Virtues — scroll animation prototype
+    </div>
+
+    <div id="stage">
+        <div id="webgl"></div>
+        <div id="css2d"></div>
+    </div>
+    <div id="spacer"></div>
+
+    <p class="proto-scroll-cue" id="scrollCue">Scroll ↓</p>
+    <p class="proto-hint" id="dragHint">Drag to rotate &middot; Pinch to zoom &middot; Scroll to rewind</p>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script type="module" src="/prototypes/continuous.js"></script>
+</body>
+</html>
