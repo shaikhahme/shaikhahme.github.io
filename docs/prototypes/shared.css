@@ -22,6 +22,15 @@ html, body {
     background: var(--paper);
     color: var(--ink);
     font-family: 'Special Elite', 'Courier New', monospace;
+    /* continuous.html's page scroll (driven by #spacer) still works exactly
+       as before - only the scrollbar's visible track/thumb is hidden, so the
+       ruled-paper look isn't broken by a browser-chrome scrollbar down the side. */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar, body::-webkit-scrollbar {
+    display: none;
 }
 
 body {
@@ -43,15 +52,20 @@ body {
     white-space: pre;
 }
 
+/* The ruled background repeats every 36px (see body's background-image
+   above) - fixed-position text throughout this file uses line-height/offset
+   multiples of that same 36px so it reads as sitting on the page's own
+   lines rather than floating independently of them. */
 .proto-badge {
     position: fixed;
-    top: 18px;
+    top: 0;
     left: 18px;
     z-index: 50;
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 8px 14px;
+    padding: 0 14px;
+    line-height: 36px;
     background: rgba(243, 239, 227, 0.9);
     border: 1px solid var(--ink-dim);
     border-radius: 4px;
@@ -71,12 +85,16 @@ body {
     opacity: 0.7;
 }
 
+/* `bottom` is set from JS (see snapToRuleGrid in continuous.js) rather than
+   a fixed value here - a static px offset only lands on a rule line for one
+   particular viewport height, so it's computed from window.innerHeight
+   instead and recomputed on resize. */
 .proto-hint {
     position: fixed;
-    bottom: 22px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
+    line-height: 36px;
     font-size: 13px;
     color: var(--ink-dim);
     opacity: 0;
@@ -91,10 +109,10 @@ body {
 
 .proto-scroll-cue {
     position: fixed;
-    bottom: 22px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 50;
+    line-height: 36px;
     font-size: 12px;
     color: var(--ink-dim);
     opacity: 0.7;
@@ -149,4 +167,298 @@ body {
 @keyframes blink-caret {
     0%, 49% { opacity: 1; }
     50%, 100% { opacity: 0; }
+}
+
+/* ---------- Prezi-style "zoom into a page" overlay ----------
+   The in-page DOM overlay a label click zooms into. `transform-origin` is set
+   inline per-instance to the clicked label's screen position (as a percentage)
+   before the scale/opacity tween runs (see zoom-anim.js), so the zoom always
+   reads as coming from - and going back to - that exact spot.
+   transform/opacity are driven frame-by-frame from JS rather than a CSS
+   `transition` - a plain CSS transition here was observed to register the
+   class change but never actually advance in some environments, so the
+   element would sit frozen at its start value. Only the resting values are
+   declared here as a fallback in case script ever fails to run. */
+.zoom-page {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    background: var(--paper);
+    background-image:
+        linear-gradient(90deg, transparent 0, transparent 74px, var(--margin-red) 74px, var(--margin-red) 76px, transparent 76px),
+        repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--rule-blue) 35px, var(--rule-blue) 36px);
+    transform: scale(0.02);
+    opacity: 0;
+}
+
+.zoom-page-back {
+    font-family: 'Special Elite', 'Courier New', monospace;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: rgba(243, 239, 227, 0.9);
+    border: 1px solid var(--ink-dim);
+    color: var(--accent);
+    padding: 10px 18px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.zoom-page-back:hover {
+    opacity: 0.75;
+}
+
+/* ---------- Phase 3: the relevant page's own layout ----------
+   Rendered into a .zoom-page by relevant-page.js: a pinned back button, a
+   scrollable main column (short note + projects list), and a right sidebar
+   that's empty/hidden until a project is selected. */
+.relevant-page {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.relevant-back {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+.relevant-main {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+    padding: 72px 60px 40px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Every block below occupies a whole multiple of the 36px rule spacing
+   (content line-height * whole lines, plus a margin that's itself a multiple
+   of 36) so the list that follows always starts on a rule line, regardless
+   of how many lines the note happens to wrap to. */
+.relevant-title {
+    flex-shrink: 0;
+    font-size: clamp(28px, 4vw, 44px);
+    line-height: 36px;
+    margin: 0 0 36px;
+}
+
+.relevant-note {
+    flex-shrink: 0;
+    max-width: 640px;
+    line-height: 36px;
+    font-size: 16px;
+    color: var(--ink);
+    margin: 0 0 36px;
+}
+
+.relevant-projects-heading {
+    flex-shrink: 0;
+    font-size: 20px;
+    line-height: 36px;
+    margin: 0 0 36px;
+    max-width: 640px;
+}
+
+/* Shows exactly 4.5 rows (4 full + the top of a 5th, as a "there's more"
+   cue), independent of the page-level scroll. Rows are stacked with no gap
+   and overlapping 1px borders (ledger-style) so each row height (108px = 3
+   rule-lines) is what keeps every row's top edge on a rule line - a gap
+   between rows would break that multiple. */
+.projects-list {
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+    max-height: calc(4.5 * 108px);
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.projects-list::-webkit-scrollbar {
+    display: none;
+}
+
+.project-row {
+    font-family: 'Special Elite', 'Courier New', monospace;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--ink-dim);
+    padding: 16px 18px;
+    height: 108px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    color: var(--ink);
+}
+
+.project-row:not(:first-child) {
+    margin-top: -1px;
+}
+
+.project-row:hover {
+    position: relative;
+    border-color: var(--accent);
+}
+
+.project-row.is-active {
+    position: relative;
+    border-color: var(--accent);
+    background: rgba(179, 0, 11, 0.06);
+}
+
+.project-name {
+    font-size: 17px;
+    line-height: 20px;
+    margin-bottom: 4px;
+}
+
+.project-desc {
+    font-size: 14px;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+}
+
+.project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.project-tag {
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border: 1px solid var(--ink-dim);
+    border-radius: 3px;
+    padding: 2px 7px;
+    color: var(--ink-dim);
+}
+
+/* ---------- Phase 3: mind-map sidebar ---------- */
+/* transform (the slide-in/out) is driven from JS - see relevantPageSlideSidebar
+   in relevant-page.js - for the same reason zoom-page's is: a CSS `transition`
+   here was observed to register but never actually advance in some
+   environments. This is just the resting closed position as a fallback. */
+.mindmap-sidebar {
+    display: none;
+    flex-direction: column;
+    width: 360px;
+    flex-shrink: 0;
+    height: 100%;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 90px 26px 40px;
+    border-left: 1px solid var(--ink-dim);
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateX(100%);
+}
+
+.mindmap-sidebar.is-open {
+    display: flex;
+}
+
+.mindmap-sidebar-header h3 {
+    margin: 0 0 6px;
+    font-size: 19px;
+}
+
+.mindmap-sidebar-header p {
+    margin: 0 0 6px;
+    font-size: 13px;
+    color: var(--ink-dim);
+}
+
+.mindmap-sidebar-header a {
+    display: inline-block;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--accent);
+    word-break: break-all;
+}
+
+.mindmap-flow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mindmap-shape {
+    width: 100%;
+    max-width: 240px;
+}
+
+.mindmap-shape-inner {
+    background: var(--paper);
+}
+
+.mindmap-shape-rectangle .mindmap-shape-inner {
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    padding: 12px 16px;
+}
+
+.mindmap-shape-diamond .mindmap-shape-inner {
+    border: 2px solid var(--accent);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    padding: 38px 34px;
+    text-align: center;
+}
+
+.mindmap-title {
+    font-weight: bold;
+    margin: 0 0 4px;
+    min-height: 1.3em;
+    font-size: 14px;
+}
+
+.mindmap-desc {
+    margin: 0;
+    min-height: 1.3em;
+    font-size: 12px;
+    color: var(--ink-dim);
+}
+
+.mindmap-arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mindmap-arrow-line {
+    width: 2px;
+    background: var(--ink);
+    height: 0;
+}
+
+.mindmap-arrow-head {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 8px solid var(--ink);
+    opacity: 0;
+    margin-top: -1px;
+}
+
+@media (max-width: 720px) {
+    .relevant-main {
+        padding: 72px 24px 30px;
+    }
+    .mindmap-sidebar {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        border-left: none;
+    }
 }

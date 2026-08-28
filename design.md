@@ -43,13 +43,65 @@ the animation should seamlessly end into interactble sphere with the vectors and
 
 2nd phase
 
-All labels are clickable and they lead to pages to relevant pages.
-the lead is also animated like prezzi- zoom out from sphrere and zoom in to the relevant page
+All labels are clickable and they lead to relevant pages.
+the lead is also animated like prezzi- zoom out from sphrere and zoom in to the relevant page, with a back button that zooms in and out back to the sphere
 
 For now have text that says test. keep the paper bakcground
 
 teh goal is to have it look like tis being zoomed out of a page and into a another part of the page.
 
+---
+3rd phase pre text
+
+AI Security
+I love AI security, AI Security is the best. I grew up with psych and AI security hence it is my faviorate
+Projects
+1. AI Project 1
+   2. Description: Test Proj
+   3. Link: test Link
+   4. Tags: AI Security, AI, Cybersecurity
+   5. mindmap: 
+      6. set up repo, rectangle, Sets up the repo
+      7. Set up agent rectangle, sets up the agent
+      8. Upload Agent, diamond, if agent ready upload it
+      9. Upload to github, rectangle, uploads ready made agent to github
+2. AI Project 3
+   3. Description: Test Proj 2
+   3. Link: test Link 2
+   4. Tags: AI Alligntment, AI Security
+   5. mindmap:
+       6. set up repo, rectangle, Sets up the repo
+       7. Set up agent rectangle, sets up the agent
+       8. test if the Agent is alligned, diamond, if agent ready upload it
+       9. allign agent, rectangle, uploads ready made agent to github
+10. 2. AI Project 4
+3. Description: Test Proj 4
+3. Link: test Link 2
+4. Tags: AI Alligntment, AI Security
+5. mindmap:
+    6. set up repo, rectangle, Sets up the repo
+    7. Set up agent rectangle, sets up the agent
+    8. test if the Agent is alligned, diamond, if agent ready upload it
+    9. allign agent, rectangle, uploads ready made agent to github
+10. 2. AI Project 4
+3. Description: Test Proj 5
+3. Link: test Link 2
+4. Tags: AI Alligntment, AI Security
+5. mindmap:
+    6. set up repo, rectangle, Sets up the repo
+    7. Set up agent rectangle, sets up the agent
+    8. test if the Agent is alligned, diamond, if agent ready upload it
+    9. allign agent, rectangle, uploads ready made agent to github
+10. 2. AI Project 4
+3. Description: Test Proj 6
+3. Link: test Link 2
+4. Tags: AI Alligntment, AI Security
+5. mindmap:
+    6. set up repo, rectangle, Sets up the repo
+    7. Set up agent rectangle, sets up the agent
+    8. test if the Agent is alligned, diamond, if agent ready upload it
+    9. allign agent, rectangle, uploads ready made agent to github
+10. 
 ---
 3rd phase
 relevant page structure
@@ -88,16 +140,33 @@ ask if there are any qucik updates to be made (renaming repo), updating readme w
 ask if there any long term updates.
 ask the general flow of the application
 
-store the the user given info per repo
+
+Create a projects.json that stores a list of projects which can then be read by the relevant pages
+1. name: Repo name
+2. Description: User given description
+3. Tags: user given
+4. Mindmap: Made from the user explained general flow
+
+for mind map:
+Arbitary Step - black rectangle
+Descision - Diamond
+AI Step - red rectangle 
+output - green rectangle
+
+create a updates.md
+1. Repo Name
+2. Short Updates
+3. Large Updates
+
 
 ---
 5th phase
 improvmeents
 
 1. Add diameter that goes vertical from cybersec to ai
-2. remove teh 5 cursor animations in the beginging
-3. make all text clickable after the first time teh sphere is made visible
-4. Make background constant not moving
+2. remove teh 5 cursor animations in the beginging, they dont disaapear if you scroll back to it after the sphere is revealed 
+4. Make background constant, not moving
 5. make the sphere interactable before the actual end of the scroll
+6. Allign all the texts except the ones on the sphere with the lines in teh background.
 
 

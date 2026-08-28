@@ -11,6 +11,22 @@ const dragHint = document.getElementById('dragHint');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* The ruled background repeats every 36px starting from the viewport top.
+   `bottom`-anchored text can't just use a fixed px offset and land on a rule
+   line for every window size - the distance from the viewport's bottom edge
+   up to the nearest line depends on window.innerHeight, so it's computed
+   here and reapplied on resize instead of hardcoded in CSS. */
+const RULE_SPACING = 36;
+function snapToRuleGrid(el) {
+    el.style.bottom = (window.innerHeight % RULE_SPACING) + 'px';
+}
+snapToRuleGrid(scrollCue);
+snapToRuleGrid(dragHint);
+window.addEventListener('resize', () => {
+    snapToRuleGrid(scrollCue);
+    snapToRuleGrid(dragHint);
+});
+
 /* ---------- renderer / scene / camera ---------- */
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -62,9 +78,12 @@ function makeLabel(text, className) {
     div.appendChild(textSpan);
     div.appendChild(cursorSpan);
 
-    // Stubbed for now - every label is clickable, but what a click should actually do
-    // (focus the camera on it, open a description, navigate somewhere) isn't decided yet.
-    div.addEventListener('click', () => console.log('label clicked:', text));
+    // Every label is clickable once its own typewriter animation has finished -
+    // clicking a still-typing (or not-yet-visible) label is a no-op.
+    div.addEventListener('click', () => {
+        if (obj.userData.p < 1) return;
+        onLabelActivate(text, div);
+    });
 
     const obj = new CSS2DObject(div);
     obj.userData.fullText = text;
@@ -74,16 +93,24 @@ function makeLabel(text, className) {
     return obj;
 }
 
+// The cursor only blinks while a label is actively mid-type (0 < p < 1), not
+// before its own tween has started - a bug let the compass labels' cursors
+// blink at their resting screen positions even at p=0 (scrolled all the way
+// back to the top), well before their arrows had even begun drawing, since
+// p=0 also satisfies "p < 1". The center label is the one exception: it's
+// meant to blink from page load/p=0, before any scroll (blinkFromZero).
 function setLabelProgress(obj, p) {
     const full = obj.userData.fullText;
     obj.userData.p = p;
     obj.userData.textSpan.textContent = full.slice(0, Math.round(full.length * p));
-    obj.userData.cursorSpan.style.display = p < 1 ? 'inline-block' : 'none';
+    const showCursor = obj.userData.blinkFromZero ? p < 1 : p > 0 && p < 1;
+    obj.userData.cursorSpan.style.display = showCursor ? 'inline-block' : 'none';
 }
 
 const centerLabel = makeLabel("Shaikh's Virtues", 'center-label');
 // nudged up off y=0 so the Engineering<->Psychology diameter passes under the text, not through it
 centerLabel.position.set(0, 0.35, 0.2);
+centerLabel.userData.blinkFromZero = true;
 scene.add(centerLabel);
 setLabelProgress(centerLabel, 0); // cursor blinks at the center from page load, before any scroll
 
@@ -213,6 +240,7 @@ function buildConceptVector(concept, group, labelClass, arrowHeadLen, arrowHeadW
 
     const label = makeLabel(concept.label, labelClass);
     label.userData.textSpan.textContent = concept.label;
+    label.userData.p = 1; // these fade in rather than type, but are fully "typed" as soon as visible
     label.position.copy(concept.point.clone().multiplyScalar(1.12));
     label.element.style.opacity = 0;
     group.add(label);
@@ -371,6 +399,100 @@ if (reduceMotion) {
         tl.to(concept.arrow.cone.material, { opacity: 1, duration: 0.6 }, '<');
         tl.to(concept.labelObj.element.style, { opacity: 1, duration: 0.6 }, '<');
     });
+}
+
+/* ---------- Phase 2/3: label -> "relevant page" zoom transition ----------
+   Clicking a label zooms the sphere away and an in-page DOM overlay (a
+   .zoom-page) zooms in over it, Prezi-style, anchored at the click point.
+   The Back button reverses the same animation. The overlay's actual content
+   (short note, projects list, mind-map sidebar) is built by
+   renderRelevantPage() in relevant-page.js. */
+
+const ZOOM_DURATION_MS = 850;
+
+function originPctFromClientXY(x, y) {
+    return { xPct: (x / window.innerWidth) * 100, yPct: (y / window.innerHeight) * 100 };
+}
+
+function setTransformOrigin(el, originPct) {
+    el.style.transformOrigin = `${originPct.xPct}% ${originPct.yPct}%`;
+}
+
+function animateIn(el, duration = ZOOM_DURATION_MS) {
+    return new Promise(resolve => zoomAnimate(el, { fromScale: 0.02, toScale: 1, fromOpacity: 0, toOpacity: 1, duration, onDone: resolve }));
+}
+
+function animateOut(el, duration = ZOOM_DURATION_MS) {
+    return new Promise(resolve => zoomAnimate(el, { fromScale: 1, toScale: 0.02, fromOpacity: 1, toOpacity: 0, duration, onDone: resolve }));
+}
+
+function makeZoomPageEl() {
+    const el = document.createElement('div');
+    el.className = 'zoom-page';
+    return el;
+}
+
+let wasInteractiveBeforeZoom = false;
+let transitioning = false;
+
+function zoomStageOut(originPct) {
+    wasInteractiveBeforeZoom = interactive;
+    disableOrbit();
+    const stage = webglEl.parentElement;
+    setTransformOrigin(stage, originPct);
+    stage.classList.add('zoomed-out');
+    return new Promise(resolve => zoomAnimate(stage, { fromScale: 1, toScale: 9, fromOpacity: 1, toOpacity: 0, duration: ZOOM_DURATION_MS, onDone: resolve }));
+}
+
+function zoomStageIn(originPct) {
+    const stage = webglEl.parentElement;
+    setTransformOrigin(stage, originPct);
+    return new Promise(resolve => zoomAnimate(stage, {
+        fromScale: 9, toScale: 1, fromOpacity: 0, toOpacity: 1, duration: ZOOM_DURATION_MS,
+        onDone: () => {
+            stage.classList.remove('zoomed-out');
+            if (wasInteractiveBeforeZoom) enableOrbit();
+            resolve();
+        }
+    }));
+}
+
+/* ---------- overlay: label click -> relevant page ---------- */
+
+let overlayEl = null;
+
+async function openOverlayPage(originPct) {
+    transitioning = true;
+    zoomStageOut(originPct);
+
+    overlayEl = makeZoomPageEl();
+    setTransformOrigin(overlayEl, originPct);
+    document.body.appendChild(overlayEl);
+    document.body.style.overflow = 'hidden';
+    renderRelevantPage(overlayEl, closeOverlayPage);
+
+    await animateIn(overlayEl);
+    transitioning = false;
+}
+
+async function closeOverlayPage() {
+    if (!overlayEl) return;
+    const el = overlayEl;
+    overlayEl = null;
+    // re-derive the exact origin used to open this overlay from its own inline style
+    const [xPct, yPct] = el.style.transformOrigin.split(' ').map(parseFloat);
+    await Promise.all([animateOut(el), zoomStageIn({ xPct, yPct })]);
+    document.body.style.overflow = '';
+    el.remove();
+}
+
+/* ---------- shared entry point for every label click ---------- */
+
+function onLabelActivate(text, _el) {
+    if (overlayEl || transitioning) return; // already zoomed into a page, or mid-transition
+    const rect = _el.getBoundingClientRect();
+    const originPct = originPctFromClientXY(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    openOverlayPage(originPct);
 }
 
 /* ---------- render loop ---------- */
