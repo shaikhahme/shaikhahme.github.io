@@ -33,7 +33,20 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
-body {
+/* The ruled-paper look lives on its own fixed, negative-z-indexed layer rather than
+   as a `background-attachment: fixed` on body. Fixed-attachment backgrounds are
+   re-evaluated against the scroll offset on every scroll frame, and on this page
+   that fights the WebGL canvas/CSS2D labels already repainting every rAF tick -
+   the two together produced a visible flicker in the ruled lines while scrolling.
+   A dedicated fixed element paints once and is otherwise untouched by scroll.
+   No z-index here (deliberately) - html/body's own `background` above is propagated
+   to the viewport canvas and always paints behind literally everything else,
+   including negative-z-index elements, so a negative z-index here would just hide
+   this layer under that flat backdrop. Being the first child of body is enough to
+   put it at the back of the normal stacking order, below #stage and everything after it. */
+#paperBg {
+    position: fixed;
+    inset: 0;
     background-image:
         linear-gradient(90deg, transparent 0, transparent 74px, var(--margin-red) 74px, var(--margin-red) 76px, transparent 76px),
         repeating-linear-gradient(
@@ -43,7 +56,6 @@ body {
             var(--rule-blue) 35px,
             var(--rule-blue) 36px
         );
-    background-attachment: fixed;
 }
 
 .type-text {
@@ -137,7 +149,13 @@ body {
     pointer-events: auto;
     cursor: pointer;
     text-shadow: 0 0 6px var(--paper), 0 0 2px var(--paper);
-    transition: opacity 0.3s ease;
+    /* No CSS transition here on purpose - opacity is already animated every frame
+       by GSAP (scroll scrub) or the interactive facing-fade tween in continuous.js.
+       A CSS transition layered on top of an already-continuously-updated value
+       fights it: each new frame retargets the transition before the previous one
+       finishes, so on fast/reversed scroll the element can visually stick at a
+       mid-fade opacity even once its inline style has already settled at 0. Same
+       class of bug already worked around for .zoom-page/.mindmap-sidebar below. */
 }
 
 .label3d:hover .label-text {
@@ -285,6 +303,13 @@ body {
     display: none;
 }
 
+.projects-empty {
+    font-family: 'Special Elite', 'Courier New', monospace;
+    color: var(--ink-dim);
+    padding: 16px 2px;
+    margin: 0;
+}
+
 .project-row {
     font-family: 'Special Elite', 'Courier New', monospace;
     text-align: left;
@@ -409,10 +434,21 @@ body {
 }
 
 .mindmap-shape-diamond .mindmap-shape-inner {
-    border: 2px solid var(--accent);
+    border: 2px solid var(--ink);
     clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
     padding: 38px 34px;
     text-align: center;
+}
+
+/* Step type drives border color on top of the shape geometry above:
+   arbitrary (black) / decision (black) / ai (red) / output (green) - see
+   design.md's phase 4 mind-map legend. */
+.mindmap-type-ai .mindmap-shape-inner {
+    border-color: #b32020;
+}
+
+.mindmap-type-output .mindmap-shape-inner {
+    border-color: #1f7a3d;
 }
 
 .mindmap-title {

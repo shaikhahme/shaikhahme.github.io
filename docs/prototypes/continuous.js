@@ -194,6 +194,24 @@ equator2Geo.setAttribute('position', new THREE.BufferAttribute(equator2Positions
 const equator2Line = new THREE.LineLoop(equator2Geo, new THREE.LineBasicMaterial({ color: 0xb3000b, transparent: true, opacity: 0 }));
 scene.add(equator2Line);
 
+/* ---------- third meridian, perpendicular to both the main equator and equator2,
+   through Cybersecurity/AI and both poles (the vertical great circle in the YZ
+   plane) - the straight-line diameterCyberAI above only spans the flat 2D
+   construction phase, this is its sphere-native counterpart, mirroring equator2's
+   role for Engineering/Psychology. Fades in alongside the sphere, same as equator2. ---------- */
+
+const equator3Positions = new Float32Array((CIRCLE_SEGMENTS + 1) * 3);
+for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
+    const t = (i / CIRCLE_SEGMENTS) * Math.PI * 2;
+    equator3Positions[i * 3] = 0;
+    equator3Positions[i * 3 + 1] = Math.cos(t) * ARM_LENGTH;
+    equator3Positions[i * 3 + 2] = Math.sin(t) * ARM_LENGTH;
+}
+const equator3Geo = new THREE.BufferGeometry();
+equator3Geo.setAttribute('position', new THREE.BufferAttribute(equator3Positions, 3));
+const equator3Line = new THREE.LineLoop(equator3Geo, new THREE.LineBasicMaterial({ color: 0xb3000b, transparent: true, opacity: 0 }));
+scene.add(equator3Line);
+
 /* ---------- sphere the construction becomes ---------- */
 
 const sphereMesh = new THREE.Mesh(
@@ -311,6 +329,7 @@ function setFinalState() {
     diameterCyberAI.material.opacity = 0.6;
     diameterEngPsych.material.opacity = 0.6;
     equator2Line.material.opacity = 0.6;
+    equator3Line.material.opacity = 0.6;
     sphereMesh.material.opacity = 1;
     wireMesh.material.opacity = 0.12;
     camera.position.copy(END_CAM);
@@ -328,11 +347,14 @@ if (reduceMotion) {
     enableOrbit();
     scrollCue.classList.add('hidden');
 } else {
-    // The sphere becomes interactive once the concept labels are most of the way through
-    // fading in (comfortably readable) rather than waiting for the very last frame of the
-    // timeline - "slightly before the end" instead of exactly at it. Scrolling back up past
-    // this same point hands control back to the scripted timeline (see the else-branch below).
-    const ORBIT_ENABLE_PROGRESS = 0.99;
+    // The sphere becomes interactive as soon as the concept vectors *start* fading in,
+    // rather than waiting for that fade (or the whole timeline) to finish - dragging/
+    // zooming works while the labels are still animating up to full opacity. This is
+    // computed from the timeline itself (via the 'conceptsStart' label added below,
+    // right before Phase 8) rather than hardcoded, so it stays correct if earlier
+    // phases' durations ever change. Scrolling back up past this same point hands
+    // control back to the scripted timeline (see the else-branch below).
+    let ORBIT_ENABLE_PROGRESS = 1; // placeholder until the full timeline is built below
 
     const tl = gsap.timeline({
         scrollTrigger: {
@@ -392,13 +414,17 @@ if (reduceMotion) {
     tl.to(sphereMesh.material, { opacity: 1, duration: 2.0 }, '<');
     tl.to(wireMesh.material, { opacity: 0.12, duration: 2.0 }, '<');
     tl.to(equator2Line.material, { opacity: 0.6, duration: 2.0 }, '<');
+    tl.to(equator3Line.material, { opacity: 0.6, duration: 2.0 }, '<');
 
     // Phase 8: the concept vectors fade in (orbit kicks in mid-fade - see ORBIT_ENABLE_PROGRESS above)
+    tl.addLabel('conceptsStart');
     CONCEPTS.forEach((concept, i) => {
         tl.to(concept.arrow.line.material, { opacity: 1, duration: 0.6 }, i === 0 ? undefined : '<');
         tl.to(concept.arrow.cone.material, { opacity: 1, duration: 0.6 }, '<');
         tl.to(concept.labelObj.element.style, { opacity: 1, duration: 0.6 }, '<');
     });
+
+    ORBIT_ENABLE_PROGRESS = tl.labels.conceptsStart / tl.duration();
 }
 
 /* ---------- Phase 2/3: label -> "relevant page" zoom transition ----------
@@ -461,7 +487,7 @@ function zoomStageIn(originPct) {
 
 let overlayEl = null;
 
-async function openOverlayPage(originPct) {
+async function openOverlayPage(originPct, label) {
     transitioning = true;
     zoomStageOut(originPct);
 
@@ -469,7 +495,7 @@ async function openOverlayPage(originPct) {
     setTransformOrigin(overlayEl, originPct);
     document.body.appendChild(overlayEl);
     document.body.style.overflow = 'hidden';
-    renderRelevantPage(overlayEl, closeOverlayPage);
+    renderRelevantPage(overlayEl, closeOverlayPage, label);
 
     await animateIn(overlayEl);
     transitioning = false;
@@ -492,7 +518,7 @@ function onLabelActivate(text, _el) {
     if (overlayEl || transitioning) return; // already zoomed into a page, or mid-transition
     const rect = _el.getBoundingClientRect();
     const originPct = originPctFromClientXY(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    openOverlayPage(originPct);
+    openOverlayPage(originPct, text);
 }
 
 /* ---------- render loop ---------- */
@@ -502,16 +528,22 @@ function animate() {
     if (interactive) {
         controls.update();
 
-        // fade concept labels/arrows when they rotate onto the far side of the sphere
+        // fade concept labels/arrows when they rotate onto the far side of the sphere.
+        // Driven through GSAP (only when the target actually changes) rather than a raw
+        // per-frame style write + CSS transition - two independent systems continuously
+        // re-animating the same property fight each other and can leave it visibly stuck
+        // mid-fade (see the .label3d comment in shared.css for the same lesson elsewhere).
         const camDir = new THREE.Vector3().subVectors(camera.position, new THREE.Vector3(0, 0, 0)).normalize();
         CONCEPTS.forEach(concept => {
             if (!concept.revealed) return;
             const normal = concept.point.clone().normalize();
             const facing = normal.dot(camDir) > -0.15;
             const targetOpacity = facing ? 1 : 0.12;
-            concept.labelObj.element.style.opacity = String(targetOpacity);
-            concept.arrow.line.material.opacity = targetOpacity;
-            concept.arrow.cone.material.opacity = targetOpacity;
+            if (concept.facingOpacity === targetOpacity) return;
+            concept.facingOpacity = targetOpacity;
+            gsap.to(concept.labelObj.element.style, { opacity: targetOpacity, duration: 0.3, overwrite: true });
+            gsap.to(concept.arrow.line.material, { opacity: targetOpacity, duration: 0.3, overwrite: true });
+            gsap.to(concept.arrow.cone.material, { opacity: targetOpacity, duration: 0.3, overwrite: true });
         });
     }
     renderer.render(scene, camera);

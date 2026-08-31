@@ -129,6 +129,9 @@ the animation enginine reads the mindmap and creates teh animation with the rele
 ---
 4th phase project infomraiton
 
+update animation engine to take in mindmap shape+color, see map below for the explanation when to use what
+
+
 Interactive session with user. 
 pull the list of all repositories from github. 
 
@@ -151,7 +154,7 @@ for mind map:
 Arbitary Step - black rectangle
 Descision - Diamond
 AI Step - red rectangle 
-output - green rectangle
+/output - green rectangle
 
 create a updates.md
 1. Repo Name
@@ -163,10 +166,13 @@ create a updates.md
 5th phase
 improvmeents
 
-1. Add diameter that goes vertical from cybersec to ai
-2. remove teh 5 cursor animations in the beginging, they dont disaapear if you scroll back to it after the sphere is revealed 
-4. Make background constant, not moving
-5. make the sphere interactable before the actual end of the scroll
-6. Allign all the texts except the ones on the sphere with the lines in teh background.
+2. Scrollign back up afte the sphere is revealed still leaves some words visible.
+3. Remove Top Left Text - Shaikhs
+4. Add colored boxes to animation
+   5. AI steps: Red
+   6. Input/output: Green
+   7. Arbitary Black
+8. The first project is not visible
+9. 
 
 

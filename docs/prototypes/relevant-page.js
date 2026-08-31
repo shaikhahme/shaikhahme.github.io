@@ -1,11 +1,24 @@
-/* Phase 3: the "relevant page" a label's overlay zooms into - a short note,
+/* Phase 3/4: the "relevant page" a label's overlay zooms into - a short note,
    a vertically scrollable projects list, and a right sidebar that plays a
    timer-driven (not scroll-linked) mind map, step by step, when a project is
    clicked: each step's shape draws in, an arrow draws down from the previous
    step, then its title/description type out - the same drawing language as
    the compass arrows in phase 1, just vertical and on a timer instead of tied
-   to scroll. One shared page/dataset for now (data/ai-security.json) - every
-   label opens the same content until real per-topic data exists. */
+   to scroll. Every one of the sphere's 10 clickable labels (4 axes + 6
+   concept vectors) opens this same view, filtered to the projects in
+   data/projects.json whose tags include that label - see RELEVANT_PAGE_ALIASES
+   below for the one label/tag spelling mismatch. The per-topic "short note"
+   is placeholder copy for now; real per-topic prose doesn't exist yet. */
+
+// The sphere's "Artificial Intelligence" axis label doesn't match any tag
+// verbatim - every project instead uses the shorter "AI" tag - so alias it.
+const RELEVANT_PAGE_ALIASES = {
+    'Artificial Intelligence': 'AI'
+};
+
+function relevantPageTagFor(label) {
+    return RELEVANT_PAGE_ALIASES[label] || label;
+}
 
 /* Timing is driven by requestAnimationFrame rather than setTimeout/setInterval
    throughout this file - some environments this prototype runs in throttle
@@ -78,9 +91,21 @@ function relevantPageSlideSidebar(el, fromPct, toPct, duration, onDone) {
     requestAnimationFrame(frame);
 }
 
-function relevantPageCreateShapeEl(shape) {
+/* Step "type" (not a raw shape) drives both the geometry and the border
+   color - see design.md's phase 4 mind-map legend:
+   arbitrary -> black rectangle, decision -> diamond, ai -> red rectangle,
+   output -> green rectangle. */
+const MINDMAP_TYPE_SHAPE = {
+    arbitrary: 'rectangle',
+    decision: 'diamond',
+    ai: 'rectangle',
+    output: 'rectangle'
+};
+
+function relevantPageCreateShapeEl(type) {
+    const shape = MINDMAP_TYPE_SHAPE[type] || 'rectangle';
     const el = document.createElement('div');
-    el.className = 'mindmap-shape mindmap-shape-' + (shape === 'diamond' ? 'diamond' : 'rectangle');
+    el.className = 'mindmap-shape mindmap-shape-' + shape + ' mindmap-type-' + (MINDMAP_TYPE_SHAPE[type] ? type : 'arbitrary');
     const inner = document.createElement('div');
     inner.className = 'mindmap-shape-inner';
     const title = document.createElement('p');
@@ -103,7 +128,7 @@ async function relevantPagePlayMindmap(container, steps, token) {
             if (token.cancelled) return;
         }
         const step = ordered[i];
-        const { el, title, desc } = relevantPageCreateShapeEl(step.shape);
+        const { el, title, desc } = relevantPageCreateShapeEl(step.type);
         container.appendChild(el);
         await relevantPageTypeText(title, step.title, 35, token);
         if (token.cancelled) return;
@@ -145,7 +170,7 @@ function relevantPageRenderProjectsList(listEl, projects, onSelect) {
     });
 }
 
-async function renderRelevantPage(container, onBack) {
+async function renderRelevantPage(container, onBack, label) {
     container.innerHTML = '';
 
     const page = document.createElement('div');
@@ -250,12 +275,22 @@ async function renderRelevantPage(container, onBack) {
         closeSidebar();
     });
 
+    title.textContent = label;
+    note.textContent = `Placeholder note for ${label} - a short write-up of why this matters to Shaikh goes here.`;
+
     try {
-        const res = await fetch('/prototypes/data/ai-security.json');
-        const data = await res.json();
-        title.textContent = data.topic;
-        note.textContent = data.note;
-        relevantPageRenderProjectsList(list, data.projects, openProject);
+        const res = await fetch('/prototypes/data/projects.json');
+        const allProjects = await res.json();
+        const tag = relevantPageTagFor(label);
+        const projects = allProjects.filter(project => project.tags.includes(tag));
+        if (projects.length === 0) {
+            const empty = document.createElement('p');
+            empty.className = 'projects-empty';
+            empty.textContent = `No projects tagged with "${tag}" yet.`;
+            list.appendChild(empty);
+        } else {
+            relevantPageRenderProjectsList(list, projects, openProject);
+        }
     } catch (e) {
         note.textContent = 'Failed to load content.';
     }
