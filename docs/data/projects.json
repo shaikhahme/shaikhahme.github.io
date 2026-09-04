@@ -1,58 +1,753 @@
 [
-  {
-    "name": "CTIoT: Cyber Threat Intelligence for IoT",
-    "description": "IEEE-published research on NLP and ML filtering for IoT cyber threats",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity", "ai-security"]
-  },
-  {
-    "name": "AI Security & Governance Framework",
-    "description": "Enterprise framework for AI alignment, safety, and governance",
-    "link": "#",
-    "image": "",
-    "tags": ["ai-security", "ai-alignment"]
-  },
-  {
-    "name": "Red Team Operations",
-    "description": "Offensive security assessments and penetration testing engagements",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity"]
-  },
-  {
-    "name": "Vulnerability Management Pipeline",
-    "description": "Automated vulnerability detection, prioritization, and remediation tracking",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity"]
-  },
-  {
-    "name": "AI Automation Training Program",
-    "description": "Internal training on AI automation, security, and team leadership",
-    "link": "#",
-    "image": "",
-    "tags": ["ai-security", "ai-alignment"]
-  },
-  {
-    "name": "Third-Party Security Assessment",
-    "description": "Vendor risk assessment and supply chain security framework",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity"]
-  },
-  {
-    "name": "ISO 27001 & SOC 2 Compliance",
-    "description": "Information security management and compliance certification",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity"]
-  },
-  {
-    "name": "DevSecOps Infrastructure",
-    "description": "Security-first CI/CD pipelines and infrastructure hardening",
-    "link": "#",
-    "image": "",
-    "tags": ["cybersecurity", "ai-security"]
-  }
+    {
+        "name": "pm",
+        "description": "Jira-style personal project management tool covering ongoing projects and personal commitments, with a calendar, reminders, GitHub-backed data storage, a mobile app, and Tailscale exposure on a personal server. Also serves as the communication board for connected agentic AI systems.",
+        "link": "https://github.com/shaikhahme/pm",
+        "tags": [
+            "Engineering",
+            "AI"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Create project",
+                "description": "Sets up a new project"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Add tasks & subtasks",
+                "description": "Breaks the project into tasks and subtasks"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Update status",
+                "description": "Task/subtask status is updated"
+            },
+            {
+                "step": 4,
+                "type": "decision",
+                "title": "Agentic system attached?",
+                "description": "Checks whether an agentic AI system is connected"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "Backlog auto-populated & picked up by agent",
+                "description": "Agentic system pulls backlog tasks automatically"
+            },
+            {
+                "step": 6,
+                "type": "output",
+                "title": "Notify user of blockers",
+                "description": "End user is notified of blockers needing manual attention"
+            }
+        ]
+    },
+    {
+        "name": "OntoloMe",
+        "description": "Personal ontology application covering a user's entire knowledge base - professional information, people network, and knowledge - via notes, people management, and project management. Creates a personal ontology layer that AIs can access via MCP servers, with visibility into where your data lives for transparent data management.",
+        "link": "https://github.com/shaikhahme/knowledge-app",
+        "tags": [
+            "Engineering",
+            "AI",
+            "Sociology and Psychology",
+            "Cybersecurity",
+            "AI Security",
+            "AI Alignment",
+            "AI Governance",
+            "Social Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Create note",
+                "description": "User creates a note about a person, project, or piece of information"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "AI identifies & enriches data",
+                "description": "AI parses and enriches the captured data"
+            },
+            {
+                "step": 3,
+                "type": "decision",
+                "title": "Needs more info?",
+                "description": "Checks whether the entry is missing information"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "Flag for follow-up",
+                "description": "Flags the entry for the user to fill in later"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "AI connects data & builds knowledge graph",
+                "description": "AI links the entry into the broader ontology"
+            },
+            {
+                "step": 6,
+                "type": "output",
+                "title": "Expose ontology via MCP",
+                "description": "Ontology is exposed to AI agents via MCP servers"
+            }
+        ]
+    },
+    {
+        "name": "TUMTOR",
+        "description": "AI-powered job-market intelligence tool for the German tech industry - reads layoff patterns, salaries, and in-demand skills, then connects them to a TUM student's ambitions to surface clubs, projects, collaborations, and research opportunities that maximize their university time.",
+        "link": "https://github.com/shaikhahme/TUMTOR",
+        "tags": [
+            "AI",
+            "Engineering",
+            "Sociology and Psychology"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Ingest validated job-market datasets",
+                "description": "Loads validated job market data"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "User creates ambition profile",
+                "description": "Student describes their career ambitions"
+            },
+            {
+                "step": 3,
+                "type": "ai",
+                "title": "AI ranks jobs & identifies required skills",
+                "description": "Ranks jobs and extracts needed skills"
+            },
+            {
+                "step": 4,
+                "type": "ai",
+                "title": "AI ranks university opportunities",
+                "description": "Ranks clubs, projects, research opportunities"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "Apply MMR ranking for diverse options",
+                "description": "Diversifies results using MMR ranking"
+            },
+            {
+                "step": 6,
+                "type": "output",
+                "title": "Generate explainable report",
+                "description": "Produces a report with explainable AI reasoning"
+            }
+        ]
+    },
+    {
+        "name": "ThirdSpaces",
+        "description": "Community-focused application to boost use of third spaces, grounded in research on social loneliness among Gen Z. Helps users find new third spaces and connect with others who are also going.",
+        "link": "https://github.com/shaikhahme/ts",
+        "tags": [
+            "Engineering",
+            "Sociology and Psychology"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User creates account",
+                "description": "User signs up"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Find thirdspaces via the app",
+                "description": "Browses available third spaces"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Enroll into a thirdspace",
+                "description": "User enrolls in a chosen third space"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "Detect other enrolled users present",
+                "description": "App detects other enrolled users nearby"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Surface nearby users to connect",
+                "description": "Shows nearby enrolled users so people can say hi"
+            }
+        ]
+    },
+    {
+        "name": "claudeAgents",
+        "description": "Repository that runs an agentic AI system, currently limited to software development tasks.",
+        "link": "https://github.com/shaikhahme/claudeAgents",
+        "tags": [
+            "AI",
+            "Engineering",
+            "AI Security"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Cron job triggers agent run",
+                "description": "Scheduled job kicks off the agent"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "Agent picks up task from PM board",
+                "description": "Agent pulls a task from the connected project management board"
+            },
+            {
+                "step": 3,
+                "type": "decision",
+                "title": "Check usage limits",
+                "description": "Verifies usage/cost limits before proceeding"
+            },
+            {
+                "step": 4,
+                "type": "ai",
+                "title": "Break task into subtasks",
+                "description": "Agent decomposes the task"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "Sub-agents complete subtasks",
+                "description": "Sub-agents complete subtasks via CLI Claude"
+            },
+            {
+                "step": 6,
+                "type": "decision",
+                "title": "Human effort required?",
+                "description": "Checks whether manual intervention is needed"
+            },
+            {
+                "step": 7,
+                "type": "output",
+                "title": "Open ticket for human",
+                "description": "Opens a ticket on the PM board for human attention"
+            }
+        ]
+    },
+    {
+        "name": "couponBuster",
+        "description": "Authorized security-testing tool that brute-forces discount/coupon codes on input boxes.",
+        "link": "https://github.com/shaikhahme/couponBuster",
+        "tags": [
+            "Cybersecurity",
+            "Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters target URL",
+                "description": "User provides the target site"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Identify input box",
+                "description": "Locates the coupon/discount input box"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Determine rate limiting & confirmation logic",
+                "description": "Analyzes the target's rate limiting and confirmation behavior"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "Brute-force codes",
+                "description": "Sends Burp-style request patterns to test codes"
+            },
+            {
+                "step": 5,
+                "type": "decision",
+                "title": "Code accepted?",
+                "description": "Checks whether a code was accepted"
+            },
+            {
+                "step": 6,
+                "type": "output",
+                "title": "Report valid code",
+                "description": "Reports the discovered valid code"
+            }
+        ]
+    },
+    {
+        "name": "caesar-cipher-game",
+        "description": "A game teaching children (and drunk adults) the basics of encryption using a simple Caesar cipher - used at the NavVis Black Out event.",
+        "link": "https://github.com/shaikhahme/caesar-cipher-game",
+        "tags": [
+            "Cybersecurity",
+            "Engineering",
+            "Sociology and Psychology"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User clicks begin",
+                "description": "Starts the game"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Present cipher & cipher wheel",
+                "description": "Shows the encrypted message and a cipher wheel"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "User spins wheel to decode",
+                "description": "User rotates the wheel to try to decode it"
+            },
+            {
+                "step": 4,
+                "type": "decision",
+                "title": "Cipher resolved?",
+                "description": "Checks whether the message has been decoded"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Award reward",
+                "description": "Rewards the user for solving the cipher"
+            }
+        ]
+    },
+    {
+        "name": "medusa",
+        "description": "Protects artists and their art from deepfakes by poisoning outputted data so any model training on it produces bad results - even if the poisoning is defended against, it raises attacker cost and reduces deepfake frequency. Multi-modal.",
+        "link": "https://github.com/shaikhahme/medusa",
+        "tags": [
+            "AI",
+            "AI Security",
+            "Cybersecurity",
+            "AI Alignment",
+            "AI Governance",
+            "Sociology and Psychology",
+            "Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Artist uploads art",
+                "description": "Artist submits original artwork"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "Generate undetectable poisoned version",
+                "description": "AI produces a humanly-undetectable poisoned copy"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Poisoned art published to public channels",
+                "description": "Poisoned art is posted publicly"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "Unauthorized model scrapes the data",
+                "description": "AI models unethically scrape the poisoned data"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Generation quality degrades - art protected",
+                "description": "Model output quality drops, protecting the art"
+            }
+        ]
+    },
+    {
+        "name": "tuneyloons",
+        "description": "Graphic visualization tool for DJs recommending which song to cue next, based on music theory - pulls track data from music-labeling provider APIs to visualize compatible songs.",
+        "link": "https://github.com/shaikhahme/tuneyloons",
+        "tags": [
+            "Engineering",
+            "AI"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters setlist / connects DJ system",
+                "description": "Imports the current setlist"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Fetch track data from labeling APIs",
+                "description": "Pulls track metadata from music-labeling providers"
+            },
+            {
+                "step": 3,
+                "type": "ai",
+                "title": "AI builds knowledge graph of song vibe paths",
+                "description": "Builds a graph of compatible song transitions"
+            },
+            {
+                "step": 4,
+                "type": "ai",
+                "title": "AI generates per-song recommendations",
+                "description": "Generates recommended next tracks"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Visualize next-track options",
+                "description": "Shows a visual of what to play next and expected audience response"
+            }
+        ]
+    },
+    {
+        "name": "ISA",
+        "description": "Information Security Agent capable of running an organization's Information Security department - asset management, control management, and risk management.",
+        "link": "https://github.com/shaikhahme/ISA",
+        "tags": [
+            "AI",
+            "Cybersecurity",
+            "Security Architecture",
+            "AI Security",
+            "AI Governance"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Agent deployed & integrated",
+                "description": "Agent is deployed per the user's environment"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "Identify primary assets",
+                "description": "Identifies primary assets"
+            },
+            {
+                "step": 3,
+                "type": "ai",
+                "title": "Identify secondary assets",
+                "description": "Identifies secondary assets"
+            },
+            {
+                "step": 4,
+                "type": "ai",
+                "title": "Identify applicable frameworks",
+                "description": "Determines which frameworks need to be adhered to"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "Attach framework requirements",
+                "description": "Attaches requirements to secondary assets"
+            },
+            {
+                "step": 6,
+                "type": "ai",
+                "title": "Evaluate current policies/measures",
+                "description": "Evaluates existing policies and controls"
+            },
+            {
+                "step": 7,
+                "type": "output",
+                "title": "Produce risk document",
+                "description": "Produces a risk document per secondary asset"
+            }
+        ]
+    },
+    {
+        "name": "EU AI Act Manager",
+        "description": "EU AI Act checker - identifies the role, risk, and nature of each AI application within a company, and produces the compliance obligations for the application owner. Long-term: convert to an agentic system capable of surfacing and identifying shadow IT, performing an assumed check, waiting for validation, and producing obligations.",
+        "link": "https://github.com/shaikhahme/aiGovernance",
+        "tags": [
+            "AI Governance",
+            "AI",
+            "Cybersecurity",
+            "AI Security"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters AI tool use case",
+                "description": "User describes an AI application in use"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "AI identifies role, risk & nature",
+                "description": "Classifies the application under the EU AI Act"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Map against obligations matrix",
+                "description": "Checks the predisposed matrix of obligations"
+            },
+            {
+                "step": 4,
+                "type": "output",
+                "title": "Produce obligations report",
+                "description": "Generates the compliance obligations report"
+            }
+        ]
+    },
+    {
+        "name": "GamifiedPhishing",
+        "description": "Open-source gamified phishing-awareness training platform, aimed at teaching kids to recognize phishing.",
+        "link": "https://github.com/shaikhahme/GamifiedPhishing",
+        "tags": [
+            "Cybersecurity",
+            "Sociology and Psychology",
+            "Social Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters website",
+                "description": "User starts the training"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Present simulated emails",
+                "description": "Shows simulated phishing and legitimate emails"
+            },
+            {
+                "step": 3,
+                "type": "decision",
+                "title": "User identifies phishing email?",
+                "description": "Checks whether the user correctly flags phishing"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "User identifies red-flag hints",
+                "description": "User explains the hints that gave it away"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Training completion",
+                "description": "Marks the training as complete"
+            }
+        ]
+    },
+    {
+        "name": "GHAS_CICD",
+        "description": "Pre-merge security CI/CD pipeline built on GitHub Advanced Security (GHAS) workflows.",
+        "link": "https://github.com/shaikhahme/GHAS-Automation",
+        "tags": [
+            "Cybersecurity",
+            "Engineering",
+            "AI Security"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Install local hooks for secret scanning",
+                "description": "User installs local desktop hooks"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Run secret scanning before push",
+                "description": "Secret scanning runs before every push"
+            },
+            {
+                "step": 3,
+                "type": "decision",
+                "title": "Secrets found?",
+                "description": "Checks whether secrets were detected"
+            },
+            {
+                "step": 4,
+                "type": "arbitrary",
+                "title": "Run Dependabot & code scanning before merge",
+                "description": "Runs Dependabot and code scanning before merge"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "PR merge-ready",
+                "description": "Pull request is cleared for merge"
+            }
+        ]
+    },
+    {
+        "name": "owasp-tester",
+        "description": "Web app security testing tool that checks for CSRF, SQL injection, and other OWASP Top 10 vulnerabilities.",
+        "link": "https://github.com/shaikhahme/software_security",
+        "tags": [
+            "Cybersecurity",
+            "Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters target URL",
+                "description": "User provides the target application"
+            },
+            {
+                "step": 2,
+                "type": "arbitrary",
+                "title": "Run vulnerability modules",
+                "description": "Runs modules for SQLi, CSRF, and other OWASP Top 10 checks"
+            },
+            {
+                "step": 3,
+                "type": "decision",
+                "title": "Vulnerabilities found?",
+                "description": "Checks whether any modules found issues"
+            },
+            {
+                "step": 4,
+                "type": "output",
+                "title": "Generate vulnerability report",
+                "description": "Produces the vulnerability report"
+            }
+        ]
+    },
+    {
+        "name": "DP-GroupProject",
+        "description": "Data-processing group project that reads public data to identify key signals about AI governance and use.",
+        "link": "https://github.com/shaikhahme/DP-GroupProject",
+        "tags": [
+            "AI",
+            "AI Governance",
+            "Engineering"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "Ingest public data",
+                "description": "Pulls in public datasets"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "Extract AI governance signals",
+                "description": "Identifies key governance signals in the data"
+            },
+            {
+                "step": 3,
+                "type": "output",
+                "title": "Generate report",
+                "description": "Produces the resulting report"
+            }
+        ]
+    },
+    {
+        "name": "AI-BF",
+        "description": "AI jailbreak brute-forcer - runs a predisposed prompt list against a target AI to attempt to jailbreak it.",
+        "link": "https://github.com/shaikhahme/AI-BF",
+        "tags": [
+            "AI Security",
+            "AI",
+            "Cybersecurity"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters target URL",
+                "description": "User provides the target AI endpoint"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "AI builds brute-force prompt list",
+                "description": "Pulls from sources to build a jailbreak prompt list"
+            },
+            {
+                "step": 3,
+                "type": "ai",
+                "title": "AI sends probing prompt",
+                "description": "Sends a prompt from the list"
+            },
+            {
+                "step": 4,
+                "type": "decision",
+                "title": "Jailbreak successful?",
+                "description": "Checks whether the attempt succeeded"
+            },
+            {
+                "step": 5,
+                "type": "ai",
+                "title": "AI adapts direction & probes further",
+                "description": "Adjusts strategy and continues probing"
+            },
+            {
+                "step": 6,
+                "type": "output",
+                "title": "Report on AI security posture",
+                "description": "Produces a report on the target's AI security posture"
+            }
+        ]
+    },
+    {
+        "name": "CTIoT",
+        "description": "Cyber threat intelligence tool using NLP to identify vulnerabilities in a person's immediate surroundings - IoT and personal devices. Long-term: add agentic AI, automate device identification, update filters, switch to a web app, automate intelligence sourcing, and adhere to STIX/TAXII and STRIDE threat-intel formats.",
+        "link": "https://github.com/shaikhahme/CTI_Tool",
+        "tags": [
+            "Cybersecurity",
+            "AI",
+            "AI Security"
+        ],
+        "mindmap": [
+            {
+                "step": 1,
+                "type": "arbitrary",
+                "title": "User enters IoT devices",
+                "description": "User lists their devices"
+            },
+            {
+                "step": 2,
+                "type": "ai",
+                "title": "AI identifies device type & common vulnerabilities",
+                "description": "Classifies devices and known vulnerabilities"
+            },
+            {
+                "step": 3,
+                "type": "arbitrary",
+                "title": "Subscribe to RSS feeds & threat-intel sources",
+                "description": "Subscribes to relevant intelligence sources"
+            },
+            {
+                "step": 4,
+                "type": "ai",
+                "title": "AI filters relevant critical intelligence",
+                "description": "Filters down to relevant, critical intelligence"
+            },
+            {
+                "step": 5,
+                "type": "output",
+                "title": "Build knowledge graph of devices & vulnerabilities",
+                "description": "Produces the end-user knowledge graph"
+            }
+        ]
+    }
 ]

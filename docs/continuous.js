@@ -61,7 +61,7 @@ window.addEventListener('resize', onResize);
 
 /* ---------- CSS2D label helper ---------- */
 /* The lined-paper look comes entirely from the persistent CSS body background now
-   (see shared.css) rather than an in-scene WebGL plane, so it reads identically
+   (see styles.css) rather than an in-scene WebGL plane, so it reads identically
    whether the scene is flat/2D or the sphere has fully formed - one background,
    always there. */
 

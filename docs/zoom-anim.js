@@ -1,10 +1,10 @@
 /* Plain rAF-driven scale/opacity tween, used by continuous.js for the
    Prezi-style zoom transitions. CSS `transition` on transform/opacity turned
-   out not to advance reliably in every environment this prototype was tested
-   in (it can get stuck at its start value even though the class change
-   registers) - driving the same animation from requestAnimationFrame
-   instead, like the rest of this prototype's motion already does, sidesteps
-   that entirely and gives an explicit onDone callback for chaining. */
+   out not to advance reliably in every environment this was tested in (it can
+   get stuck at its start value even though the class change registers) -
+   driving the same animation from requestAnimationFrame instead, like the
+   rest of this page's motion already does, sidesteps that entirely and gives
+   an explicit onDone callback for chaining. */
 function zoomAnimate(el, { fromScale, toScale, fromOpacity, toOpacity, duration, onDone }) {
     const start = performance.now();
     function ease(t) { return 1 - Math.pow(1 - t, 3); }

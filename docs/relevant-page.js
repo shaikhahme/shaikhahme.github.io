@@ -21,8 +21,8 @@ function relevantPageTagFor(label) {
 }
 
 /* Timing is driven by requestAnimationFrame rather than setTimeout/setInterval
-   throughout this file - some environments this prototype runs in throttle
-   plain timers down to roughly one callback per second (a background-tab
+   throughout this file - some environments this page runs in throttle plain
+   timers down to roughly one callback per second (a background-tab
    power-saving policy), which made typing crawl at ~1 character/second, while
    rAF (which drives the page's actual rendering) kept ticking normally. */
 function relevantPageSleep(ms, token) {
@@ -319,9 +319,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         currentToken = token;
 
         try {
-            // The three per-specialty timeline files are currently identical -
-            // any one of them is Shaikh's whole timeline, not a specialty-specific cut.
-            const res = await fetch('/data/timeline-cybersecurity.json');
+            const res = await fetch('/data/timeline.json');
             const milestones = await res.json();
             const steps = milestones.map((m, i) => ({
                 step: i + 1,
@@ -353,7 +351,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     note.textContent = `Placeholder note for ${label} - a short write-up of why this matters to Shaikh goes here.`;
 
     try {
-        const res = await fetch('/prototypes/data/projects.json');
+        const res = await fetch('/data/projects.json');
         const allProjects = await res.json();
         const tag = relevantPageTagFor(label);
         const projects = allProjects.filter(project => project.tags.includes(tag));
