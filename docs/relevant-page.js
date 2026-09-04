@@ -150,6 +150,39 @@ async function relevantPagePlayMindmapLoop(container, steps, token) {
     }
 }
 
+/* Every row's rendered *bottom edge* needs to land on a multiple of 36 (the
+   ruled-paper spacing) for the row after it to stay on the grid too -
+   `min-height: 108px` (3 rule-lines, see shared.css) only guarantees that for
+   a row whose name/description/tags happen to fit in exactly three lines.
+   Real project descriptions wrap to all kinds of line counts, so most rows
+   render taller than that and land on an arbitrary height instead - dragging
+   every row below the first mismatched one off the grid. Rather than cap
+   each row's height (which is exactly the fixed-height + overflow:hidden bug
+   that used to clip long titles - see the CSS comment on .project-row), this
+   pads each row's bottom out to the next multiple of 36, snapping its bottom
+   edge back onto a rule line. Re-run on resize since wrapping (and so
+   height) depends on the container's width.
+   Processed top-to-bottom, measuring each row's *actual rendered position*
+   relative to the list rather than assuming heights simply add up - rows
+   overlap by 1px each (`.project-row:not(:first-child) { margin-top: -1px }`,
+   collapsing adjacent borders into one line), which would otherwise
+   accumulate into a growing drift row by row if each row's fix only
+   accounted for its own height in isolation.
+   `.project-row` uses `justify-content: flex-start` (not `center`) so this
+   only ever adds trailing whitespace below a card's content - it never
+   shifts the content itself. */
+const RULE_SPACING = 36;
+function relevantPageSnapRowsToRuleGrid(listEl) {
+    const rows = listEl.querySelectorAll('.project-row');
+    rows.forEach(row => { row.style.paddingBottom = ''; });
+    const listTop = listEl.getBoundingClientRect().top;
+    rows.forEach(row => {
+        const relBottom = Math.round(row.getBoundingClientRect().bottom - listTop);
+        const extra = (RULE_SPACING - relBottom % RULE_SPACING) % RULE_SPACING;
+        if (extra) row.style.paddingBottom = `${16 + extra}px`;
+    });
+}
+
 function relevantPageRenderProjectsList(listEl, projects, onSelect) {
     listEl.innerHTML = '';
     projects.forEach(project => {
@@ -180,6 +213,7 @@ function relevantPageRenderProjectsList(listEl, projects, onSelect) {
         row.addEventListener('click', () => onSelect(project, row));
         listEl.appendChild(row);
     });
+    relevantPageSnapRowsToRuleGrid(listEl);
 }
 
 async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
@@ -362,6 +396,14 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
             list.appendChild(empty);
         } else {
             relevantPageRenderProjectsList(list, projects, openProject);
+            // Re-snap on resize, since text wrapping (and so each row's natural
+            // height) depends on the list's width. Self-unregisters once this
+            // page's DOM is gone rather than needing an explicit teardown hook.
+            const onResize = () => {
+                if (!list.isConnected) { window.removeEventListener('resize', onResize); return; }
+                relevantPageSnapRowsToRuleGrid(list);
+            };
+            window.addEventListener('resize', onResize);
         }
     } catch (e) {
         note.textContent = 'Failed to load content.';

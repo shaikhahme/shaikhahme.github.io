@@ -572,6 +572,13 @@ function onLabelActivate(text, _el) {
 const _frameClock = new THREE.Clock();
 function animate() {
     requestAnimationFrame(animate);
+    // Once a topic's overlay is fully open (not mid-transition), the stage
+    // sits at opacity 0 behind it and pointer-events:none - fully invisible,
+    // so re-rendering the WebGL scene and repositioning 10 CSS2D label DOM
+    // nodes every frame is pure wasted work, competing with the overlay's own
+    // (rAF-driven, see zoom-anim.js) animation and DOM updates for the same
+    // main-thread time. Skip it entirely while there's nothing on screen to see.
+    if (overlayEl && !transitioning) return;
     const dt = _frameClock.getDelta();
     if (interactive) controls.update();
     // Concept vector opacity is recomputed every frame from concept.reveal

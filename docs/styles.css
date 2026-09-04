@@ -237,12 +237,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 /* Every block below occupies a whole multiple of the 36px rule spacing
    (content line-height * whole lines, plus a margin that's itself a multiple
    of 36) so the list that follows always starts on a rule line, regardless
-   of how many lines the note happens to wrap to. */
+   of how many lines the note happens to wrap to. Browsers vertically center
+   a line's glyphs within its line-height box (half-leading above and below),
+   which for this font/these sizes leaves the text floating well above the
+   rule at the *bottom* of each 36px band rather than resting on it - each
+   element below adds a small `padding-top` to push its text down near that
+   rule, with `margin-bottom` reduced by the same amount so the running total
+   is still an exact multiple of 36 for whatever follows. (The title's old
+   `clamp(..., 44px)` max also let its font-size exceed the 36px line-height
+   box outright at wide viewports - capped lower here so it always fits.) */
 .relevant-title {
     flex-shrink: 0;
-    font-size: clamp(28px, 4vw, 44px);
+    font-size: clamp(24px, 3vw, 34px);
     line-height: 36px;
-    margin: 0 0 36px;
+    padding-top: 3px;
+    margin: 0 0 33px;
 }
 
 .relevant-note {
@@ -251,14 +260,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     line-height: 36px;
     font-size: 16px;
     color: var(--ink);
-    margin: 0 0 36px;
+    padding-top: 8px;
+    margin: 0 0 28px;
 }
 
 .relevant-projects-heading {
     flex-shrink: 0;
     font-size: 20px;
     line-height: 36px;
-    margin: 0 0 36px;
+    padding-top: 6px;
+    margin: 0 0 30px;
     max-width: 640px;
 }
 
@@ -302,6 +313,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     margin: 0;
 }
 
+/* `justify-content: flex-start` (not `center`) so the per-row bottom padding
+   relevantPageSnapRowsToRuleGrid() adds in relevant-page.js - to snap this
+   row's height to a multiple of 36px - only ever adds trailing whitespace
+   below the content. Centering would instead shift the content itself up as
+   that padding grows, throwing off the vertical rhythm it's meant to fix. */
 .project-row {
     font-family: 'Special Elite', 'Courier New', monospace;
     text-align: left;
@@ -313,7 +329,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     cursor: pointer;
     color: var(--ink);
 }
@@ -333,16 +349,21 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     background: rgba(179, 0, 11, 0.06);
 }
 
+/* line-height 18px on both (a clean half of the 36px rule spacing, instead
+   of the arbitrary 20px/browser-default line-heights this used to have) so
+   wrapped description lines fall in a consistent rhythm rather than cutting
+   across the ruled background at random heights. */
 .project-name {
     font-size: 17px;
-    line-height: 20px;
-    margin-bottom: 4px;
+    line-height: 18px;
+    margin-bottom: 6px;
 }
 
 .project-desc {
     font-size: 14px;
+    line-height: 18px;
     color: var(--ink-dim);
-    margin-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 .project-tags {
