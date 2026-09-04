@@ -58,12 +58,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
         );
 }
 
-.type-text {
-    font-family: 'Special Elite', 'Courier New', monospace;
-    letter-spacing: 0.02em;
-    white-space: pre;
-}
-
 /* The ruled background repeats every 36px (see body's background-image
    above) - fixed-position text throughout this file uses line-height/offset
    multiples of that same 36px so it reads as sitting on the page's own
@@ -181,16 +175,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     opacity: 0;
 }
 
+/* Icon-only (just the red arrow, no label) - see the `back.title`/
+   `aria-label` set in relevant-page.js for the accessible name that replaces
+   the text that used to be visible here. */
 .zoom-page-back {
     font-family: 'Special Elite', 'Courier New', monospace;
-    font-size: 14px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    font-size: 22px;
+    line-height: 1;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(243, 239, 227, 0.9);
     border: 1px solid var(--ink-dim);
+    border-radius: 50%;
     color: var(--accent);
-    padding: 10px 18px;
-    border-radius: 4px;
     cursor: pointer;
 }
 
@@ -216,27 +216,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     z-index: 10;
 }
 
-/* The whole column is the single scroll container - short viewports simply
-   scroll the page rather than clipping content. An earlier version clipped
-   here (`overflow: hidden`) and gave `.projects-list` its own nested scroll,
-   which on shorter windows could push the first project row out of view with
-   no way to reach it. */
+/* The page itself never scrolls - title/note/heading are pinned and only
+   `.projects-list` below gets its own scroll region, sized to whatever
+   vertical space is left. (An earlier version made this whole column the
+   scroll container instead; that fixed short viewports clipping the first
+   row, but the real cause of that clipping was `.project-row`'s old fixed
+   height + overflow:hidden, fixed separately below - so the page can go back
+   to being static.) */
 .relevant-main {
     flex: 1;
     min-width: 0;
     height: 100%;
-    overflow-y: auto;
-    overflow-x: hidden;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    overflow: hidden;
     box-sizing: border-box;
     padding: 72px 60px 40px;
     display: flex;
     flex-direction: column;
-}
-
-.relevant-main::-webkit-scrollbar {
-    display: none;
 }
 
 /* Every block below occupies a whole multiple of the 36px rule spacing
@@ -267,16 +262,37 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     max-width: 640px;
 }
 
-/* Rows flow in the page (the `.relevant-main` column is the only scroll
-   container now) so the first row is always visible right under the heading.
-   Rows are stacked with no gap and overlapping 1px borders (ledger-style) so
-   each row height (108px = 3 rule-lines) keeps every row's top edge on a rule
-   line - a gap between rows would break that multiple. */
+/* The only scrolling region in `.relevant-main` - fills whatever vertical
+   space is left under the pinned title/note/heading (`flex: 1` + `min-height:
+   0` so it shrinks instead of overflowing its flex parent). Rows are stacked
+   with no gap and overlapping 1px borders (ledger-style) so each row height
+   keeps every row's top edge on a rule line - a gap between rows would break
+   that multiple. Its own ruled-line background uses `background-attachment:
+   local` so the lines scroll with the rows instead of staying pinned to the
+   (non-scrolling) viewport-fixed background on `.zoom-page`. */
 .projects-list {
     display: flex;
     flex-direction: column;
-    flex-shrink: 0;
+    flex: 1;
+    min-height: 0;
     max-width: 640px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    background-color: var(--paper);
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 35px,
+        var(--rule-blue) 35px,
+        var(--rule-blue) 36px
+    );
+    background-attachment: local;
+}
+
+.projects-list::-webkit-scrollbar {
+    display: none;
 }
 
 .projects-empty {
@@ -292,13 +308,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     background: rgba(255, 255, 255, 0.25);
     border: 1px solid var(--ink-dim);
     padding: 16px 18px;
-    height: 108px;
+    min-height: 108px;
     box-sizing: border-box;
     flex-shrink: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    overflow: hidden;
     cursor: pointer;
     color: var(--ink);
 }
@@ -357,16 +372,22 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     width: 360px;
     flex-shrink: 0;
     height: 100%;
-    overflow-y: auto;
+    overflow: hidden;
     box-sizing: border-box;
-    padding: 90px 26px 40px;
+    padding: 90px 26px 0;
     border-left: 1px solid var(--ink-dim);
-    background: rgba(255, 255, 255, 0.35);
+    background-color: rgba(255, 255, 255, 0.35);
     transform: translateX(100%);
 }
 
 .mindmap-sidebar.is-open {
     display: flex;
+}
+
+/* Pinned above the scrolling mind-map (see .mindmap-flow below) - name,
+   description, and link never scroll out of view. */
+.mindmap-sidebar-header {
+    flex-shrink: 0;
 }
 
 .mindmap-sidebar-header h3 {
@@ -388,10 +409,35 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     word-break: break-all;
 }
 
+/* The only scrolling region in the sidebar - fills whatever space is left
+   under the pinned header above. Own ruled-line background (same
+   `background-attachment: local` reasoning as `.projects-list`) so the lines
+   scroll with the mind-map steps instead of staying pinned to the
+   (non-scrolling) viewport-fixed background on `.zoom-page`. */
 .mindmap-flow {
     display: flex;
     flex-direction: column;
     align-items: center;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding-bottom: 40px;
+    background-color: rgba(255, 255, 255, 0.35);
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 35px,
+        var(--rule-blue) 35px,
+        var(--rule-blue) 36px
+    );
+    background-attachment: local;
+}
+
+.mindmap-flow::-webkit-scrollbar {
+    display: none;
 }
 
 .mindmap-shape {

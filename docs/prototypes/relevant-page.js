@@ -138,6 +138,18 @@ async function relevantPagePlayMindmap(container, steps, token) {
     }
 }
 
+/* The life timeline (center label) auto-plays and, unlike a project's
+   mind-map, never just sits there once finished - it loops back to step 1
+   for as long as the sidebar stays open (token.cancelled, set by
+   closeSidebar/openProject, is what ends it). */
+async function relevantPagePlayMindmapLoop(container, steps, token) {
+    while (!token.cancelled) {
+        await relevantPagePlayMindmap(container, steps, token);
+        if (token.cancelled) return;
+        await relevantPageSleep(900, token);
+    }
+}
+
 function relevantPageRenderProjectsList(listEl, projects, onSelect) {
     listEl.innerHTML = '';
     projects.forEach(project => {
@@ -170,7 +182,7 @@ function relevantPageRenderProjectsList(listEl, projects, onSelect) {
     });
 }
 
-async function renderRelevantPage(container, onBack, label) {
+async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     container.innerHTML = '';
 
     const page = document.createElement('div');
@@ -179,7 +191,9 @@ async function renderRelevantPage(container, onBack, label) {
     const back = document.createElement('button');
     back.type = 'button';
     back.className = 'zoom-page-back relevant-back';
-    back.textContent = '← Back to sphere';
+    back.textContent = '←';
+    back.title = 'Back to sphere';
+    back.setAttribute('aria-label', 'Back to sphere');
     back.addEventListener('click', onBack);
 
     const main = document.createElement('div');
@@ -200,8 +214,11 @@ async function renderRelevantPage(container, onBack, label) {
 
     main.appendChild(title);
     main.appendChild(note);
-    main.appendChild(projectsHeading);
-    main.appendChild(list);
+    // The life timeline has no project list of its own - see isLifeTimeline below.
+    if (!isLifeTimeline) {
+        main.appendChild(projectsHeading);
+        main.appendChild(list);
+    }
 
     const sidebar = document.createElement('aside');
     sidebar.className = 'mindmap-sidebar';
@@ -226,12 +243,10 @@ async function renderRelevantPage(container, onBack, label) {
         });
     }
 
-    function openProject(project, row) {
-        if (currentToken) currentToken.cancelled = true;
-        if (activeRow) activeRow.classList.remove('is-active');
-        activeRow = row;
-        row.classList.add('is-active');
-
+    // Shared by openProject and openLifeTimeline below - handles the sidebar's
+    // slide-in (or, if it's already open, just resets it to resting position
+    // before the new content replaces the old).
+    function openSidebar() {
         const wasOpen = sidebar.classList.contains('is-open');
         sidebar.innerHTML = '';
         sidebar.classList.add('is-open');
@@ -241,6 +256,15 @@ async function renderRelevantPage(container, onBack, label) {
             sidebar.style.transform = 'translateX(100%)';
             relevantPageSlideSidebar(sidebar, 100, 0, SIDEBAR_SLIDE_MS);
         }
+    }
+
+    function openProject(project, row) {
+        if (currentToken) currentToken.cancelled = true;
+        if (activeRow) activeRow.classList.remove('is-active');
+        activeRow = row;
+        row.classList.add('is-active');
+
+        openSidebar();
 
         const header = document.createElement('div');
         header.className = 'mindmap-sidebar-header';
@@ -268,6 +292,49 @@ async function renderRelevantPage(container, onBack, label) {
         relevantPagePlayMindmap(flow, project.mindmap, token);
     }
 
+    // The center "Shaikh's Virtues" label's page: no project to click, the
+    // sidebar opens itself and plays the life timeline (one arbitrary step per
+    // milestone, per design.md's mind-map legend - these are just life events,
+    // not decisions/AI-steps/outputs) on a loop for as long as it stays open.
+    async function openLifeTimeline() {
+        if (currentToken) currentToken.cancelled = true;
+        if (activeRow) activeRow.classList.remove('is-active');
+        activeRow = null;
+
+        openSidebar();
+
+        const header = document.createElement('div');
+        header.className = 'mindmap-sidebar-header';
+        const name = document.createElement('h3');
+        name.textContent = 'The Timeline';
+        header.appendChild(name);
+
+        const flow = document.createElement('div');
+        flow.className = 'mindmap-flow';
+
+        sidebar.appendChild(header);
+        sidebar.appendChild(flow);
+
+        const token = { cancelled: false };
+        currentToken = token;
+
+        try {
+            // The three per-specialty timeline files are currently identical -
+            // any one of them is Shaikh's whole timeline, not a specialty-specific cut.
+            const res = await fetch('/data/timeline-cybersecurity.json');
+            const milestones = await res.json();
+            const steps = milestones.map((m, i) => ({
+                step: i + 1,
+                type: 'arbitrary',
+                title: `${m.age} — ${m.title}`,
+                description: m.text
+            }));
+            relevantPagePlayMindmapLoop(flow, steps, token);
+        } catch (e) {
+            flow.textContent = 'Failed to load the timeline.';
+        }
+    }
+
     // "Click in the centre area" closes the sidebar - anywhere in the main
     // column that isn't a project row itself.
     main.addEventListener('click', event => {
@@ -276,6 +343,13 @@ async function renderRelevantPage(container, onBack, label) {
     });
 
     title.textContent = label;
+
+    if (isLifeTimeline) {
+        note.textContent = 'A step-by-step walk through the path that led here.';
+        openLifeTimeline();
+        return;
+    }
+
     note.textContent = `Placeholder note for ${label} - a short write-up of why this matters to Shaikh goes here.`;
 
     try {

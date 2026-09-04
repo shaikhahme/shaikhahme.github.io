@@ -529,7 +529,7 @@ function zoomStageIn(originPct) {
 
 let overlayEl = null;
 
-async function openOverlayPage(originPct, label) {
+async function openOverlayPage(originPct, label, isLifeTimeline) {
     transitioning = true;
     zoomStageOut(originPct);
 
@@ -537,7 +537,7 @@ async function openOverlayPage(originPct, label) {
     setTransformOrigin(overlayEl, originPct);
     document.body.appendChild(overlayEl);
     document.body.style.overflow = 'hidden';
-    renderRelevantPage(overlayEl, closeOverlayPage, label);
+    renderRelevantPage(overlayEl, closeOverlayPage, label, isLifeTimeline);
 
     await animateIn(overlayEl);
     transitioning = false;
@@ -560,7 +560,11 @@ function onLabelActivate(text, _el) {
     if (overlayEl || transitioning) return; // already zoomed into a page, or mid-transition
     const rect = _el.getBoundingClientRect();
     const originPct = originPctFromClientXY(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    openOverlayPage(originPct, text);
+    // The center "Shaikh's Virtues" label opens the life timeline (auto-playing,
+    // looping mind-map) instead of a topic's project list - distinguished by its
+    // own label3d class rather than matching on the text itself.
+    const isLifeTimeline = _el.classList.contains('center-label');
+    openOverlayPage(originPct, text, isLifeTimeline);
 }
 
 /* ---------- render loop ---------- */

@@ -164,15 +164,10 @@ create a updates.md
 
 ---
 5th phase
-improvmeents
-
-2. Scrollign back up afte the sphere is revealed still leaves some words visible.
-3. Remove Top Left Text - Shaikhs
-4. Add colored boxes to animation
-   5. AI steps: Red
-   6. Input/output: Green
-   7. Arbitary Black
-8. The first project is not visible
-9. 
+improvements
+1. Remove the text "Back to sphere", just keep a red arrow
+2. In each of the zoomed pages, the project list is supposed to be a scrollable elemetn but th epage should not be scrollable
+3. Be a strong and smart engineer. analyse the current code and clean up all tech debt. and make it as clean as possible.
+4. make this applicaiton servable via vercel
 
 
