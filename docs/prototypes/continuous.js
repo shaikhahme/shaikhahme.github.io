@@ -82,6 +82,10 @@ function makeLabel(text, className) {
     // clicking a still-typing (or not-yet-visible) label is a no-op.
     div.addEventListener('click', () => {
         if (obj.userData.p < 1) return;
+        // concept labels carry an inline opacity - ignore clicks while one is
+        // still fading in (reveal < 1) or has rotated to the back of the sphere.
+        const op = parseFloat(div.style.opacity);
+        if (!Number.isNaN(op) && op < 0.9) return;
         onLabelActivate(text, div);
     });
 
@@ -265,12 +269,42 @@ function buildConceptVector(concept, group, labelClass, arrowHeadLen, arrowHeadW
 
     concept.arrow = arrow;
     concept.labelObj = label;
-    concept.revealed = false;
+    concept.normal = concept.point.clone().normalize();
+    concept.reveal = 0;      // 0..1, owned solely by the scroll-scrubbed timeline
+    concept.dispOpacity = 0;  // eased on-screen opacity = reveal x facing-fade multiplier
 }
 
 const conceptGroup = new THREE.Group();
 scene.add(conceptGroup);
 CONCEPTS.forEach(concept => buildConceptVector(concept, conceptGroup, 'vector-label', 0.35, 0.16));
+
+/* Single writer for a concept vector's on-screen opacity, so the scroll timeline
+   and the interactive facing-fade never fight over the same property. An earlier
+   version tweened material/label opacity from GSAP in the render loop with
+   overwrite:true, which permanently killed the timeline's own tween on those
+   properties - so after any orbit interaction the vectors and their labels
+   stayed on screen even when scrolled all the way back to the top.
+   Now `reveal` (0..1) is driven only by the timeline; the far-side facing-fade
+   is a multiplier eased in here, frame by frame, with no tween at all. */
+const _camDir = new THREE.Vector3();
+function applyConceptOpacity(concept, dt) {
+    const facingActive = interactive && concept.reveal >= 1;
+    let target = concept.reveal;
+    if (facingActive) {
+        _camDir.copy(camera.position).normalize();
+        target = concept.normal.dot(_camDir) > -0.15 ? 1 : 0.12;
+        concept.dispOpacity += (target - concept.dispOpacity) * Math.min(1, dt * 10);
+    } else {
+        concept.dispOpacity = target; // snap while the timeline scrubs, for scroll responsiveness
+    }
+    const o = Math.abs(concept.dispOpacity - target) < 0.002 ? target : concept.dispOpacity;
+    if (o === concept._lastOpacity) return; // skip redundant per-frame writes once settled
+    concept._lastOpacity = o;
+    concept.dispOpacity = o;
+    concept.arrow.line.material.opacity = o;
+    concept.arrow.cone.material.opacity = o;
+    concept.labelObj.element.style.opacity = String(o);
+}
 
 /* ---------- orbit controls (only live once the sequence finishes) ---------- */
 
@@ -335,10 +369,11 @@ function setFinalState() {
     camera.position.copy(END_CAM);
     camera.lookAt(0, 0, 0);
     CONCEPTS.forEach(concept => {
+        concept.reveal = 1;
+        concept.dispOpacity = 1;
         concept.arrow.line.material.opacity = 1;
         concept.arrow.cone.material.opacity = 1;
-        concept.labelObj.element.style.opacity = 1;
-        concept.revealed = true;
+        concept.labelObj.element.style.opacity = '1';
     });
 }
 
@@ -365,7 +400,6 @@ if (reduceMotion) {
             onUpdate: self => {
                 scrollCue.classList.toggle('hidden', self.progress > 0.02);
                 if (self.progress >= ORBIT_ENABLE_PROGRESS && !interactive) {
-                    CONCEPTS.forEach(c => { c.revealed = true; });
                     enableOrbit();
                 } else if (self.progress < ORBIT_ENABLE_PROGRESS && interactive) {
                     disableOrbit();
@@ -384,7 +418,10 @@ if (reduceMotion) {
         tl.to(lenProxy, {
             len: ARM_LENGTH,
             duration: 0.5,
-            onUpdate: () => axis.arrow.setLength(lenProxy.len, Math.min(0.3, lenProxy.len * 0.2), Math.min(0.18, lenProxy.len * 0.12))
+            onUpdate: () => {
+                axis.arrow.visible = lenProxy.len > 0.02; // stay fully hidden when scrolled back to the top
+                axis.arrow.setLength(lenProxy.len, Math.min(0.3, lenProxy.len * 0.2), Math.min(0.18, lenProxy.len * 0.12));
+            }
         });
         tl.to(axis.label.userData, {
             p: 1,
@@ -416,12 +453,17 @@ if (reduceMotion) {
     tl.to(equator2Line.material, { opacity: 0.6, duration: 2.0 }, '<');
     tl.to(equator3Line.material, { opacity: 0.6, duration: 2.0 }, '<');
 
-    // Phase 8: the concept vectors fade in (orbit kicks in mid-fade - see ORBIT_ENABLE_PROGRESS above)
+    // Phase 8: the concept vectors fade in (orbit kicks in mid-fade - see ORBIT_ENABLE_PROGRESS above).
+    // Only `concept.reveal` is tweened; applyConceptOpacity() turns that into the actual
+    // material/label opacity every frame, so the interactive facing-fade never has to
+    // tween (and possibly clobber) the same properties the timeline is scrubbing.
     tl.addLabel('conceptsStart');
     CONCEPTS.forEach((concept, i) => {
-        tl.to(concept.arrow.line.material, { opacity: 1, duration: 0.6 }, i === 0 ? undefined : '<');
-        tl.to(concept.arrow.cone.material, { opacity: 1, duration: 0.6 }, '<');
-        tl.to(concept.labelObj.element.style, { opacity: 1, duration: 0.6 }, '<');
+        tl.to(concept, {
+            reveal: 1,
+            duration: 0.6,
+            onUpdate: () => applyConceptOpacity(concept, 0)
+        }, i === 0 ? undefined : '<');
     });
 
     ORBIT_ENABLE_PROGRESS = tl.labels.conceptsStart / tl.duration();
@@ -523,29 +565,17 @@ function onLabelActivate(text, _el) {
 
 /* ---------- render loop ---------- */
 
+const _frameClock = new THREE.Clock();
 function animate() {
     requestAnimationFrame(animate);
-    if (interactive) {
-        controls.update();
-
-        // fade concept labels/arrows when they rotate onto the far side of the sphere.
-        // Driven through GSAP (only when the target actually changes) rather than a raw
-        // per-frame style write + CSS transition - two independent systems continuously
-        // re-animating the same property fight each other and can leave it visibly stuck
-        // mid-fade (see the .label3d comment in shared.css for the same lesson elsewhere).
-        const camDir = new THREE.Vector3().subVectors(camera.position, new THREE.Vector3(0, 0, 0)).normalize();
-        CONCEPTS.forEach(concept => {
-            if (!concept.revealed) return;
-            const normal = concept.point.clone().normalize();
-            const facing = normal.dot(camDir) > -0.15;
-            const targetOpacity = facing ? 1 : 0.12;
-            if (concept.facingOpacity === targetOpacity) return;
-            concept.facingOpacity = targetOpacity;
-            gsap.to(concept.labelObj.element.style, { opacity: targetOpacity, duration: 0.3, overwrite: true });
-            gsap.to(concept.arrow.line.material, { opacity: targetOpacity, duration: 0.3, overwrite: true });
-            gsap.to(concept.arrow.cone.material, { opacity: targetOpacity, duration: 0.3, overwrite: true });
-        });
-    }
+    const dt = _frameClock.getDelta();
+    if (interactive) controls.update();
+    // Concept vector opacity is recomputed every frame from concept.reveal
+    // (timeline-owned) times a far-side facing-fade multiplier - see
+    // applyConceptOpacity. No GSAP tween here, so nothing competes with the
+    // scroll timeline for these properties and a scroll back to the top always
+    // returns them to fully hidden.
+    for (const concept of CONCEPTS) applyConceptOpacity(concept, dt);
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
 }

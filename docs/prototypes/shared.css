@@ -68,34 +68,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
    above) - fixed-position text throughout this file uses line-height/offset
    multiples of that same 36px so it reads as sitting on the page's own
    lines rather than floating independently of them. */
-.proto-badge {
-    position: fixed;
-    top: 0;
-    left: 18px;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 0 14px;
-    line-height: 36px;
-    background: rgba(243, 239, 227, 0.9);
-    border: 1px solid var(--ink-dim);
-    border-radius: 4px;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    backdrop-filter: blur(4px);
-}
-
-.proto-badge a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid var(--accent);
-}
-
-.proto-badge a:hover {
-    opacity: 0.7;
-}
 
 /* `bottom` is set from JS (see snapToRuleGrid in continuous.js) rather than
    a fixed value here - a static px offset only lands on a rule line for one
@@ -244,15 +216,27 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     z-index: 10;
 }
 
+/* The whole column is the single scroll container - short viewports simply
+   scroll the page rather than clipping content. An earlier version clipped
+   here (`overflow: hidden`) and gave `.projects-list` its own nested scroll,
+   which on shorter windows could push the first project row out of view with
+   no way to reach it. */
 .relevant-main {
     flex: 1;
     min-width: 0;
     height: 100%;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     box-sizing: border-box;
     padding: 72px 60px 40px;
     display: flex;
     flex-direction: column;
+}
+
+.relevant-main::-webkit-scrollbar {
+    display: none;
 }
 
 /* Every block below occupies a whole multiple of the 36px rule spacing
@@ -283,24 +267,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     max-width: 640px;
 }
 
-/* Shows exactly 4.5 rows (4 full + the top of a 5th, as a "there's more"
-   cue), independent of the page-level scroll. Rows are stacked with no gap
-   and overlapping 1px borders (ledger-style) so each row height (108px = 3
-   rule-lines) is what keeps every row's top edge on a rule line - a gap
-   between rows would break that multiple. */
+/* Rows flow in the page (the `.relevant-main` column is the only scroll
+   container now) so the first row is always visible right under the heading.
+   Rows are stacked with no gap and overlapping 1px borders (ledger-style) so
+   each row height (108px = 3 rule-lines) keeps every row's top edge on a rule
+   line - a gap between rows would break that multiple. */
 .projects-list {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     max-width: 640px;
-    max-height: calc(4.5 * 108px);
-    min-height: 0;
-    overflow-y: auto;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-.projects-list::-webkit-scrollbar {
-    display: none;
 }
 
 .projects-empty {
