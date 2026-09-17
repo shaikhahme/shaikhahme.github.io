@@ -183,6 +183,60 @@ function relevantPageSnapRowsToRuleGrid(listEl) {
     });
 }
 
+/* The center "Shaikh's Virtues" label's page has no project list of its own
+   (see isLifeTimeline below), so instead of a placeholder note it renders the
+   full human-written essay from data/virtues.json - the essay's own
+   paragraphs/quotes/headings, then an AI-generated "Where this reaches"
+   section mapping the essay's three pillars onto the sphere's other nine
+   labels, closing with that section's own AI-disclosure line. All HTML here
+   comes from our own authored JSON, never user input, so building it via
+   innerHTML is fine. */
+function relevantPageRenderVirtuesBlock(block) {
+    const el = document.createElement(block.type === 'heading' ? 'h2' : block.type === 'quote' ? 'blockquote' : 'p');
+    el.className = 'virtues-' + block.type;
+    el.innerHTML = block.html;
+    return el;
+}
+
+function relevantPageRenderVirtuesContent(container, data) {
+    container.innerHTML = '';
+
+    const authorNote = document.createElement('p');
+    authorNote.className = 'virtues-author-note';
+    authorNote.innerHTML = data.human.authorNote;
+    container.appendChild(authorNote);
+
+    data.human.blocks.forEach(block => {
+        container.appendChild(relevantPageRenderVirtuesBlock(block));
+    });
+
+    const hr = document.createElement('hr');
+    hr.className = 'virtues-divider';
+    container.appendChild(hr);
+
+    const relHeading = document.createElement('h2');
+    relHeading.className = 'virtues-heading';
+    relHeading.textContent = data.relationships.heading;
+    container.appendChild(relHeading);
+
+    const relIntro = document.createElement('p');
+    relIntro.className = 'virtues-paragraph';
+    relIntro.innerHTML = data.relationships.intro;
+    container.appendChild(relIntro);
+
+    data.relationships.items.forEach(item => {
+        const row = document.createElement('p');
+        row.className = 'virtues-relationship';
+        row.innerHTML = `<strong>${item.concept}</strong> &mdash; ${item.html}`;
+        container.appendChild(row);
+    });
+
+    const disclosure = document.createElement('p');
+    disclosure.className = 'virtues-ai-disclosure';
+    disclosure.textContent = data.relationships.aiDisclosure;
+    container.appendChild(disclosure);
+}
+
 function relevantPageRenderProjectsList(listEl, projects, onSelect) {
     listEl.innerHTML = '';
     projects.forEach(project => {
@@ -248,10 +302,15 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
 
     main.appendChild(title);
     main.appendChild(note);
-    // The life timeline has no project list of its own - see isLifeTimeline below.
+    // The life timeline has no project list of its own - see isLifeTimeline
+    // below - it gets the virtues essay/relationships content instead.
+    const virtuesContent = document.createElement('div');
+    virtuesContent.className = 'virtues-content';
     if (!isLifeTimeline) {
         main.appendChild(projectsHeading);
         main.appendChild(list);
+    } else {
+        main.appendChild(virtuesContent);
     }
 
     const sidebar = document.createElement('aside');
@@ -379,6 +438,13 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     if (isLifeTimeline) {
         note.textContent = 'A step-by-step walk through the path that led here.';
         openLifeTimeline();
+        try {
+            const res = await fetch('/data/virtues.json');
+            const virtuesData = await res.json();
+            relevantPageRenderVirtuesContent(virtuesContent, virtuesData);
+        } catch (e) {
+            virtuesContent.textContent = 'Failed to load content.';
+        }
         return;
     }
 

@@ -1,0 +1,58 @@
+{
+  "human": {
+    "lede": "<strong>I read this page when I forget that the challenges I complain about today are the ones I fought for yesterday.</strong>",
+    "authorNote": "<em>AI Disclosure: This was written entirely by me</em>",
+    "blocks": [
+      { "type": "quote", "html": "&ldquo;Don&rsquo;t chase success, chase capability. Then success will chase you!&rdquo;" },
+      { "type": "paragraph", "html": "A roughly translated quote from <em>3 Idiots</em>, a movie that cemented my love and ambitions of engineering. Like many invisible directive forces, the movie affected me in ways I can only recognise now, more than 15 years later. These forces had been guiding my decisions for years, but I had never really made the effort to identify or formalise them." },
+      { "type": "paragraph", "html": "It took a rejection, and a follow-up question from the Head of Cyber Threat Management at IBM, <strong>&ldquo;What are your virtues?&rdquo;</strong> to make me stop and put words to them." },
+      { "type": "paragraph", "html": "Virtues are inherently difficult to articulate because they are so deeply embedded in who we are. LUCKILY, I had enjoyed psychology to recognise the concept floating in my head: <strong><a href=\"https://en.wikipedia.org/wiki/Eudaimonia\" target=\"_blank\" rel=\"noopener noreferrer\">eudaimonia</a></strong>, one of the philosophical inspirations behind <a href=\"https://en.wikipedia.org/wiki/PERMA_model\" target=\"_blank\" rel=\"noopener noreferrer\">PERMA</a>." },
+      { "type": "paragraph", "html": "I know now that what I strive for is <strong><a href=\"https://en.wikipedia.org/wiki/Eudaimonia\" target=\"_blank\" rel=\"noopener noreferrer\">eudaimonia</a></strong> (&ldquo;Flourishing Life&rdquo;) And, for me, that means a career that feeds this. I can split that pursuit into three major pillars." },
+      { "type": "heading", "html": "1. <a href=\"https://en.wikipedia.org/wiki/Episteme\" target=\"_blank\" rel=\"noopener noreferrer\">Epistēmē</a> &mdash; The need to learn why" },
+      { "type": "quote", "html": "&ldquo;If I could afford it, I&rsquo;d study forever.&rdquo;" },
+      { "type": "paragraph", "html": "I have said this long enough that I've forgotten where I heard it first." },
+      { "type": "paragraph", "html": "A career in which I am intellectually challenged in new ways has always excited me. I still remember my first official cybersecurity lecture in Paris. I caught myself feeling nervous and excited, almost as if I were going on a first date. I still laugh at the feeling and the incredibly nerdy joke that popped to my head - \"truly was a city of love\"." },
+      { "type": "paragraph", "html": "There is something deeply rewarding about <strong>finally</strong> understanding the intuition behind something, the moment that to me feels like I just unlocked a new lens to see the world." },
+      { "type": "paragraph", "html": "In a perhaps optimistically constructive and nihilistic way, understanding something gives it meaning and existence. I want to understand the world around me, and I feel that I can only fully experience it by trying to understand as much of it and in as many perspectives as I can." },
+      { "type": "heading", "html": "2. <a href=\"https://en.wikipedia.org/wiki/Koinonia\" target=\"_blank\" rel=\"noopener noreferrer\">Koinōnia</a> &mdash; The need to help my community" },
+      { "type": "quote", "html": "&ldquo;I am a mosaic of everyone I&rsquo;ve ever met.&rdquo;" },
+      { "type": "paragraph", "html": "It is difficult not to feel a sense of responsibility towards, and be inspired by, your community when it feels like a part of you." },
+      { "type": "paragraph", "html": "Specifically hard not to care for my &ldquo;village&rdquo; when my extended family alone is around 100 people, and the friends I have made across each of the seven cities I have lived, easily add another 110 (Yes, I maintain a list, so I don't lose touch)." },
+      { "type": "paragraph", "html": "And that list obviously does not include every interesting, kind stranger or OSS dev (mini-shoutout) who has left some small piece of themselves with me." },
+      { "type": "paragraph", "html": "When so much of who I am has been shaped by other people, contributing something back feels less like an obligation and more like a natural consequence of belonging to them." },
+      { "type": "paragraph", "html": "I may be an engineer, but first, I am a villager." },
+      { "type": "heading", "html": "3. <a href=\"https://en.wikipedia.org/wiki/Arete\" target=\"_blank\" rel=\"noopener noreferrer\">Aretē</a> &mdash; The need to excel" },
+      { "type": "quote", "html": "&ldquo;When the going gets tough, the tough get going.&rdquo;" },
+      { "type": "paragraph", "html": "My dad used that line when I was crying about not getting into the football team I wanted as a kid. Sure enough, After a year of trying my best at every practice, there I was, playing CDM." },
+      { "type": "paragraph", "html": "That experience taught me something I have enjoyed repeatedly since: there is an innate joy in working hard at something you love and becoming genuinely good at it." },
+      { "type": "paragraph", "html": "Excellence, to me, is not simply about being better than someone else. It is the pursuit of capability, seeing how far I can develop my craft and how much can i maximise my positive impact." },
+      { "type": "paragraph", "html": "My affinity for technology naturally led me towards a career where that pursuit is never ending." },
+      { "type": "heading", "html": "Where they intersect" },
+      { "type": "paragraph", "html": "This was the final piece of the puzzle. Looking back, cybersecurity simply appeared at the intersection of all three needs:" },
+      { "type": "paragraph", "html": "<strong>A domain where I could always learn, help people, and excel.</strong>" },
+      { "type": "paragraph", "html": "It seemed almost too perfect too! Today, that same need to help has pulled me towards what I believe to be one of the most exciting and potentially dangerous technologies since the Industrial Revolution: <strong>Artificial Intelligence</strong>." },
+      { "type": "paragraph", "html": "That is why I began studying AI security, governance, and alignment in the hope of contributing, however I can, towards steering this incredible technology in a direction that benefits the community." },
+      { "type": "paragraph", "html": "Now, when I feel drained after hours of coding, reading papers, cooking for my friends or simply escaping a rabbit hole triggered via Kurzgesagt. I tell myself" },
+      { "type": "paragraph", "html": "<strong>Learn. Help. Excel.</strong>" },
+      { "type": "paragraph", "html": "<strong><a href=\"https://en.wikipedia.org/wiki/Episteme\" target=\"_blank\" rel=\"noopener noreferrer\">Epistēmē</a>. <a href=\"https://en.wikipedia.org/wiki/Koinonia\" target=\"_blank\" rel=\"noopener noreferrer\">Koinōnia</a>. <a href=\"https://en.wikipedia.org/wiki/Arete\" target=\"_blank\" rel=\"noopener noreferrer\">Aretē</a>.</strong>" },
+      { "type": "paragraph", "html": "Disclosure: My feelings about Artifical Intellignece or better yet LLMs are conflicting, while as an engineer it an incredible piece of technology, as a securtiy nerd- the widescale risk is evident. Therefore I truly believe that it is something that requires strong education, gaurdrails and most importanly allignment." }
+    ]
+  },
+  "relationships": {
+    "heading": "Where this reaches",
+    "intro": "How the same three pillars &mdash; Epistēmē, Koinōnia, Aretē &mdash; show up across the other nine concepts on this map.",
+    "items": [
+      { "concept": "Engineering", "html": "Engineering is the vehicle, not the destination: it's where Epistēmē's need for new intellectual challenges and Aretē's &ldquo;never ending&rdquo; pursuit of craft both find a career-shaped outlet." },
+      { "concept": "Cybersecurity", "html": "Named directly as &ldquo;the intersection of all three needs&rdquo; &mdash; the one domain where learning (Epistēmē), protecting people (Koinōnia), and excelling at a craft (Aretē) could all be pursued at once." },
+      { "concept": "Sociology and Psychology", "html": "The lens Koinōnia is felt through &mdash; being &ldquo;a mosaic of everyone I've ever met&rdquo; is a psychological and sociological claim before it's anything else, and it was psychology that supplied the word <em>eudaimonia</em> in the first place." },
+      { "concept": "Artificial Intelligence", "html": "Named as &ldquo;one of the most exciting and potentially dangerous technologies since the Industrial Revolution&rdquo; &mdash; it pulls on Epistēmē (endless new intuitions to unlock) and Koinōnia (the need to steer it toward the community's benefit) at once, which is exactly the source of the disclosed ambivalence about LLMs." },
+      { "concept": "AI Alignment", "html": "The most direct expression of Koinōnia applied to AI: &ldquo;steering this incredible technology in a direction that benefits the community&rdquo; is alignment work in the same words used to describe the village." },
+      { "concept": "AI Security", "html": "Where the &ldquo;security nerd&rdquo; self-description and Aretē's pursuit of capability meet AI &mdash; the same instinct that noticed cybersecurity's risks now applies to AI's &ldquo;widescale risk.&rdquo;" },
+      { "concept": "Security Architecture", "html": "Aretē in its most structural form &mdash; &ldquo;how far I can develop my craft&rdquo; applied to building systems that hold up, not just breaking them." },
+      { "concept": "Social Engineering", "html": "Koinōnia's inverse lens: the same attentiveness to people that produces a 200-plus-person village list is also what makes the human layer of security legible." },
+      { "concept": "Neural Networks", "html": "Epistēmē's &ldquo;finally understanding the intuition behind something&rdquo; feeling, pointed at the mechanics underneath AI itself rather than at the technology's outcomes." },
+      { "concept": "AI Governance", "html": "Koinōnia scaled up from a village to a civilization &mdash; the belief that AI &ldquo;requires strong education, guardrails&rdquo; is the community-first instinct applied at policy level." }
+    ],
+    "aiDisclosure": "this section was generated by AI using the human written section - Shaikh's Virutes"
+  }
+}

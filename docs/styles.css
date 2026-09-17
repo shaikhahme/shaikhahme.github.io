@@ -306,6 +306,85 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: none;
 }
 
+/* The center "Shaikh's Virtues" label's page: the human essay from
+   data/virtues.json followed by the AI-generated "Where this reaches"
+   section, in the same scrollable-under-a-pinned-header slot the projects
+   list occupies for every other label (same ruled-background/local-attachment
+   reasoning as `.projects-list` above). */
+.virtues-content {
+    flex: 1;
+    min-height: 0;
+    max-width: 640px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 4px 4px 40px;
+    background-color: var(--paper);
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent 35px,
+        var(--rule-blue) 35px,
+        var(--rule-blue) 36px
+    );
+    background-attachment: local;
+}
+
+.virtues-content::-webkit-scrollbar {
+    display: none;
+}
+
+.virtues-content a {
+    color: var(--accent);
+}
+
+.virtues-author-note {
+    color: var(--ink-dim);
+    font-size: 13px;
+    margin: 0 0 24px;
+}
+
+.virtues-heading {
+    font-size: 19px;
+    margin: 30px 0 18px;
+}
+
+.virtues-heading:first-of-type {
+    margin-top: 6px;
+}
+
+.virtues-quote {
+    font-style: italic;
+    color: var(--ink-dim);
+    border-left: 2px solid var(--ink-dim);
+    padding-left: 14px;
+    margin: 0 0 18px;
+}
+
+.virtues-paragraph {
+    margin: 0 0 18px;
+    line-height: 1.7;
+}
+
+.virtues-divider {
+    border: none;
+    border-top: 1px solid var(--ink-dim);
+    margin: 12px 0 24px;
+}
+
+.virtues-relationship {
+    margin: 0 0 16px;
+    line-height: 1.7;
+}
+
+.virtues-ai-disclosure {
+    color: var(--ink-dim);
+    font-size: 13px;
+    font-style: italic;
+    margin: 24px 0 0;
+}
+
 .projects-empty {
     font-family: 'Special Elite', 'Courier New', monospace;
     color: var(--ink-dim);
