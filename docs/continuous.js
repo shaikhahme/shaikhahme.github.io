@@ -567,6 +567,16 @@ function onLabelActivate(text, _el) {
     openOverlayPage(originPct, text, isLifeTimeline);
 }
 
+/* Let an in-overlay link (the "extracted from Shaikh's Virtues" credit under
+   every topic note - see relevant-page.js) jump straight to the centre essay:
+   zoom the current topic page back out, then zoom into the Shaikh's Virtues
+   page from the middle of the screen. */
+window.openVirtuesPage = async () => {
+    if (transitioning) return;
+    if (overlayEl) await closeOverlayPage();
+    openOverlayPage({ xPct: 50, yPct: 50 }, "Shaikh's Virtues", true);
+};
+
 /* ---------- render loop ---------- */
 
 const _frameClock = new THREE.Clock();

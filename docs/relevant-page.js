@@ -62,8 +62,8 @@ function relevantPageGrowArrow(container, token) {
         wrap.appendChild(head);
         container.appendChild(wrap);
 
-        const TARGET_PX = 32;
-        const DURATION_MS = 280;
+        const TARGET_PX = 44;
+        const DURATION_MS = 440;
         const start = performance.now();
         function frame(now) {
             if (token.cancelled) { resolve(); return; }
@@ -130,11 +130,11 @@ async function relevantPagePlayMindmap(container, steps, token) {
         const step = ordered[i];
         const { el, title, desc } = relevantPageCreateShapeEl(step.type);
         container.appendChild(el);
-        await relevantPageTypeText(title, step.title, 35, token);
+        await relevantPageTypeText(title, step.title, 55, token);
         if (token.cancelled) return;
-        await relevantPageTypeText(desc, step.description, 18, token);
+        await relevantPageTypeText(desc, step.description, 32, token);
         if (token.cancelled) return;
-        await relevantPageSleep(250, token);
+        await relevantPageSleep(450, token);
     }
 }
 
@@ -146,7 +146,7 @@ async function relevantPagePlayMindmapLoop(container, steps, token) {
     while (!token.cancelled) {
         await relevantPagePlayMindmap(container, steps, token);
         if (token.cancelled) return;
-        await relevantPageSleep(900, token);
+        await relevantPageSleep(1200, token);
     }
 }
 
@@ -209,32 +209,8 @@ function relevantPageRenderVirtuesContent(container, data) {
     data.human.blocks.forEach(block => {
         container.appendChild(relevantPageRenderVirtuesBlock(block));
     });
-
-    const hr = document.createElement('hr');
-    hr.className = 'virtues-divider';
-    container.appendChild(hr);
-
-    const relHeading = document.createElement('h2');
-    relHeading.className = 'virtues-heading';
-    relHeading.textContent = data.relationships.heading;
-    container.appendChild(relHeading);
-
-    const relIntro = document.createElement('p');
-    relIntro.className = 'virtues-paragraph';
-    relIntro.innerHTML = data.relationships.intro;
-    container.appendChild(relIntro);
-
-    data.relationships.items.forEach(item => {
-        const row = document.createElement('p');
-        row.className = 'virtues-relationship';
-        row.innerHTML = `<strong>${item.concept}</strong> &mdash; ${item.html}`;
-        container.appendChild(row);
-    });
-
-    const disclosure = document.createElement('p');
-    disclosure.className = 'virtues-ai-disclosure';
-    disclosure.textContent = data.relationships.aiDisclosure;
-    container.appendChild(disclosure);
+    // The AI-generated "Where this reaches" relationships section is intentionally
+    // not rendered here - the centre page shows only the human-written essay.
 }
 
 function relevantPageRenderProjectsList(listEl, projects, onSelect) {
@@ -436,7 +412,9 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     title.textContent = label;
 
     if (isLifeTimeline) {
-        note.textContent = 'A step-by-step walk through the path that led here.';
+        // No sub-title line on the essay page - the essay starts straight under
+        // the title.
+        note.remove();
         openLifeTimeline();
         try {
             const res = await fetch('/data/virtues.json');
@@ -449,6 +427,32 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     }
 
     note.textContent = `Placeholder note for ${label} - a short write-up of why this matters to Shaikh goes here.`;
+
+    // The per-topic note is real prose now, extracted from the virtues essay's
+    // own "Where this reaches" section (data/virtues.json's `notes`) rather
+    // than the placeholder above - which stays only as a fallback if this
+    // fetch fails. Appended as trailing lines *inside* the same `note`
+    // paragraph (not a new element) so the note's line-height: 36px keeps
+    // governing the whole block and the rule-grid math above it still holds
+    // regardless of how many lines this adds.
+    try {
+        const virtuesRes = await fetch('/data/virtues.json');
+        const virtuesData = await virtuesRes.json();
+        const topicNote = virtuesData.notes && virtuesData.notes.items[label];
+        if (topicNote) {
+            // The note, then on the very next line a link to the essay it was
+            // drawn from. Clicking it jumps to the centre "Shaikh's Virtues" page
+            // (see window.openVirtuesPage in continuous.js).
+            note.innerHTML = `${topicNote}<br><a href="#" class="relevant-note-source">extracted from Shaikh's Virtues</a>`;
+            const source = note.querySelector('.relevant-note-source');
+            if (source) {
+                source.addEventListener('click', event => {
+                    event.preventDefault();
+                    if (typeof window.openVirtuesPage === 'function') window.openVirtuesPage();
+                });
+            }
+        }
+    } catch (e) { /* keep the placeholder note above */ }
 
     try {
         const res = await fetch('/data/projects.json');

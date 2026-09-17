@@ -8,6 +8,19 @@
     --ink: #1c1a17;
     --ink-dim: rgba(28, 26, 23, 0.6);
     --accent: #b3000b;
+
+    /* The ruled-paper grid, expressed once so every text block in an overlay
+       page can lock its line-height/margins to a whole multiple of it and so
+       actually sit on the lines rather than float across them. */
+    --rule: 36px;
+    /* The red margin rule is painted at 74-76px from the left (see #paperBg /
+       .zoom-page backgrounds). Reading text must begin to the RIGHT of it, the
+       way writing does on real ruled paper - a gutter smaller than this made
+       every line cross over the margin. */
+    --reading-gutter: 100px;
+    /* A comfortable measure (~72 monospace chars) - wider than the old 640px so
+       more of the sheet is used, but still short enough to read. */
+    --reading-measure: 760px;
 }
 
 * {
@@ -178,24 +191,24 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 /* Icon-only (just the red arrow, no label) - see the `back.title`/
    `aria-label` set in relevant-page.js for the accessible name that replaces
    the text that used to be visible here. */
+/* A bare arrow (no circular chip) that sits on the title's own line, in the
+   left margin - see .relevant-back for its placement. */
 .zoom-page-back {
     font-family: 'Special Elite', 'Courier New', monospace;
-    font-size: 22px;
-    line-height: 1;
-    width: 40px;
-    height: 40px;
-    display: flex;
+    font-size: 26px;
+    line-height: 36px;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
-    background: rgba(243, 239, 227, 0.9);
-    border: 1px solid var(--ink-dim);
-    border-radius: 50%;
+    background: none;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     color: var(--accent);
     cursor: pointer;
 }
 
 .zoom-page-back:hover {
-    opacity: 0.75;
+    opacity: 0.6;
 }
 
 /* ---------- Phase 3: the relevant page's own layout ----------
@@ -209,10 +222,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     display: flex;
 }
 
+/* Aligned to the title's line (main padding-top is 36px) and tucked into the
+   left margin, so the arrow reads as sitting on the same line as the title. */
 .relevant-back {
     position: absolute;
-    top: 20px;
-    left: 20px;
+    top: 36px;
+    left: 28px;
     z-index: 10;
 }
 
@@ -229,7 +244,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 72px 60px 40px;
+    /* Left padding clears the red margin rule (~76px) so text begins to its
+       right; top padding is a whole multiple of --rule (36 = 1 line) so the
+       first line lands on the grid shared with the fixed .zoom-page background.
+       (One line, not two, so the title sits up near the top of the sheet.) */
+    padding: 36px 60px 40px var(--reading-gutter);
     display: flex;
     flex-direction: column;
 }
@@ -256,12 +275,35 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .relevant-note {
     flex-shrink: 0;
-    max-width: 640px;
+    max-width: var(--reading-measure);
     line-height: 36px;
     font-size: 16px;
     color: var(--ink);
     padding-top: 8px;
     margin: 0 0 28px;
+}
+
+/* Inline, not a block of its own - appended inside `.relevant-note`'s own
+   markup so it rides along on the note's line-height: 36px rather than
+   needing its own margin worked into the rule-grid math above. */
+.relevant-note-disclosure {
+    color: var(--ink-dim);
+    font-style: italic;
+    font-size: 13px;
+}
+
+/* The "extracted from Shaikh's Virtues" credit under each topic note: a link
+   straight to the centre essay. Sits on the note's next ruled line. */
+.relevant-note-source {
+    color: var(--accent);
+    font-style: italic;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.relevant-note-source:hover {
+    opacity: 0.7;
 }
 
 .relevant-projects-heading {
@@ -270,7 +312,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     line-height: 36px;
     padding-top: 6px;
     margin: 0 0 30px;
-    max-width: 640px;
+    max-width: var(--reading-measure);
 }
 
 /* The only scrolling region in `.relevant-main` - fills whatever vertical
@@ -286,7 +328,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    max-width: 640px;
+    max-width: var(--reading-measure);
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
@@ -314,12 +356,16 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .virtues-content {
     flex: 1;
     min-height: 0;
-    max-width: 640px;
+    /* The essay uses the whole width of the main column (up to the timeline
+       sidebar) so more of it is visible at once, rather than a narrow measure. */
+    max-width: none;
     overflow-y: auto;
     overflow-x: hidden;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding: 4px 4px 40px;
+    /* No top/left padding: the text must start flush with this pane's own
+       (local-attachment) ruled background so its lines sit on the rules. */
+    padding: 0 0 40px;
     background-color: var(--paper);
     background-image: repeating-linear-gradient(
         to bottom,
@@ -339,19 +385,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     color: var(--accent);
 }
 
+/* Every block below locks its line-height and vertical margins to whole
+   multiples of --rule (36px) so each line of the essay rests on a ruled line
+   and the blank line between blocks is itself one ruled line - the whole point
+   of writing on ruled paper. (The essay used to run at line-height 1.7 with
+   assorted px margins, so the rules cut straight through the text.) */
 .virtues-author-note {
     color: var(--ink-dim);
     font-size: 13px;
-    margin: 0 0 24px;
+    line-height: var(--rule);
+    margin: 0 0 var(--rule);
 }
 
 .virtues-heading {
     font-size: 19px;
-    margin: 30px 0 18px;
+    line-height: var(--rule);
+    margin: var(--rule) 0 0;
 }
 
 .virtues-heading:first-of-type {
-    margin-top: 6px;
+    margin-top: 0;
 }
 
 .virtues-quote {
@@ -359,30 +412,33 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     color: var(--ink-dim);
     border-left: 2px solid var(--ink-dim);
     padding-left: 14px;
-    margin: 0 0 18px;
+    line-height: var(--rule);
+    margin: 0 0 var(--rule);
 }
 
 .virtues-paragraph {
-    margin: 0 0 18px;
-    line-height: 1.7;
+    line-height: var(--rule);
+    margin: 0 0 var(--rule);
 }
 
+/* 1px rule + 35px margin = one 36px ruled line, keeping the grid intact. */
 .virtues-divider {
     border: none;
     border-top: 1px solid var(--ink-dim);
-    margin: 12px 0 24px;
+    margin: 0 0 35px;
 }
 
 .virtues-relationship {
-    margin: 0 0 16px;
-    line-height: 1.7;
+    line-height: var(--rule);
+    margin: 0 0 var(--rule);
 }
 
 .virtues-ai-disclosure {
     color: var(--ink-dim);
     font-size: 13px;
     font-style: italic;
-    margin: 24px 0 0;
+    line-height: var(--rule);
+    margin: var(--rule) 0 0;
 }
 
 .projects-empty {
@@ -400,7 +456,11 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .project-row {
     font-family: 'Special Elite', 'Courier New', monospace;
     text-align: left;
-    background: rgba(255, 255, 255, 0.25);
+    /* Solid (not translucent): the card's name/description run on a 18px
+       sub-grid that doesn't land on every rule, so an opaque fill keeps the
+       list's ruled background from showing through and cutting the text. The
+       collapsed 1px borders still read as ledger rules between cards. */
+    background: #f7f3e9;
     border: 1px solid var(--ink-dim);
     padding: 16px 18px;
     min-height: 108px;
@@ -469,12 +529,14 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .mindmap-sidebar {
     display: none;
     flex-direction: column;
-    width: 360px;
+    width: 460px;
     flex-shrink: 0;
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
-    padding: 90px 26px 0;
+    /* top padding matches .relevant-main's (36px) so the sidebar title lines up
+       with the page title's height. */
+    padding: 36px 30px 0;
     border-left: 1px solid var(--ink-dim);
     background-color: rgba(255, 255, 255, 0.35);
     transform: translateX(100%);
@@ -490,21 +552,25 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     flex-shrink: 0;
 }
 
+/* Centred and sized to sit at the same height as the page title. */
 .mindmap-sidebar-header h3 {
-    margin: 0 0 6px;
-    font-size: 19px;
+    margin: 0 0 10px;
+    font-size: 24px;
+    line-height: 36px;
+    text-align: center;
 }
 
 .mindmap-sidebar-header p {
-    margin: 0 0 6px;
-    font-size: 13px;
+    margin: 0 0 8px;
+    font-size: 15px;
+    line-height: 1.5;
     color: var(--ink-dim);
 }
 
 .mindmap-sidebar-header a {
     display: inline-block;
     margin-bottom: 24px;
-    font-size: 13px;
+    font-size: 14px;
     color: var(--accent);
     word-break: break-all;
 }
@@ -542,7 +608,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .mindmap-shape {
     width: 100%;
-    max-width: 240px;
+    max-width: 320px;
 }
 
 .mindmap-shape-inner {
@@ -575,16 +641,63 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .mindmap-title {
     font-weight: bold;
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     min-height: 1.3em;
-    font-size: 14px;
+    font-size: 17px;
+    line-height: 1.4;
 }
 
 .mindmap-desc {
     margin: 0;
     min-height: 1.3em;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--ink-dim);
+}
+
+/* ---------- Playable "Shaikh" character (see shaikh-character.js) ----------
+   The walk spritesheet + 8-direction logic are ported from the s345 Roommates
+   game. The element is one 48x48 sheet cell drawn at 2x (96px), fixed to the
+   viewport and z-indexed above literally everything (incl. the z:500 zoom-page
+   overlays) so Shaikh walks on top of the whole site. */
+#shaikh {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 96px;
+    height: 96px;
+    z-index: 9999;
+    pointer-events: none;
+    background-image: url('/assets/shaikh_walk.png');
+    /* 384x384 sheet drawn at 2x = 768x768; JS steps background-position by 96px. */
+    background-size: 768px 768px;
+    background-repeat: no-repeat;
+    /* keep the pixel art crisp when scaled up */
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    will-change: transform;
+}
+
+#shaikh-hint {
+    position: fixed;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    z-index: 9999;
+    margin: 0;
+    padding: 4px 10px;
+    font-family: 'Special Elite', 'Courier New', monospace;
     font-size: 12px;
     color: var(--ink-dim);
+    background: rgba(243, 239, 227, 0.7);
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0.85;
+    transition: opacity 0.8s ease;
+}
+
+#shaikh-hint.fade {
+    opacity: 0;
 }
 
 .mindmap-arrow {
@@ -610,8 +723,19 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 }
 
 @media (max-width: 720px) {
+    /* The 76px red margin eats too much of a phone's width, so drop it from the
+       overlay page and let reading text use a small gutter instead. */
+    .zoom-page {
+        background-image: repeating-linear-gradient(
+            to bottom,
+            transparent 0,
+            transparent 35px,
+            var(--rule-blue) 35px,
+            var(--rule-blue) 36px
+        );
+    }
     .relevant-main {
-        padding: 72px 24px 30px;
+        padding: 72px 22px 30px;
     }
     .mindmap-sidebar {
         position: fixed;
