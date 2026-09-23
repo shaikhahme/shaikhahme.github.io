@@ -16,11 +16,6 @@ if (isTouch) {
     dragHint.innerHTML = 'Swipe to spin &middot; Pinch to zoom &middot; Tap a label';
 }
 
-/* The ruled background repeats every 36px starting from the viewport top.
-   `bottom`-anchored text can't just use a fixed px offset and land on a rule
-   line for every window size - the distance from the viewport's bottom edge
-   up to the nearest line depends on window.innerHeight, so it's computed
-   here and reapplied on resize instead of hardcoded in CSS. */
 const RULE_SPACING = 36;
 function snapToRuleGrid(el) {
     el.style.bottom = (window.innerHeight % RULE_SPACING) + 'px';
@@ -31,8 +26,6 @@ window.addEventListener('resize', () => {
     snapToRuleGrid(scrollCue);
     snapToRuleGrid(dragHint);
 });
-
-/* ---------- renderer / scene / camera ---------- */
 
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -55,12 +48,6 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
 dirLight.position.set(5, 8, 10);
 scene.add(dirLight);
 
-/* Portrait screens see far less width than the desktop framing was tuned for,
-   so the east/west labels ran off the edge. Widen the view (camera.zoom < 1)
-   just enough to keep FIT_HALF_WIDTH world units visible either side of center
-   at the starting distance - wide screens already clear it and stay at zoom 1.
-   Zoom rather than moving the camera, so the scroll timeline's baked-in
-   START_CAM/END_CAM tweens and OrbitControls' distance limits stay untouched. */
 const FIT_HALF_WIDTH = 6.2;
 function fitZoom(aspect) {
     const halfWidthAtStart = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect * START_CAM.length();
@@ -79,12 +66,6 @@ function onResize() {
 }
 window.addEventListener('resize', onResize);
 
-/* ---------- CSS2D label helper ---------- */
-/* The lined-paper look comes entirely from the persistent CSS body background now
-   (see styles.css) rather than an in-scene WebGL plane, so it reads identically
-   whether the scene is flat/2D or the sphere has fully formed - one background,
-   always there. */
-
 function makeLabel(text, className) {
     const div = document.createElement('div');
     div.className = 'label3d ' + className;
@@ -98,12 +79,8 @@ function makeLabel(text, className) {
     div.appendChild(textSpan);
     div.appendChild(cursorSpan);
 
-    // Every label is clickable once its own typewriter animation has finished -
-    // clicking a still-typing (or not-yet-visible) label is a no-op.
     div.addEventListener('click', () => {
         if (obj.userData.p < 1) return;
-        // concept labels carry an inline opacity - ignore clicks while one is
-        // still fading in (reveal < 1) or has rotated to the back of the sphere.
         const op = parseFloat(div.style.opacity);
         if (!Number.isNaN(op) && op < 0.9) return;
         onLabelActivate(text, div);
@@ -117,12 +94,6 @@ function makeLabel(text, className) {
     return obj;
 }
 
-// The cursor only blinks while a label is actively mid-type (0 < p < 1), not
-// before its own tween has started - a bug let the compass labels' cursors
-// blink at their resting screen positions even at p=0 (scrolled all the way
-// back to the top), well before their arrows had even begun drawing, since
-// p=0 also satisfies "p < 1". The center label is the one exception: it's
-// meant to blink from page load/p=0, before any scroll (blinkFromZero).
 function setLabelProgress(obj, p) {
     const full = obj.userData.fullText;
     obj.userData.p = p;
@@ -132,16 +103,11 @@ function setLabelProgress(obj, p) {
 }
 
 const centerLabel = makeLabel("Shaikh's Virtues", 'center-label');
-// nudged up off y=0 so the Engineering<->Psychology diameter passes under the text, not through it
 centerLabel.position.set(0, 0.35, 0.2);
 centerLabel.userData.blinkFromZero = true;
 scene.add(centerLabel);
-setLabelProgress(centerLabel, 0); // cursor blinks at the center from page load, before any scroll
+setLabelProgress(centerLabel, 0);
 
-/* ---------- four compass axes ---------- */
-
-// Cybersecurity/AI sit closer to the sphere than Engineering/Psychology, whose longer
-// labels need the extra clearance from their arrowhead
 const AXES = [
     { key: 'engineering', label: 'Engineering', angle: 0, labelOffset: 1 },
     { key: 'cybersecurity', label: 'Cybersecurity', angle: 90, labelOffset: 0.5 },
@@ -172,8 +138,6 @@ AXES.forEach(axis => {
 const axisByKey = {};
 AXES.forEach(axis => { axisByKey[axis.key] = axis; });
 
-/* ---------- circle joining the four arrow tips ---------- */
-
 const CIRCLE_SEGMENTS = 128;
 const circlePositions = new Float32Array((CIRCLE_SEGMENTS + 1) * 3);
 for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
@@ -188,8 +152,6 @@ circleGeo.setDrawRange(0, 0);
 const circleLine = new THREE.LineLoop(circleGeo, new THREE.LineBasicMaterial({ color: 0xb3000b }));
 scene.add(circleLine);
 
-/* ---------- red diameters: Cybersecurity<->AI and Engineering<->Psychology ---------- */
-
 function makeDiameter(axisA, axisB) {
     const geo = new THREE.BufferGeometry().setFromPoints([axisA.tipVec, axisB.tipVec]);
     const mat = new THREE.LineBasicMaterial({ color: 0xb3000b, transparent: true, opacity: 0 });
@@ -200,11 +162,6 @@ function makeDiameter(axisA, axisB) {
 
 const diameterCyberAI = makeDiameter(axisByKey.cybersecurity, axisByKey.ai);
 const diameterEngPsych = makeDiameter(axisByKey.engineering, axisByKey.psychology);
-
-
-/* ---------- second equator, perpendicular to the first, through Engineering/Psychology
-   and both poles (the vertical great circle in the XZ plane) - only makes visual sense
-   once the sphere has actually formed, so it fades in alongside it ---------- */
 
 const equator2Positions = new Float32Array((CIRCLE_SEGMENTS + 1) * 3);
 for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
@@ -218,12 +175,6 @@ equator2Geo.setAttribute('position', new THREE.BufferAttribute(equator2Positions
 const equator2Line = new THREE.LineLoop(equator2Geo, new THREE.LineBasicMaterial({ color: 0xb3000b, transparent: true, opacity: 0 }));
 scene.add(equator2Line);
 
-/* ---------- third meridian, perpendicular to both the main equator and equator2,
-   through Cybersecurity/AI and both poles (the vertical great circle in the YZ
-   plane) - the straight-line diameterCyberAI above only spans the flat 2D
-   construction phase, this is its sphere-native counterpart, mirroring equator2's
-   role for Engineering/Psychology. Fades in alongside the sphere, same as equator2. ---------- */
-
 const equator3Positions = new Float32Array((CIRCLE_SEGMENTS + 1) * 3);
 for (let i = 0; i <= CIRCLE_SEGMENTS; i++) {
     const t = (i / CIRCLE_SEGMENTS) * Math.PI * 2;
@@ -236,8 +187,6 @@ equator3Geo.setAttribute('position', new THREE.BufferAttribute(equator3Positions
 const equator3Line = new THREE.LineLoop(equator3Geo, new THREE.LineBasicMaterial({ color: 0xb3000b, transparent: true, opacity: 0 }));
 scene.add(equator3Line);
 
-/* ---------- sphere the construction becomes ---------- */
-
 const sphereMesh = new THREE.Mesh(
     new THREE.SphereGeometry(ARM_LENGTH, 48, 32),
     new THREE.MeshStandardMaterial({ color: 0xece7e2, transparent: true, opacity: 0, roughness: 0.85, metalness: 0.05 })
@@ -249,8 +198,6 @@ const wireMesh = new THREE.Mesh(
     new THREE.MeshBasicMaterial({ color: 0x1c1a17, wireframe: true, transparent: true, opacity: 0 })
 );
 scene.add(wireMesh);
-
-/* ---------- three concept vectors on the sphere ---------- */
 
 function spherePoint(polarDeg, azimuthDeg, radius) {
     const phi = THREE.MathUtils.degToRad(polarDeg);
@@ -282,7 +229,7 @@ function buildConceptVector(concept, group, labelClass, arrowHeadLen, arrowHeadW
 
     const label = makeLabel(concept.label, labelClass);
     label.userData.textSpan.textContent = concept.label;
-    label.userData.p = 1; // these fade in rather than type, but are fully "typed" as soon as visible
+    label.userData.p = 1;
     label.position.copy(concept.point.clone().multiplyScalar(1.12));
     label.element.style.opacity = 0;
     group.add(label);
@@ -290,22 +237,14 @@ function buildConceptVector(concept, group, labelClass, arrowHeadLen, arrowHeadW
     concept.arrow = arrow;
     concept.labelObj = label;
     concept.normal = concept.point.clone().normalize();
-    concept.reveal = 0;      // 0..1, owned solely by the scroll-scrubbed timeline
-    concept.dispOpacity = 0;  // eased on-screen opacity = reveal x facing-fade multiplier
+    concept.reveal = 0;
+    concept.dispOpacity = 0;
 }
 
 const conceptGroup = new THREE.Group();
 scene.add(conceptGroup);
 CONCEPTS.forEach(concept => buildConceptVector(concept, conceptGroup, 'vector-label', 0.35, 0.16));
 
-/* Single writer for a concept vector's on-screen opacity, so the scroll timeline
-   and the interactive facing-fade never fight over the same property. An earlier
-   version tweened material/label opacity from GSAP in the render loop with
-   overwrite:true, which permanently killed the timeline's own tween on those
-   properties - so after any orbit interaction the vectors and their labels
-   stayed on screen even when scrolled all the way back to the top.
-   Now `reveal` (0..1) is driven only by the timeline; the far-side facing-fade
-   is a multiplier eased in here, frame by frame, with no tween at all. */
 const _camDir = new THREE.Vector3();
 function applyConceptOpacity(concept, dt) {
     const facingActive = interactive && concept.reveal >= 1;
@@ -315,18 +254,16 @@ function applyConceptOpacity(concept, dt) {
         target = concept.normal.dot(_camDir) > -0.15 ? 1 : 0.12;
         concept.dispOpacity += (target - concept.dispOpacity) * Math.min(1, dt * 10);
     } else {
-        concept.dispOpacity = target; // snap while the timeline scrubs, for scroll responsiveness
+        concept.dispOpacity = target;
     }
     const o = Math.abs(concept.dispOpacity - target) < 0.002 ? target : concept.dispOpacity;
-    if (o === concept._lastOpacity) return; // skip redundant per-frame writes once settled
+    if (o === concept._lastOpacity) return;
     concept._lastOpacity = o;
     concept.dispOpacity = o;
     concept.arrow.line.material.opacity = o;
     concept.arrow.cone.material.opacity = o;
     concept.labelObj.element.style.opacity = String(o);
 }
-
-/* ---------- orbit controls (only live once the sequence finishes) ---------- */
 
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enabled = false;
@@ -335,15 +272,8 @@ controls.dampingFactor = 0.08;
 controls.minDistance = 6;
 controls.maxDistance = 24;
 controls.target.set(0, 0, 0);
-// Zoom and pan are handled entirely by our own pinch listener below, not OrbitControls'
-// native wheel handling - that keeps plain scroll wheel/trackpad input isolated to driving
-// the page/timeline, never hijacked for camera interaction.
 controls.enableZoom = false;
 controls.enablePan = false;
-// OrbitControls sets touch-action:none on the full-screen canvas, which on a phone
-// swallowed every swipe - the page could never scroll, so the timeline never ran.
-// pan-y hands vertical swipes back to the page (scrubbing/rewinding the timeline);
-// horizontal swipes still reach OrbitControls to spin the sphere once it's live.
 renderer.domElement.style.touchAction = 'pan-y';
 
 let interactive = false;
@@ -360,15 +290,9 @@ function disableOrbit() {
     dragHint.classList.remove('visible');
 }
 
-/* Pinch-to-zoom only: trackpad/touchpad pinch gestures arrive as wheel events with
-   ctrlKey set (the standard browser convention), which is otherwise the native
-   "zoom the whole page" gesture - preventDefault() here swaps that for dollying the
-   camera instead, while a plain wheel event (no ctrlKey) is left completely alone and
-   falls through to normal page scroll, which always drives the scripted timeline (see
-   the ScrollTrigger below) whether or not the sphere is currently interactive. */
 window.addEventListener('wheel', event => {
     if (!event.ctrlKey) return;
-    event.preventDefault(); // always swallow pinch so it never triggers native page zoom
+    event.preventDefault();
     if (!interactive) return;
     const dist = camera.position.distanceTo(controls.target);
     const factor = 1 + event.deltaY * 0.01;
@@ -376,8 +300,6 @@ window.addEventListener('wheel', event => {
     camera.position.sub(controls.target).setLength(newDist).add(controls.target);
 }, { passive: false });
 
-/* Touchscreen pinch: the ctrlKey-wheel path above only covers trackpads. Same
-   dolly, driven by the change in distance between two fingers. */
 let pinchDist = 0;
 function touchSpread(touches) {
     return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
@@ -398,8 +320,6 @@ renderer.domElement.addEventListener('touchmove', event => {
 renderer.domElement.addEventListener('touchend', event => {
     if (event.touches.length < 2) pinchDist = 0;
 }, { passive: true });
-
-/* ---------- scroll-scrubbed timeline ---------- */
 
 function setFinalState() {
     setLabelProgress(centerLabel, 1);
@@ -430,14 +350,7 @@ if (reduceMotion) {
     enableOrbit();
     scrollCue.classList.add('hidden');
 } else {
-    // The sphere becomes interactive as soon as the concept vectors *start* fading in,
-    // rather than waiting for that fade (or the whole timeline) to finish - dragging/
-    // zooming works while the labels are still animating up to full opacity. This is
-    // computed from the timeline itself (via the 'conceptsStart' label added below,
-    // right before Phase 8) rather than hardcoded, so it stays correct if earlier
-    // phases' durations ever change. Scrolling back up past this same point hands
-    // control back to the scripted timeline (see the else-branch below).
-    let ORBIT_ENABLE_PROGRESS = 1; // placeholder until the full timeline is built below
+    let ORBIT_ENABLE_PROGRESS = 1;
 
     const tl = gsap.timeline({
         scrollTrigger: {
@@ -457,17 +370,15 @@ if (reduceMotion) {
         defaults: { ease: 'none' }
     });
 
-    // Phase 1: type "Shaikh's Virtues"
     tl.to(centerLabel.userData, { p: 1, duration: 1.2, onUpdate: () => setLabelProgress(centerLabel, centerLabel.userData.p) });
 
-    // Phases 2-5: each axis draws its arrow, then types its label
     AXES.forEach(axis => {
         const lenProxy = { len: 0.001 };
         tl.to(lenProxy, {
             len: ARM_LENGTH,
             duration: 0.5,
             onUpdate: () => {
-                axis.arrow.visible = lenProxy.len > 0.02; // stay fully hidden when scrolled back to the top
+                axis.arrow.visible = lenProxy.len > 0.02;
                 axis.arrow.setLength(lenProxy.len, Math.min(0.3, lenProxy.len * 0.2), Math.min(0.18, lenProxy.len * 0.12));
             }
         });
@@ -478,7 +389,6 @@ if (reduceMotion) {
         });
     });
 
-    // Phase 6: circle joins the four tips
     const circleProxy = { n: 0 };
     tl.to(circleProxy, {
         n: CIRCLE_SEGMENTS + 1,
@@ -488,9 +398,8 @@ if (reduceMotion) {
     tl.to(diameterCyberAI.material, { opacity: 0.6, duration: 0.8 }, '<');
     tl.to(diameterEngPsych.material, { opacity: 0.6, duration: 0.8 }, '<');
 
-    tl.to({}, { duration: 0.3 }); // brief settle
+    tl.to({}, { duration: 0.3 });
 
-    // Phase 7: camera pans back, sphere and its perpendicular equator fade in
     tl.to(camera.position, {
         x: END_CAM.x, y: END_CAM.y, z: END_CAM.z,
         duration: 2.0,
@@ -501,10 +410,6 @@ if (reduceMotion) {
     tl.to(equator2Line.material, { opacity: 0.6, duration: 2.0 }, '<');
     tl.to(equator3Line.material, { opacity: 0.6, duration: 2.0 }, '<');
 
-    // Phase 8: the concept vectors fade in (orbit kicks in mid-fade - see ORBIT_ENABLE_PROGRESS above).
-    // Only `concept.reveal` is tweened; applyConceptOpacity() turns that into the actual
-    // material/label opacity every frame, so the interactive facing-fade never has to
-    // tween (and possibly clobber) the same properties the timeline is scrubbing.
     tl.addLabel('conceptsStart');
     CONCEPTS.forEach((concept, i) => {
         tl.to(concept, {
@@ -516,13 +421,6 @@ if (reduceMotion) {
 
     ORBIT_ENABLE_PROGRESS = tl.labels.conceptsStart / tl.duration();
 }
-
-/* ---------- Phase 2/3: label -> "relevant page" zoom transition ----------
-   Clicking a label zooms the sphere away and an in-page DOM overlay (a
-   .zoom-page) zooms in over it, Prezi-style, anchored at the click point.
-   The Back button reverses the same animation. The overlay's actual content
-   (short note, projects list, mind-map sidebar) is built by
-   renderRelevantPage() in relevant-page.js. */
 
 const ZOOM_DURATION_MS = 850;
 
@@ -573,8 +471,6 @@ function zoomStageIn(originPct) {
     }));
 }
 
-/* ---------- overlay: label click -> relevant page ---------- */
-
 let overlayEl = null;
 
 async function openOverlayPage(originPct, label, isLifeTimeline) {
@@ -595,41 +491,26 @@ async function closeOverlayPage() {
     if (!overlayEl) return;
     const el = overlayEl;
     overlayEl = null;
-    // re-derive the exact origin used to open this overlay from its own inline style
     const [xPct, yPct] = el.style.transformOrigin.split(' ').map(parseFloat);
     await Promise.all([animateOut(el), zoomStageIn({ xPct, yPct })]);
     document.body.style.overflow = '';
     el.remove();
 }
 
-/* ---------- shared entry point for every label click ---------- */
-
 function onLabelActivate(text, _el) {
-    if (overlayEl || transitioning) return; // already zoomed into a page, or mid-transition
+    if (overlayEl || transitioning) return;
     const rect = _el.getBoundingClientRect();
     const originPct = originPctFromClientXY(rect.left + rect.width / 2, rect.top + rect.height / 2);
-    // The center "Shaikh's Virtues" label opens the life timeline (auto-playing,
-    // looping mind-map) instead of a topic's project list - distinguished by its
-    // own label3d class rather than matching on the text itself.
     const isLifeTimeline = _el.classList.contains('center-label');
     openOverlayPage(originPct, text, isLifeTimeline);
 }
 
-/* Let an in-overlay link (the "extracted from Shaikh's Virtues" credit under
-   every topic note - see relevant-page.js) jump straight to the centre essay:
-   zoom the current topic page back out, then zoom into the Shaikh's Virtues
-   page from the middle of the screen. */
 window.openVirtuesPage = async () => {
     if (transitioning) return;
     if (overlayEl) await closeOverlayPage();
     openOverlayPage({ xPct: 50, yPct: 50 }, "Shaikh's Virtues", true);
 };
 
-/* The playable Shaikh sprite (shaikh-character.js) calls this while the player
-   holds E and steers - rotates the view like dragging the sphere would: dazDeg
-   spins it around the vertical axis (left/right), dpolDeg tilts it up/down
-   (clamped so it never flips over a pole). Only works once the sphere is
-   interactive (the timeline has revealed it). */
 window.shaikhRotateGlobe = (dazDeg, dpolDeg) => {
     if (!interactive) return false;
     const offset = camera.position.clone().sub(controls.target);
@@ -647,25 +528,12 @@ window.shaikhRotateGlobe = (dazDeg, dpolDeg) => {
     return true;
 };
 
-/* ---------- render loop ---------- */
-
 const _frameClock = new THREE.Clock();
 function animate() {
     requestAnimationFrame(animate);
-    // Once a topic's overlay is fully open (not mid-transition), the stage
-    // sits at opacity 0 behind it and pointer-events:none - fully invisible,
-    // so re-rendering the WebGL scene and repositioning 10 CSS2D label DOM
-    // nodes every frame is pure wasted work, competing with the overlay's own
-    // (rAF-driven, see zoom-anim.js) animation and DOM updates for the same
-    // main-thread time. Skip it entirely while there's nothing on screen to see.
     if (overlayEl && !transitioning) return;
     const dt = _frameClock.getDelta();
     if (interactive) controls.update();
-    // Concept vector opacity is recomputed every frame from concept.reveal
-    // (timeline-owned) times a far-side facing-fade multiplier - see
-    // applyConceptOpacity. No GSAP tween here, so nothing competes with the
-    // scroll timeline for these properties and a scroll back to the top always
-    // returns them to fully hidden.
     for (const concept of CONCEPTS) applyConceptOpacity(concept, dt);
     renderer.render(scene, camera);
     labelRenderer.render(scene, camera);
