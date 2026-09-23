@@ -554,13 +554,26 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     flex-shrink: 0;
 }
 
-/* Centred and sized to sit at the same height as the page title. */
-.mindmap-close {
+/* Phone-only buttons (shown in the max-width: 720px block below): the
+   sidebar's own close button, and the essay page's timeline opener. */
+.mindmap-close,
+.timeline-open {
     display: none;
     align-self: flex-start;
+    flex-shrink: 0;
+}
+
+.mindmap-close {
     margin-bottom: 24px;
 }
 
+/* One ruled line tall (36px line-height, no margins) so the essay below
+   still starts on a rule. */
+.timeline-open {
+    font-size: 18px;
+}
+
+/* Centred and sized to sit at the same height as the page title. */
 .mindmap-sidebar-header h3 {
     margin: 0 0 10px;
     font-size: 24px;
@@ -847,10 +860,46 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     .relevant-main {
         padding: 72px 22px 30px;
     }
-    /* Full-screen on phones: opaque ruled paper (the desktop sidebar's
-       translucent wash let the projects list show through), its own close
-       button in place of the page's Back button, which would otherwise
-       jump all the way back to the sphere. */
+}
+
+/* Phones and short (landscape) screens: pinning the title/note/heading and
+   scrolling only the list below them left the list zero pixels tall once the
+   note wrapped to a few lines. Here the whole column scrolls as one page
+   instead, carrying its own ruled background (local attachment, same reason
+   as .projects-list) so the lines move with the text; the list and essay
+   just grow to their content.
+   The mind-map sidebar goes full-screen: opaque ruled paper with no red
+   margin (it ran through the text), header and flow scrolling together
+   rather than squeezing the flow, and its own close button - the page's
+   Back button would jump all the way back to the sphere. */
+@media (max-width: 720px), (max-height: 500px) {
+    .relevant-main {
+        overflow-y: auto;
+        scrollbar-width: none;
+        /* Opaque, or the .zoom-page's static lines show through doubled. */
+        background-color: var(--paper);
+        background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--rule-blue) 35px, var(--rule-blue) 36px);
+        background-attachment: local;
+    }
+
+    .relevant-main::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* The Back arrow stays put while the column scrolls under it - a paper
+       chip keeps it legible over the text. */
+    .relevant-back {
+        background: var(--paper);
+        padding: 0 6px;
+        left: 22px;
+    }
+
+    .projects-list,
+    .virtues-content {
+        flex: none;
+        overflow: visible;
+    }
+
     .mindmap-sidebar {
         position: fixed;
         inset: 0;
@@ -858,13 +907,34 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
         width: 100%;
         padding-top: 20px;
         border-left: none;
+        overflow-y: auto;
+        scrollbar-width: none;
         background-color: var(--paper);
+        background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--rule-blue) 35px, var(--rule-blue) 36px);
+        background-attachment: local;
+    }
+
+    .mindmap-sidebar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .mindmap-flow {
+        flex: none;
+        overflow: visible;
+    }
+
+    .mindmap-close,
+    .timeline-open {
+        display: inline-flex;
+    }
+}
+
+/* Landscape phones keep the desktop layout's red margin rule, so the
+   scrolling column has to repaint it along with the lines. */
+@media (min-width: 721px) and (max-height: 500px) {
+    .relevant-main {
         background-image:
             linear-gradient(90deg, transparent 0, transparent 74px, var(--margin-red) 74px, var(--margin-red) 76px, transparent 76px),
             repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--rule-blue) 35px, var(--rule-blue) 36px);
-    }
-
-    .mindmap-close {
-        display: inline-block;
     }
 }
