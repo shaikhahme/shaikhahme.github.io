@@ -577,6 +577,28 @@ window.openVirtuesPage = async () => {
     openOverlayPage({ xPct: 50, yPct: 50 }, "Shaikh's Virtues", true);
 };
 
+/* The playable Shaikh sprite (shaikh-character.js) calls this while the player
+   holds E and steers - rotates the view like dragging the sphere would: dazDeg
+   spins it around the vertical axis (left/right), dpolDeg tilts it up/down
+   (clamped so it never flips over a pole). Only works once the sphere is
+   interactive (the timeline has revealed it). */
+window.shaikhRotateGlobe = (dazDeg, dpolDeg) => {
+    if (!interactive) return false;
+    const offset = camera.position.clone().sub(controls.target);
+    if (dazDeg) offset.applyAxisAngle(new THREE.Vector3(0, 1, 0), THREE.MathUtils.degToRad(dazDeg));
+    if (dpolDeg) {
+        const up = new THREE.Vector3(0, 1, 0);
+        const right = new THREE.Vector3().crossVectors(up, offset).normalize();
+        const polar = Math.acos(THREE.MathUtils.clamp(offset.clone().normalize().dot(up), -1, 1));
+        const target = THREE.MathUtils.clamp(polar - THREE.MathUtils.degToRad(dpolDeg), 0.25, Math.PI - 0.25);
+        offset.applyAxisAngle(right, target - polar);
+    }
+    camera.position.copy(controls.target).add(offset);
+    camera.lookAt(controls.target);
+    controls.update();
+    return true;
+};
+
 /* ---------- render loop ---------- */
 
 const _frameClock = new THREE.Clock();
