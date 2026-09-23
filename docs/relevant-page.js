@@ -353,6 +353,15 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const flow = document.createElement('div');
         flow.className = 'mindmap-flow';
 
+        // Phones only (see shared.css): the sidebar covers the whole screen
+        // there, so the projects list can't be tapped to close it.
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'zoom-page-back mindmap-close';
+        close.textContent = '← Back to projects';
+        close.addEventListener('click', closeSidebar);
+
+        sidebar.appendChild(close);
         sidebar.appendChild(header);
         sidebar.appendChild(flow);
 
