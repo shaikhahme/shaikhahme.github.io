@@ -13,7 +13,7 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
 const isTouch = window.matchMedia('(hover: none)').matches;
 
 if (isTouch) {
-    dragHint.innerHTML = 'Swipe sideways to spin &middot; Pinch to zoom &middot; Scroll to rewind &middot; Tap a label';
+    dragHint.innerHTML = 'Swipe to spin &middot; Pinch to zoom &middot; Tap a label';
 }
 
 /* The ruled background repeats every 36px starting from the viewport top.

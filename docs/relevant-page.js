@@ -390,6 +390,14 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const flow = document.createElement('div');
         flow.className = 'mindmap-flow';
 
+        // Phones only (see styles.css), same as openProject's close button.
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'zoom-page-back mindmap-close';
+        close.textContent = '← Back to the essay';
+        close.addEventListener('click', closeSidebar);
+
+        sidebar.appendChild(close);
         sidebar.appendChild(header);
         sidebar.appendChild(flow);
 
@@ -414,7 +422,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     // "Click in the centre area" closes the sidebar - anywhere in the main
     // column that isn't a project row itself.
     main.addEventListener('click', event => {
-        if (event.target.closest('.project-row')) return;
+        if (event.target.closest('.project-row, .timeline-open')) return;
         closeSidebar();
     });
 
@@ -424,7 +432,18 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         // No sub-title line on the essay page - the essay starts straight under
         // the title.
         note.remove();
-        openLifeTimeline();
+        // On phones the sidebar is full-screen and would bury the essay, so
+        // it waits behind a button there instead of opening itself.
+        if (window.matchMedia('(max-width: 720px), (max-height: 500px)').matches) {
+            const openTimeline = document.createElement('button');
+            openTimeline.type = 'button';
+            openTimeline.className = 'zoom-page-back timeline-open';
+            openTimeline.textContent = 'See the timeline →';
+            openTimeline.addEventListener('click', openLifeTimeline);
+            main.insertBefore(openTimeline, virtuesContent);
+        } else {
+            openLifeTimeline();
+        }
         try {
             const res = await fetch('/data/virtues.json');
             const virtuesData = await res.json();
