@@ -1,17 +1,3 @@
-/* Phase 3/4: the "relevant page" a label's overlay zooms into - a short note,
-   a vertically scrollable projects list, and a right sidebar that plays a
-   timer-driven (not scroll-linked) mind map, step by step, when a project is
-   clicked: each step's shape draws in, an arrow draws down from the previous
-   step, then its title/description type out - the same drawing language as
-   the compass arrows in phase 1, just vertical and on a timer instead of tied
-   to scroll. Every one of the sphere's 10 clickable labels (4 axes + 6
-   concept vectors) opens this same view, filtered to the projects in
-   data/projects.json whose tags include that label - see RELEVANT_PAGE_ALIASES
-   below for the one label/tag spelling mismatch. The per-topic "short note"
-   is placeholder copy for now; real per-topic prose doesn't exist yet. */
-
-// The sphere's "Artificial Intelligence" axis label doesn't match any tag
-// verbatim - every project instead uses the shorter "AI" tag - so alias it.
 const RELEVANT_PAGE_ALIASES = {
     'Artificial Intelligence': 'AI'
 };
@@ -20,11 +6,6 @@ function relevantPageTagFor(label) {
     return RELEVANT_PAGE_ALIASES[label] || label;
 }
 
-/* Timing is driven by requestAnimationFrame rather than setTimeout/setInterval
-   throughout this file - some environments this page runs in throttle plain
-   timers down to roughly one callback per second (a background-tab
-   power-saving policy), which made typing crawl at ~1 character/second, while
-   rAF (which drives the page's actual rendering) kept ticking normally. */
 function relevantPageSleep(ms, token) {
     return new Promise(resolve => {
         const start = performance.now();
@@ -77,8 +58,6 @@ function relevantPageGrowArrow(container, token) {
     });
 }
 
-/* Slides the sidebar in/out via a translateX tween (same rAF-driven approach
-   as the rest of this file/zoom-anim.js, rather than a CSS `transition`). */
 function relevantPageSlideSidebar(el, fromPct, toPct, duration, onDone) {
     const start = performance.now();
     function frame(now) {
@@ -91,10 +70,6 @@ function relevantPageSlideSidebar(el, fromPct, toPct, duration, onDone) {
     requestAnimationFrame(frame);
 }
 
-/* Step "type" (not a raw shape) drives both the geometry and the border
-   color - see design.md's phase 4 mind-map legend:
-   arbitrary -> black rectangle, decision -> diamond, ai -> red rectangle,
-   output -> green rectangle. */
 const MINDMAP_TYPE_SHAPE = {
     arbitrary: 'rectangle',
     decision: 'diamond',
@@ -138,10 +113,6 @@ async function relevantPagePlayMindmap(container, steps, token) {
     }
 }
 
-/* The life timeline (center label) auto-plays and, unlike a project's
-   mind-map, never just sits there once finished - it loops back to step 1
-   for as long as the sidebar stays open (token.cancelled, set by
-   closeSidebar/openProject, is what ends it). */
 async function relevantPagePlayMindmapLoop(container, steps, token) {
     while (!token.cancelled) {
         await relevantPagePlayMindmap(container, steps, token);
@@ -150,27 +121,6 @@ async function relevantPagePlayMindmapLoop(container, steps, token) {
     }
 }
 
-/* Every row's rendered *bottom edge* needs to land on a multiple of 36 (the
-   ruled-paper spacing) for the row after it to stay on the grid too -
-   `min-height: 108px` (3 rule-lines, see shared.css) only guarantees that for
-   a row whose name/description/tags happen to fit in exactly three lines.
-   Real project descriptions wrap to all kinds of line counts, so most rows
-   render taller than that and land on an arbitrary height instead - dragging
-   every row below the first mismatched one off the grid. Rather than cap
-   each row's height (which is exactly the fixed-height + overflow:hidden bug
-   that used to clip long titles - see the CSS comment on .project-row), this
-   pads each row's bottom out to the next multiple of 36, snapping its bottom
-   edge back onto a rule line. Re-run on resize since wrapping (and so
-   height) depends on the container's width.
-   Processed top-to-bottom, measuring each row's *actual rendered position*
-   relative to the list rather than assuming heights simply add up - rows
-   overlap by 1px each (`.project-row:not(:first-child) { margin-top: -1px }`,
-   collapsing adjacent borders into one line), which would otherwise
-   accumulate into a growing drift row by row if each row's fix only
-   accounted for its own height in isolation.
-   `.project-row` uses `justify-content: flex-start` (not `center`) so this
-   only ever adds trailing whitespace below a card's content - it never
-   shifts the content itself. */
 const RULE_SPACING = 36;
 function relevantPageSnapRowsToRuleGrid(listEl) {
     const rows = listEl.querySelectorAll('.project-row');
@@ -183,14 +133,6 @@ function relevantPageSnapRowsToRuleGrid(listEl) {
     });
 }
 
-/* The center "Shaikh's Virtues" label's page has no project list of its own
-   (see isLifeTimeline below), so instead of a placeholder note it renders the
-   full human-written essay from data/virtues.json - the essay's own
-   paragraphs/quotes/headings, then an AI-generated "Where this reaches"
-   section mapping the essay's three pillars onto the sphere's other nine
-   labels, closing with that section's own AI-disclosure line. All HTML here
-   comes from our own authored JSON, never user input, so building it via
-   innerHTML is fine. */
 function relevantPageRenderVirtuesBlock(block) {
     const el = document.createElement(block.type === 'heading' ? 'h2' : block.type === 'quote' ? 'blockquote' : 'p');
     el.className = 'virtues-' + block.type;
@@ -209,8 +151,6 @@ function relevantPageRenderVirtuesContent(container, data) {
     data.human.blocks.forEach(block => {
         container.appendChild(relevantPageRenderVirtuesBlock(block));
     });
-    // The AI-generated "Where this reaches" relationships section is intentionally
-    // not rendered here - the centre page shows only the human-written essay.
 }
 
 function relevantPageRenderProjectsList(listEl, projects, onSelect) {
@@ -278,8 +218,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
 
     main.appendChild(title);
     main.appendChild(note);
-    // The life timeline has no project list of its own - see isLifeTimeline
-    // below - it gets the virtues essay/relationships content instead.
     const virtuesContent = document.createElement('div');
     virtuesContent.className = 'virtues-content';
     if (!isLifeTimeline) {
@@ -312,9 +250,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         });
     }
 
-    // Shared by openProject and openLifeTimeline below - handles the sidebar's
-    // slide-in (or, if it's already open, just resets it to resting position
-    // before the new content replaces the old).
     function openSidebar() {
         const wasOpen = sidebar.classList.contains('is-open');
         sidebar.innerHTML = '';
@@ -353,8 +288,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const flow = document.createElement('div');
         flow.className = 'mindmap-flow';
 
-        // Phones only (see shared.css): the sidebar covers the whole screen
-        // there, so the projects list can't be tapped to close it.
         const close = document.createElement('button');
         close.type = 'button';
         close.className = 'zoom-page-back mindmap-close';
@@ -370,10 +303,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         relevantPagePlayMindmap(flow, project.mindmap, token);
     }
 
-    // The center "Shaikh's Virtues" label's page: no project to click, the
-    // sidebar opens itself and plays the life timeline (one arbitrary step per
-    // milestone, per design.md's mind-map legend - these are just life events,
-    // not decisions/AI-steps/outputs) on a loop for as long as it stays open.
     async function openLifeTimeline() {
         if (currentToken) currentToken.cancelled = true;
         if (activeRow) activeRow.classList.remove('is-active');
@@ -390,7 +319,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const flow = document.createElement('div');
         flow.className = 'mindmap-flow';
 
-        // Phones only (see styles.css), same as openProject's close button.
         const close = document.createElement('button');
         close.type = 'button';
         close.className = 'zoom-page-back mindmap-close';
@@ -410,7 +338,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
             const steps = milestones.map((m, i) => ({
                 step: i + 1,
                 type: 'arbitrary',
-                title: `${m.age} — ${m.title}`,
+                title: `${m.age}: ${m.title}`,
                 description: m.text
             }));
             relevantPagePlayMindmapLoop(flow, steps, token);
@@ -419,8 +347,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         }
     }
 
-    // "Click in the centre area" closes the sidebar - anywhere in the main
-    // column that isn't a project row itself.
     main.addEventListener('click', event => {
         if (event.target.closest('.project-row, .timeline-open')) return;
         closeSidebar();
@@ -429,11 +355,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
     title.textContent = label;
 
     if (isLifeTimeline) {
-        // No sub-title line on the essay page - the essay starts straight under
-        // the title.
         note.remove();
-        // On phones the sidebar is full-screen and would bury the essay, so
-        // it waits behind a button there instead of opening itself.
         if (window.matchMedia('(max-width: 720px), (max-height: 500px)').matches) {
             const openTimeline = document.createElement('button');
             openTimeline.type = 'button';
@@ -456,21 +378,11 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
 
     note.textContent = `Placeholder note for ${label} - a short write-up of why this matters to Shaikh goes here.`;
 
-    // The per-topic note is real prose now, extracted from the virtues essay's
-    // own "Where this reaches" section (data/virtues.json's `notes`) rather
-    // than the placeholder above - which stays only as a fallback if this
-    // fetch fails. Appended as trailing lines *inside* the same `note`
-    // paragraph (not a new element) so the note's line-height: 36px keeps
-    // governing the whole block and the rule-grid math above it still holds
-    // regardless of how many lines this adds.
     try {
         const virtuesRes = await fetch('/data/virtues.json');
         const virtuesData = await virtuesRes.json();
         const topicNote = virtuesData.notes && virtuesData.notes.items[label];
         if (topicNote) {
-            // The note, then on the very next line a link to the essay it was
-            // drawn from. Clicking it jumps to the centre "Shaikh's Virtues" page
-            // (see window.openVirtuesPage in continuous.js).
             note.innerHTML = `${topicNote}<br><a href="#" class="relevant-note-source">extracted from Shaikh's Virtues</a>`;
             const source = note.querySelector('.relevant-note-source');
             if (source) {
@@ -480,7 +392,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
                 });
             }
         }
-    } catch (e) { /* keep the placeholder note above */ }
+    } catch (e) {  }
 
     try {
         const res = await fetch('/data/projects.json');
@@ -494,9 +406,6 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
             list.appendChild(empty);
         } else {
             relevantPageRenderProjectsList(list, projects, openProject);
-            // Re-snap on resize, since text wrapping (and so each row's natural
-            // height) depends on the list's width. Self-unregisters once this
-            // page's DOM is gone rather than needing an explicit teardown hook.
             const onResize = () => {
                 if (!list.isConnected) { window.removeEventListener('resize', onResize); return; }
                 relevantPageSnapRowsToRuleGrid(list);

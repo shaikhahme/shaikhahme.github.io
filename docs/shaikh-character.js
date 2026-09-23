@@ -1,46 +1,14 @@
-/* A playable "Shaikh" sprite that roams on top of the whole page, speaks in a
-   typewriter chat bubble, and interacts with the page via an E "action" key.
-
-   Character + 8-direction walk spritesheet are ported from the s345 "Roommates"
-   Phaser game (shaikh_walk.png): 384x384, an 8x8 grid of 48x48 frames, one ROW
-   per facing direction in DIR_ORDER order, 8 walk frames per row; direction is
-   chosen from the movement vector via SLICE_TABLE, exactly like the game.
-
-   ------- controls -------
-   Arrow keys / WASD: walk. Horizontal is always free-roam.
-
-   BUILDING the globe (before it's "set"): the sprite's vertical position drives
-   the scroll/build - top border = original, bottom = complete, saturating a bit
-   before each border (BUILD_COMPLETE_AT / BUILD_REWIND_AT). Walking down builds,
-   up rewinds; the mouse wheel nudges him too ("scroll down" still works).
-
-   ONCE SET (he reaches the complete point / the globe appears): walking is
-   DECOUPLED from the build - he roams freely everywhere (so he can reach every
-   label) and walking up no longer rewinds. Reversing the animation is now only
-   possible by SCROLLING UP with the wheel. If the wheel takes it all the way
-   back to the blank original, it re-arms and walking drives the build again.
-
-   E (action key):
-     - TAP E (press & release without steering) while over a link -> "clicks" it
-       (opens a label's page / project / inline link / the Back button). A prompt
-       ("press e to check it out!" / "press e to go back") shows when in range.
-     - HOLD E + arrows -> on the main page rotates the globe (left/right spin,
-       up/down tilt); inside a sub-page up/down scrolls the content, and holding
-       up while already at the top exits back to the sphere.
-
-   Interaction uses body-overlap (rect vs rect), not pixel-precise point-testing,
-   so even the thin Back arrow is caught reliably. */
 (function () {
   if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
 
-  const FRAME = 48, SCALE = 2, SIZE = FRAME * SCALE; // 96px on screen
+  const FRAME = 48, SCALE = 2, SIZE = FRAME * SCALE;
   const WALK_STRIDE_PX = 13;
   const MOVE_SPEED = 7;
   const MARGIN = 16;
   const WHEEL_TO_Y = 0.6;
   const ROT_STEP = 2.6;
   const SUB_SCROLL_STEP = 16;
-  const BODY_HALF = 26;          // half-size of his interaction body box
+  const BODY_HALF = 26;
   const BUILD_COMPLETE_AT = 0.55;
   const BUILD_REWIND_AT = 0.10;
   const ROTATE_HINT = 'Hold E and steer to spin the globe.';
@@ -59,17 +27,16 @@
   const inSubPage = () => !!document.querySelector('.zoom-page');
   const normY = () => clamp((y - topBorder()) / Math.max(1, botBorder() - topBorder()), 0, 1);
 
-  // ---- sprite element ----
   const el = document.createElement('div');
   el.id = 'shaikh';
   el.setAttribute('aria-hidden', 'true');
   document.body.appendChild(el);
 
-  let x = MARGIN, y = MARGIN;   // starts top-left
+  let x = MARGIN, y = MARGIN;
   let row = 0, frame = 0, distAcc = 0;
-  let built = false;            // has the globe been "set" (fully built) yet?
+  let built = false;
   let rotateHintShown = false;
-  let lastScrollY = 0;          // post-set: track native scroll to walk him along it
+  let lastScrollY = 0;
 
   function draw() {
     el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
@@ -78,12 +45,9 @@
     positionPrompt();
   }
 
-  // =====================================================================
-  // speak() + hint bubbles
-  // =====================================================================
   let bubbleEl = null, bubbleTextEl = null, bubbleToken = null;
-  let hintUp = false;              // a hint bubble is showing
-  let hintDismissable = false;     // does input dismiss it?
+  let hintUp = false;
+  let hintDismissable = false;
   let hintAutoHide = 0;
 
   function ensureBubble() {
@@ -124,7 +88,6 @@
     if (bubbleToken) bubbleToken.cancelled = true;
     if (bubbleEl) { bubbleEl.classList.add('hidden'); bubbleEl.classList.remove('visible'); }
   }
-  // A hint that types out, then hides after a timeout and/or on the next input.
   function sayHint(text, opts) {
     opts = opts || {};
     speak(text);
@@ -133,8 +96,6 @@
     clearTimeout(hintAutoHide);
     if (opts.autoMs) hintAutoHide = setTimeout(() => { if (hintUp) { hideBubble(); hintUp = false; } }, opts.autoMs);
   }
-  // Called on input; only hides hints that opted into input-dismissal (the
-  // welcome). The "hold E to spin" hint stays put while he walks around.
   function dismissHint() { if (hintUp && hintDismissable) { hintUp = false; clearTimeout(hintAutoHide); hideBubble(); } }
 
   function positionBubble() {
@@ -152,9 +113,6 @@
   window.shaikhSpeak = speak;
   window.shaikhHideBubble = hideBubble;
 
-  // =====================================================================
-  // "press e ..." prompt, pinned right above his head (close to him)
-  // =====================================================================
   const promptEl = document.createElement('div');
   promptEl.id = 'shaikh-prompt';
   document.body.appendChild(promptEl);
@@ -173,17 +131,11 @@
     if (!promptKind) return;
     const bw = promptEl.offsetWidth, bh = promptEl.offsetHeight;
     let bx = clamp(x + SIZE / 2 - bw / 2, 6, Math.max(6, window.innerWidth - bw - 6));
-    let by = y - bh - 2;                    // just above his head
-    if (by < 6) by = y + SIZE + 2;          // flip below if no room above
+    let by = y - bh - 2;
+    if (by < 6) by = y + SIZE + 2;
     promptEl.style.transform = `translate(${Math.round(bx)}px, ${Math.round(by)}px)`;
   }
 
-  // =====================================================================
-  // interaction targets by BODY OVERLAP (robust, catches the thin Back arrow)
-  // =====================================================================
-  // Targets depend on context: the sphere labels on the main page, or the
-  // sub-page's OWN controls when an overlay is open. The sphere labels still
-  // exist in the DOM behind the overlay, so we must not match them in a sub-page.
   function linkSel() {
     return inSubPage()
       ? '.zoom-page .project-row, .zoom-page .relevant-note-source, .zoom-page .virtues-content a, .zoom-page .mindmap-sidebar-header a, .zoom-page .relevant-note a'
@@ -202,8 +154,6 @@
     const oy = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
     return ox > 0 && oy > 0 ? ox * oy : 0;
   }
-  // The clickable element whose rect his body overlaps most (skips off-screen /
-  // faded-to-the-back labels, which aren't really clickable).
   function targetOverlap(sel) {
     const body = bodyRect();
     let best = null, bestArea = 0;
@@ -239,9 +189,6 @@
     }
   }
 
-  // =====================================================================
-  // build binding (only while NOT yet set): sprite vertical -> scroll
-  // =====================================================================
   function applyBuildBinding() {
     const p = clamp((normY() - BUILD_REWIND_AT) / (BUILD_COMPLETE_AT - BUILD_REWIND_AT), 0, 1);
     const target = p * maxScroll();
@@ -249,13 +196,9 @@
   }
 
   function scheduleRotateHint() {
-    // Stays put while he walks (dismissOnInput defaults false); hides after 4s.
     setTimeout(() => { sayHint(ROTATE_HINT, { autoMs: 4000 }); }, 800);
   }
 
-  // =====================================================================
-  // input
-  // =====================================================================
   const held = new Set();
   const MOVE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D']);
   let eDown = false, eMoved = false;
@@ -274,18 +217,13 @@
 
   window.addEventListener('keyup', e => {
     if (e.key === 'e' || e.key === 'E') {
-      if (eDown && !eMoved) tapAction();  // a clean tap = "click"
+      if (eDown && !eMoved) tapAction();
       eDown = false;
       return;
     }
     held.delete(e.key.length === 1 ? e.key.toLowerCase() : e.key);
   });
 
-  // Wheel: BEFORE the globe is set, nudge him vertically (accumulated and applied
-  // in the loop so it reads as walking, and it drives the build via binding).
-  // AFTER it's set, let the wheel scroll natively - that's the only way to reverse
-  // the animation - and the loop walks him up along that scroll. Always native in
-  // a sub-page.
   let wheelAccum = 0;
   window.addEventListener('wheel', e => {
     if (e.ctrlKey || inSubPage() || built) return;
@@ -305,15 +243,11 @@
     return { dx, dy };
   }
 
-  // =====================================================================
-  // main loop
-  // =====================================================================
   function tick() {
     requestAnimationFrame(tick);
     const { dx, dy } = inputVector();
     const anyInput = dx !== 0 || dy !== 0;
 
-    // HOLD E + steering -> rotate / scroll instead of walking.
     if (eDown && anyInput) {
       eMoved = true;
       holdAction(dx, dy);
@@ -330,26 +264,21 @@
     if (dy !== 0) y = clamp(y + Math.sign(dy) * MOVE_SPEED, topBorder(), botBorder());
 
     let wheelDir = 0;
-    // Pre-set wheel: nudge him vertically (drives the build via binding below).
     if (wheelAccum !== 0 && !built && !inSubPage()) {
       y = clamp(y + wheelAccum * WHEEL_TO_Y, topBorder(), botBorder());
       wheelDir = Math.sign(wheelAccum);
       wheelAccum = 0;
     }
 
-    // Build control on the main page.
     if (!inSubPage()) {
       if (!built) {
-        applyBuildBinding();                 // sprite drives the build
-        if (normY() >= BUILD_COMPLETE_AT) {   // reached the complete point -> SET
+        applyBuildBinding();
+        if (normY() >= BUILD_COMPLETE_AT) {
           built = true;
           lastScrollY = window.scrollY;
           if (!rotateHintShown) { rotateHintShown = true; scheduleRotateHint(); }
         }
       } else {
-        // Post-set: native scroll (wheel) rewinds/rebuilds, and we walk him along
-        // it - so scrolling up carries him smoothly all the way back to the top
-        // (a consistent start), while KEY walking still never touches the build.
         const ds = window.scrollY - lastScrollY;
         if (ds !== 0) {
           const range = Math.max(1, botBorder() - topBorder());
@@ -357,11 +286,10 @@
           wheelDir = Math.sign(ds);
           lastScrollY = window.scrollY;
         }
-        if (window.scrollY <= 1) { built = false; y = topBorder(); lastScrollY = 0; } // re-arm at the original
+        if (window.scrollY <= 1) { built = false; y = topBorder(); lastScrollY = 0; }
       }
     }
 
-    // Facing: keys win; otherwise face the way the wheel/scroll is walking him.
     if (anyInput) { const r = dirRowFromVector(dx, dy); if (r !== null) row = r; }
     else if (wheelDir !== 0) row = wheelDir < 0 ? DIR_ORDER.indexOf('north') : DIR_ORDER.indexOf('south');
 
@@ -371,7 +299,6 @@
       while (distAcc >= WALK_STRIDE_PX) { distAcc -= WALK_STRIDE_PX; frame = (frame + 1) % 8; }
     } else { frame = 0; distAcc = 0; }
 
-    // Contextual prompt (links, or the Back arrow in a sub-page).
     if (!hintUp && !eDown) {
       if (targetOverlap(linkSel())) setPrompt('link');
       else if (inSubPage() && targetOverlap('.zoom-page-back')) setPrompt('back');
