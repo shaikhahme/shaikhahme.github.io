@@ -10,6 +10,11 @@ const scrollCue = document.getElementById('scrollCue');
 const dragHint = document.getElementById('dragHint');
 
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isTouch = window.matchMedia('(hover: none)').matches;
+
+if (isTouch) {
+    dragHint.innerHTML = 'Swipe sideways to spin &middot; Pinch to zoom &middot; Scroll to rewind &middot; Tap a label';
+}
 
 /* The ruled background repeats every 36px starting from the viewport top.
    `bottom`-anchored text can't just use a fixed px offset and land on a rule
@@ -50,9 +55,24 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
 dirLight.position.set(5, 8, 10);
 scene.add(dirLight);
 
+/* Portrait screens see far less width than the desktop framing was tuned for,
+   so the east/west labels ran off the edge. Widen the view (camera.zoom < 1)
+   just enough to keep FIT_HALF_WIDTH world units visible either side of center
+   at the starting distance - wide screens already clear it and stay at zoom 1.
+   Zoom rather than moving the camera, so the scroll timeline's baked-in
+   START_CAM/END_CAM tweens and OrbitControls' distance limits stay untouched. */
+const FIT_HALF_WIDTH = 6.2;
+function fitZoom(aspect) {
+    const halfWidthAtStart = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2)) * aspect * START_CAM.length();
+    return Math.min(1, halfWidthAtStart / FIT_HALF_WIDTH);
+}
+camera.zoom = fitZoom(camera.aspect);
+camera.updateProjectionMatrix();
+
 function onResize() {
     const w = window.innerWidth, h = window.innerHeight;
     camera.aspect = w / h;
+    camera.zoom = fitZoom(camera.aspect);
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
     labelRenderer.setSize(w, h);
@@ -320,6 +340,11 @@ controls.target.set(0, 0, 0);
 // the page/timeline, never hijacked for camera interaction.
 controls.enableZoom = false;
 controls.enablePan = false;
+// OrbitControls sets touch-action:none on the full-screen canvas, which on a phone
+// swallowed every swipe - the page could never scroll, so the timeline never ran.
+// pan-y hands vertical swipes back to the page (scrubbing/rewinding the timeline);
+// horizontal swipes still reach OrbitControls to spin the sphere once it's live.
+renderer.domElement.style.touchAction = 'pan-y';
 
 let interactive = false;
 
@@ -350,6 +375,29 @@ window.addEventListener('wheel', event => {
     const newDist = THREE.MathUtils.clamp(dist * factor, controls.minDistance, controls.maxDistance);
     camera.position.sub(controls.target).setLength(newDist).add(controls.target);
 }, { passive: false });
+
+/* Touchscreen pinch: the ctrlKey-wheel path above only covers trackpads. Same
+   dolly, driven by the change in distance between two fingers. */
+let pinchDist = 0;
+function touchSpread(touches) {
+    return Math.hypot(touches[0].clientX - touches[1].clientX, touches[0].clientY - touches[1].clientY);
+}
+renderer.domElement.addEventListener('touchstart', event => {
+    if (event.touches.length === 2) pinchDist = touchSpread(event.touches);
+}, { passive: true });
+renderer.domElement.addEventListener('touchmove', event => {
+    if (event.touches.length !== 2 || !pinchDist) return;
+    event.preventDefault();
+    if (!interactive) return;
+    const spread = touchSpread(event.touches);
+    const dist = camera.position.distanceTo(controls.target);
+    const newDist = THREE.MathUtils.clamp(dist * (pinchDist / spread), controls.minDistance, controls.maxDistance);
+    camera.position.sub(controls.target).setLength(newDist).add(controls.target);
+    pinchDist = spread;
+}, { passive: false });
+renderer.domElement.addEventListener('touchend', event => {
+    if (event.touches.length < 2) pinchDist = 0;
+}, { passive: true });
 
 /* ---------- scroll-scrubbed timeline ---------- */
 

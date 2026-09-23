@@ -168,6 +168,34 @@ function relevantPageRenderProjectsList(listEl, projects, onSelect) {
         row.addEventListener('click', () => onSelect(project, row));
         listEl.appendChild(row);
     });
+    relevantPageSnapRowHeights(listEl);
+}
+
+/* A row's resting height is 108px (3 rule lines). Longer descriptions - and
+   every row on a narrow phone column - need more room than that, so each row
+   grows by whole 36px rule lines to fit its content instead of clipping it,
+   keeping every row edge on the paper's lines. offsetHeight/scrollHeight
+   ignore the zoom overlay's in-flight scale transform, so this measures true
+   layout size even mid-animation. */
+const RELEVANT_PAGE_RULE_PX = 36;
+const RELEVANT_PAGE_MIN_ROW_PX = 108;
+
+function relevantPageSnapRowHeights(listEl) {
+    function snap() {
+        listEl.querySelectorAll('.project-row').forEach(row => {
+            row.style.height = 'auto';
+            const needed = Math.ceil(row.offsetHeight / RELEVANT_PAGE_RULE_PX) * RELEVANT_PAGE_RULE_PX;
+            row.style.height = Math.max(RELEVANT_PAGE_MIN_ROW_PX, needed) + 'px';
+        });
+    }
+    snap();
+    // Web fonts can land after first layout and re-wrap the text.
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(snap);
+    function onResize() {
+        if (!listEl.isConnected) { window.removeEventListener('resize', onResize); return; }
+        snap();
+    }
+    window.addEventListener('resize', onResize);
 }
 
 async function renderRelevantPage(container, onBack, label) {
@@ -260,6 +288,15 @@ async function renderRelevantPage(container, onBack, label) {
         const flow = document.createElement('div');
         flow.className = 'mindmap-flow';
 
+        // Phones only (see shared.css): the sidebar covers the whole screen
+        // there, so the projects list can't be tapped to close it.
+        const close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'zoom-page-back mindmap-close';
+        close.textContent = '← Back to projects';
+        close.addEventListener('click', closeSidebar);
+
+        sidebar.appendChild(close);
         sidebar.appendChild(header);
         sidebar.appendChild(flow);
 

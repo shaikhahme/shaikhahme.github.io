@@ -182,8 +182,10 @@ section {
     background: var(--accent);
 }
 
-.nav-brand:hover .brand-mark {
-    transform: rotate(160deg);
+@media (hover: hover) {
+    .nav-brand:hover .brand-mark {
+        transform: rotate(160deg);
+    }
 }
 
 .site-nav nav {
@@ -253,6 +255,7 @@ main {
 
 .section {
     position: relative;
+    width: 100%;
     padding: clamp(4rem, 10vh, 7rem) clamp(1.25rem, 6vw, 4rem);
     max-width: 1180px;
     margin: 0 auto;
@@ -275,6 +278,13 @@ main {
 .section-intro {
     max-width: 640px;
     font-size: 1.05rem;
+}
+
+/* Sized to its 640px text column (not full width like other sections) so the
+   left-aligned heading sits flush with the centered copy beneath it. */
+#virtue {
+    width: fit-content;
+    max-width: min(1180px, 100%);
 }
 
 .virtue-body {
@@ -395,8 +405,10 @@ main {
     transition: transform 0.35s var(--ease-out), box-shadow 0.35s ease, border-color 0.3s ease;
 }
 
-.btn:hover {
-    transform: translateY(-2px);
+@media (hover: hover) {
+    .btn:hover {
+        transform: translateY(-2px);
+    }
 }
 
 .btn-primary {
@@ -405,8 +417,10 @@ main {
     box-shadow: 0 8px 24px -8px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 
-.btn-primary:hover {
-    box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--accent) 75%, transparent);
+@media (hover: hover) {
+    .btn-primary:hover {
+        box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--accent) 75%, transparent);
+    }
 }
 
 .btn-ghost {
@@ -414,8 +428,10 @@ main {
     color: var(--text);
 }
 
-.btn-ghost:hover {
-    border-color: var(--accent);
+@media (hover: hover) {
+    .btn-ghost:hover {
+        border-color: var(--accent);
+    }
 }
 
 /* Sheen sweep used on cards / buttons */
@@ -434,8 +450,10 @@ main {
     pointer-events: none;
 }
 
-.sheen:hover::after {
-    transform: translateX(140%);
+@media (hover: hover) {
+    .sheen:hover::after {
+        transform: translateX(140%);
+    }
 }
 
 /* --- Scroll-pinned vinyl timeline --- */
@@ -726,8 +744,10 @@ main {
     transition: transform 0.4s var(--ease-out);
 }
 
-.album:hover {
-    transform: translateY(-10px) rotate(-1deg);
+@media (hover: hover) {
+    .album:hover {
+        transform: translateY(-10px) rotate(-1deg);
+    }
 }
 
 .album-cover {
@@ -740,8 +760,10 @@ main {
     transition: box-shadow 0.4s ease;
 }
 
-.album:hover .album-cover {
-    box-shadow: 0 28px 54px -16px color-mix(in srgb, var(--accent) 50%, transparent), 0 0 0 1px var(--accent);
+@media (hover: hover) {
+    .album:hover .album-cover {
+        box-shadow: 0 28px 54px -16px color-mix(in srgb, var(--accent) 50%, transparent), 0 0 0 1px var(--accent);
+    }
 }
 
 .album-groove {
@@ -761,8 +783,10 @@ main {
     transition: transform 0.4s var(--ease-out);
 }
 
-.album:hover .album-groove {
-    transform: scale(0.9) translateY(-4%);
+@media (hover: hover) {
+    .album:hover .album-groove {
+        transform: scale(0.9) translateY(-4%);
+    }
 }
 
 .album-mark {
@@ -1068,9 +1092,11 @@ footer {
     transition: border-color 0.3s ease, transform 0.3s ease;
 }
 
-.testimonial-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-4px);
+@media (hover: hover) {
+    .testimonial-card:hover {
+        border-color: var(--accent);
+        transform: translateY(-4px);
+    }
 }
 
 .testimonial-quote {
@@ -1137,6 +1163,7 @@ footer {
 
 .crate-album {
     flex: 0 0 clamp(150px, 22vw, 230px);
+    min-width: 0;
     display: flex;
     flex-direction: column;
     text-decoration: none;
@@ -1144,9 +1171,20 @@ footer {
     transition: transform 0.4s var(--ease-out), box-shadow 0.4s ease;
 }
 
-.crate-album:hover,
 .crate-album:focus-visible {
     transform: translateY(-16px);
+}
+
+@media (hover: hover) {
+    .crate-album:hover {
+        transform: translateY(-16px);
+    }
+}
+
+@media (hover: none) {
+    .crate-album:active {
+        transform: translateY(-16px);
+    }
 }
 
 .crate-album-cover {
@@ -1185,11 +1223,13 @@ footer {
     background: linear-gradient(155deg, rgba(255, 255, 255, 0.22), transparent 55%);
 }
 
-.crate-album:hover .crate-album-cover {
-    box-shadow: 0 30px 54px -16px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.3);
+@media (hover: hover) {
+    .crate-album:hover .crate-album-cover {
+        box-shadow: 0 30px 54px -16px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
 }
 
-.crate-album-title {
+.crate-album .crate-album-title {
     margin: 1.2rem 0 0.4rem;
     min-height: 2.5em;
     display: flex;
@@ -1253,14 +1293,37 @@ footer {
         display: none;
     }
 
+    /* Longer than desktop's 380vh: the passion copy and the vinyl column's
+       own height both come out of the sticky run on narrow screens. */
+    .timeline-pin {
+        height: 420vh;
+    }
+
+    /* Stacked, the passion copy + vinyl are taller than a phone screen, so
+       pinning the whole stage clipped the copy under the nav and squeezed the
+       disc. Here the copy scrolls normally and only the vinyl column pins,
+       for the rest of the pin's length (see stickyProgress in script.js). */
     .timeline-stage {
+        position: relative;
         grid-template-columns: 1fr;
-        height: auto;
-        min-height: 100vh;
+        align-content: start;
+        height: 100%;
         overflow: visible;
         padding-top: clamp(1.5rem, 4vh, 2.5rem);
         padding-bottom: clamp(1.5rem, 4vh, 2.5rem);
         gap: clamp(1.2rem, 3vh, 2rem);
+    }
+
+    .timeline-visual-col {
+        position: sticky;
+        top: var(--nav-h);
+        height: calc(100vh - var(--nav-h));
+        height: calc(100svh - var(--nav-h));
+        justify-content: center;
+    }
+
+    .timeline-visual {
+        width: clamp(180px, min(72vw, 40svh), 380px);
     }
 
     .timeline-passion {
@@ -1275,10 +1338,6 @@ footer {
 }
 
 @media (max-width: 640px) {
-    .timeline-pin {
-        height: 300vh;
-    }
-
     .tonearm-base {
         width: 26px;
     }
@@ -1299,7 +1358,8 @@ footer {
     }
 
     .crate-album:hover,
-    .crate-album:focus-visible {
+    .crate-album:focus-visible,
+    .crate-album:active {
         transform: translateY(-8px);
     }
 }
@@ -1337,6 +1397,51 @@ footer {
     }
 }
 
+/* Touch: no hover, so the lift/glow effects above play on press instead,
+   and tap targets / the drag-to-rotate graph are sized for fingers. */
+@media (hover: none) {
+    .btn:active {
+        transform: translateY(-2px);
+    }
+
+    .btn-primary:active {
+        box-shadow: 0 12px 30px -8px color-mix(in srgb, var(--accent) 75%, transparent);
+    }
+
+    .btn-ghost:active {
+        border-color: var(--accent);
+    }
+
+    .album:active {
+        transform: translateY(-10px) rotate(-1deg);
+    }
+
+    .album:active .album-cover {
+        box-shadow: 0 28px 54px -16px color-mix(in srgb, var(--accent) 50%, transparent), 0 0 0 1px var(--accent);
+    }
+
+    .crate-album:active .crate-album-cover {
+        box-shadow: 0 30px 54px -16px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+
+    .testimonial-card:active {
+        border-color: var(--accent);
+    }
+}
+
+@media (pointer: coarse) {
+    .site-nav a {
+        padding: 0.75rem 0.1rem;
+    }
+
+    /* Shorter than desktop's 62vh so there's always page above/below the
+       canvas to swipe-scroll on - a one-finger drag on the canvas rotates it. */
+    .graph-canvas {
+        height: 52vh;
+        min-height: 320px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     html {
         scroll-behavior: auto;
@@ -1362,5 +1467,10 @@ footer {
         position: relative;
         height: auto;
         min-height: 100vh;
+    }
+
+    .timeline-visual-col {
+        position: static;
+        height: auto;
     }
 }

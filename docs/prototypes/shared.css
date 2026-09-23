@@ -76,6 +76,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 .proto-hint {
     position: fixed;
     left: 50%;
+    width: max-content;
+    max-width: calc(100% - 32px);
     transform: translateX(-50%);
     z-index: 50;
     line-height: 36px;
@@ -286,6 +288,8 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     margin: 0;
 }
 
+/* height is the 3-rule-line minimum; relevant-page.js grows a row in whole
+   rule lines when its content needs more (see relevantPageSnapRowHeights). */
 .project-row {
     font-family: 'Special Elite', 'Courier New', monospace;
     text-align: left;
@@ -367,6 +371,12 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
 
 .mindmap-sidebar.is-open {
     display: flex;
+}
+
+.mindmap-close {
+    display: none;
+    align-self: flex-start;
+    margin-bottom: 24px;
 }
 
 .mindmap-sidebar-header h3 {
@@ -463,14 +473,56 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     margin-top: -1px;
 }
 
+/* Phones: the sphere is framed wider (see fitZoom in continuous.js), so the
+   fixed-pixel labels are brought down to match, and the long axis labels
+   wrap onto two lines instead of running off the screen edge. */
+@media (max-width: 600px) {
+    .label3d {
+        font-size: 13px;
+    }
+
+    .label3d.axis-label {
+        font-size: 13px;
+        white-space: normal;
+        max-width: 8.5em;
+        text-align: center;
+    }
+
+    .label3d.vector-label {
+        font-size: 12px;
+    }
+
+    .label3d.center-label {
+        font-size: 18px;
+    }
+
+    .proto-hint {
+        font-size: 12px;
+    }
+}
+
 @media (max-width: 720px) {
     .relevant-main {
         padding: 72px 24px 30px;
     }
+    /* Full-screen on phones: opaque ruled paper (the desktop sidebar's
+       translucent wash let the projects list show through), its own close
+       button in place of the page's Back button, which would otherwise
+       jump all the way back to the sphere. */
     .mindmap-sidebar {
         position: fixed;
         inset: 0;
+        z-index: 20;
         width: 100%;
+        padding-top: 20px;
         border-left: none;
+        background-color: var(--paper);
+        background-image:
+            linear-gradient(90deg, transparent 0, transparent 74px, var(--margin-red) 74px, var(--margin-red) 76px, transparent 76px),
+            repeating-linear-gradient(to bottom, transparent 0, transparent 35px, var(--rule-blue) 35px, var(--rule-blue) 36px);
+    }
+
+    .mindmap-close {
+        display: inline-block;
     }
 }

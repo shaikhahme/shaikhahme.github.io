@@ -104,6 +104,8 @@
         if (!pin || !stage || !vinyl || !vinylCore || !ringTextPath) return;
 
         var ringTextEl = ringTextPath.parentNode;
+        var visualCol = stage.querySelector('.timeline-visual-col');
+        var passion = stage.querySelector('.timeline-passion');
         var ringPathEl = document.getElementById('ringPath');
 
         /* Build a shallow arc (sampled, avoids SVG arc-flag ambiguity) that sits in its
@@ -173,11 +175,29 @@
                 var TONEARM_START = -30;
                 var TONEARM_END = -4;
 
+                /* Under 900px only the vinyl column is sticky (the passion copy
+                   above it scrolls away first), so progress runs from when that
+                   column pins to when it unpins, rather than across the whole pin. */
+                function stickyProgress() {
+                    var colStyle = getComputedStyle(visualCol);
+                    var stageStyle = getComputedStyle(stage);
+                    var stageRect = stage.getBoundingClientRect();
+                    var naturalTop = passion.getBoundingClientRect().bottom + parseFloat(stageStyle.rowGap || 0);
+                    var runEnd = stageRect.bottom - parseFloat(stageStyle.paddingBottom) - visualCol.offsetHeight;
+                    var run = runEnd - naturalTop;
+                    return run > 0 ? (parseFloat(colStyle.top) - naturalTop) / run : 0;
+                }
+
                 function update() {
                     ticking = false;
-                    var rect = pin.getBoundingClientRect();
-                    var total = rect.height - window.innerHeight;
-                    var progress = total > 0 ? (-rect.top) / total : 0;
+                    var progress;
+                    if (visualCol && passion && getComputedStyle(visualCol).position === 'sticky') {
+                        progress = stickyProgress();
+                    } else {
+                        var rect = pin.getBoundingClientRect();
+                        var total = rect.height - window.innerHeight;
+                        progress = total > 0 ? (-rect.top) / total : 0;
+                    }
                     progress = Math.max(0, Math.min(1, progress));
 
                     var deg = progress * TOTAL_SPINS * 360;
@@ -274,7 +294,7 @@
             });
     })();
 
-    /* ---- Testimonials carousel: fetch from JSON, infinite loop, auto-scroll, pauses on hover ---- */
+    /* ---- Testimonials carousel: fetch from JSON, infinite loop, auto-scroll, pauses on hover/touch ---- */
     (function initTestimonials() {
         var carousel = document.getElementById('testimonialCarousel');
         if (!carousel) return;
@@ -330,6 +350,10 @@
                 if (!reduceMotion) {
                     carousel.addEventListener('mouseenter', stop);
                     carousel.addEventListener('mouseleave', start);
+                    // Touch has no hover: hold still while a finger is on it, resume on release.
+                    carousel.addEventListener('touchstart', stop, { passive: true });
+                    carousel.addEventListener('touchend', start, { passive: true });
+                    carousel.addEventListener('touchcancel', start, { passive: true });
                     start();
                 }
             })

@@ -5,6 +5,12 @@
     if (!container || typeof ForceGraph3D === 'undefined') return;
 
     var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var isTouch = window.matchMedia('(hover: none)').matches;
+
+    var hintEl = document.querySelector('.graph-hint');
+    if (hintEl && isTouch) {
+        hintEl.innerHTML = 'Drag to rotate &middot; Pinch to zoom &middot; Tap a node for details';
+    }
 
     /* Topics have no category field in the source data, so domains are assigned
        here by label. Keep this in sync with docs/data/topics.json if it grows. */
@@ -161,27 +167,12 @@
                 .linkDirectionalParticleColor(function () { return HOT_LINK_COLOR; })
                 .cooldownTime(Infinity)
                 .onNodeHover(function (node) {
-                    hoverNode = node || null;
-                    neighborIds.clear();
-                    highlightLinks.clear();
-                    if (node) {
-                        rawLinks.forEach(function (link) {
-                            var srcId = linkEndpointId(link.source);
-                            var tgtId = linkEndpointId(link.target);
-                            if (srcId === node.id || tgtId === node.id) {
-                                highlightLinks.add(link);
-                                neighborIds.add(srcId);
-                                neighborIds.add(tgtId);
-                            }
-                        });
-                    }
+                    highlight(node);
                     container.style.cursor = node ? 'pointer' : 'grab';
-                    Graph.nodeColor(Graph.nodeColor());
-                    Graph.linkColor(Graph.linkColor());
-                    Graph.linkWidth(Graph.linkWidth());
-                    Graph.linkDirectionalParticles(Graph.linkDirectionalParticles());
                 })
                 .onNodeClick(function (node) {
+                    // Touch never fires hover, so a tap also lights up the node's neighbors.
+                    if (isTouch) highlight(node);
                     showInfo(node);
                     var distance = 90;
                     var ratio = 1 + distance / Math.hypot(node.x, node.y, node.z || 1);
@@ -192,10 +183,32 @@
                     );
                 })
                 .onBackgroundClick(function () {
+                    if (isTouch) highlight(null);
                     if (infoEl) {
                         infoEl.innerHTML = '<p class="graph-info-placeholder">Select a node to see what it is.</p>';
                     }
                 });
+
+            function highlight(node) {
+                hoverNode = node || null;
+                neighborIds.clear();
+                highlightLinks.clear();
+                if (node) {
+                    rawLinks.forEach(function (link) {
+                        var srcId = linkEndpointId(link.source);
+                        var tgtId = linkEndpointId(link.target);
+                        if (srcId === node.id || tgtId === node.id) {
+                            highlightLinks.add(link);
+                            neighborIds.add(srcId);
+                            neighborIds.add(tgtId);
+                        }
+                    });
+                }
+                Graph.nodeColor(Graph.nodeColor());
+                Graph.linkColor(Graph.linkColor());
+                Graph.linkWidth(Graph.linkWidth());
+                Graph.linkDirectionalParticles(Graph.linkDirectionalParticles());
+            }
 
             if (hasSpriteText) {
                 Graph.nodeThreeObjectExtend(true)
