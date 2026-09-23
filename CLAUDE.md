@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Personal portfolio site for Shaikh Ahmed ("Shaikh's Virtues"), deployed on Vercel from the `docs/` directory. There is no build step, package manager, or test suite — it's static HTML/CSS/vanilla JS, plus Three.js and GSAP pulled in from CDNs.
+Personal portfolio site for Shaikh Ahmed ("Shaikh's Virtues"), deployed on GitHub Pages (https://shaikhahme.github.io/) from the `docs/` directory of `main`. There is no build step, package manager, or test suite — it's static HTML/CSS/vanilla JS, plus Three.js and GSAP pulled in from CDNs.
 
 It's a single page: a scroll-driven, typewriter-on-lined-paper animation that builds a 3D "compass" (four axis labels — Engineering, Cybersecurity, Sociology and Psychology, Artificial Intelligence — drawn as arrows out from a center "Shaikh's Virtues" label) which folds into an interactive sphere carrying six more concept-vector labels (AI Alignment, AI Security, Security Architecture, Social Engineering, Neural Networks, AI Governance). Once formed, the sphere is drag-to-rotate/pinch-to-zoom. Clicking any label — including the center one — zooms out of the sphere and zooms into a full-page DOM overlay, Prezi-style, anchored at the click point.
 
@@ -27,7 +27,8 @@ It's a single page: a scroll-driven, typewriter-on-lined-paper animation that bu
 ## Working in this repo
 
 - No build step, package manager, or test suite. Everything is loaded directly by `docs/index.html` — CDN/unpkg for Three.js and GSAP, local files for everything else.
-- Changes to `docs/` deploy automatically via Vercel on push to `main`. The repo has no `vercel.json`; Vercel project settings (root/output directory pointed at `docs/`) live in the Vercel dashboard, not in-repo.
+- Changes to `docs/` deploy automatically via GitHub Pages (classic branch deploy, source `main` → `/docs`) on push to `main`. All asset paths are root-relative (`/styles.css`, `/data/*.json`), which works because `docs/` is served as the site root.
+- There's also a Vercel project ("portfolio") on the same repo that is **paused** with its build step skipped (`commandForIgnoringBuildStep: exit 0`) - GitHub Pages is the only live site. If Vercel is ever revived, its Root Directory must be `docs` (it was once left blank, which served the repo root and 404'd `/`), and it has Vercel Authentication on, so it isn't public by default.
 - Bump the `?v=N` query param on the `styles.css`/`zoom-anim.js`/`relevant-page.js`/`continuous.js` `<script>`/`<link>` tags in `docs/index.html` when shipping changes to those files, for cache-busting.
 - Editing project/mind-map content is a JSON-only edit (`docs/data/projects.json`); editing the life timeline is a JSON-only edit (`docs/data/timeline.json`). Only touch the JS/HTML/CSS directly for structural or behavioral changes.
 - The per-topic "note" copy is not in a data file yet — it's the hardcoded placeholder string in `renderRelevantPage` (`docs/relevant-page.js`). Real per-topic prose, if/when it exists, should probably move into its own data file rather than staying hardcoded.
