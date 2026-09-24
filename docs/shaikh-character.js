@@ -12,8 +12,9 @@
   const BUILD_COMPLETE_AT = 0.55;
   const BUILD_REWIND_AT = 0.10;
   const TOUCH_HINT_CLEARANCE = 48;
-  const DASH_SPEED = 36;
-  const DASH_STRIDE_PX = 30;
+  const DASH_SPEED = 16;
+  const DASH_STRIDE_PX = 22;
+  const FRAME_MS = 1000 / 60;
   const SUB_PAGE_BUBBLE_MS = 6000;
   const ROTATE_HINT = 'Hold E and steer to spin the globe.';
 
@@ -41,6 +42,7 @@
   let built = false;
   let rotateHintShown = false;
   let lastScrollY = 0;
+  let lastTick = 0, step = 1;
 
   function draw() {
     el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
@@ -183,13 +185,13 @@
   function holdAction(dx, dy) {
     if (inSubPage()) {
       const pane = document.querySelector('.zoom-page .virtues-content, .zoom-page .projects-list, .zoom-page .mindmap-flow');
-      if (dy > 0 && pane) pane.scrollTop += SUB_SCROLL_STEP;
+      if (dy > 0 && pane) pane.scrollTop += SUB_SCROLL_STEP * step;
       else if (dy < 0) {
-        if (pane && pane.scrollTop > 0) pane.scrollTop -= SUB_SCROLL_STEP;
+        if (pane && pane.scrollTop > 0) pane.scrollTop -= SUB_SCROLL_STEP * step;
         else { const back = document.querySelector('.zoom-page-back'); if (back) back.click(); }
       }
     } else if (typeof window.shaikhRotateGlobe === 'function') {
-      window.shaikhRotateGlobe(dx ? Math.sign(dx) * ROT_STEP : 0, dy ? -Math.sign(dy) * ROT_STEP : 0);
+      window.shaikhRotateGlobe(dx ? Math.sign(dx) * ROT_STEP * step : 0, dy ? -Math.sign(dy) * ROT_STEP * step : 0);
     }
   }
 
@@ -224,7 +226,8 @@
   function stepDash() {
     const ddx = dash.tx - x, ddy = dash.ty - y;
     const dist = Math.hypot(ddx, ddy);
-    if (dist <= DASH_SPEED) {
+    const speed = DASH_SPEED * step;
+    if (dist <= speed) {
       x = dash.tx; y = dash.ty;
       frame = 0; distAcc = 0;
       row = DIR_ORDER.indexOf('south');
@@ -232,11 +235,11 @@
       dash = null;
       if (text) sayHint(text, { autoMs: text.length * 42 + SUB_PAGE_BUBBLE_MS });
     } else {
-      x += ddx / dist * DASH_SPEED;
-      y += ddy / dist * DASH_SPEED;
+      x += ddx / dist * speed;
+      y += ddy / dist * speed;
       const r = dirRowFromVector(Math.abs(ddx) > 1 ? Math.sign(ddx) : 0, Math.abs(ddy) > 1 ? Math.sign(ddy) : 0);
       if (r !== null) row = r;
-      distAcc += DASH_SPEED;
+      distAcc += speed;
       while (distAcc >= DASH_STRIDE_PX) { distAcc -= DASH_STRIDE_PX; frame = (frame + 1) % 8; }
     }
     setPrompt(null);
@@ -297,8 +300,10 @@
     return { dx, dy };
   }
 
-  function tick() {
+  function tick(now) {
     requestAnimationFrame(tick);
+    step = lastTick ? clamp((now - lastTick) / FRAME_MS, 0, 3) : 1;
+    lastTick = now;
     if (dash) { stepDash(); return; }
     const { dx, dy } = inputVector();
     const anyInput = dx !== 0 || dy !== 0;
@@ -315,8 +320,8 @@
     }
 
     const prevX = x, prevY = y;
-    if (dx !== 0) x = clamp(x + Math.sign(dx) * MOVE_SPEED, 0, window.innerWidth - SIZE);
-    if (dy !== 0) y = clamp(y + Math.sign(dy) * MOVE_SPEED, topBorder(), botBorder());
+    if (dx !== 0) x = clamp(x + Math.sign(dx) * MOVE_SPEED * step, 0, window.innerWidth - SIZE);
+    if (dy !== 0) y = clamp(y + Math.sign(dy) * MOVE_SPEED * step, topBorder(), botBorder());
 
     let wheelDir = 0;
     if (wheelAccum !== 0 && !built && !inSubPage()) {
