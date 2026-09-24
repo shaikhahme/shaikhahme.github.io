@@ -9,7 +9,6 @@ const css2dEl = document.getElementById('css2d');
 const scrollCue = document.getElementById('scrollCue');
 const dragHint = document.getElementById('dragHint');
 
-const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isTouch = window.matchMedia('(hover: none)').matches;
 
 if (isTouch) {
@@ -321,35 +320,7 @@ renderer.domElement.addEventListener('touchend', event => {
     if (event.touches.length < 2) pinchDist = 0;
 }, { passive: true });
 
-function setFinalState() {
-    setLabelProgress(centerLabel, 1);
-    AXES.forEach(axis => {
-        axis.arrow.setLength(ARM_LENGTH, 0.3, 0.18);
-        setLabelProgress(axis.label, 1);
-    });
-    circleGeo.setDrawRange(0, CIRCLE_SEGMENTS + 1);
-    diameterCyberAI.material.opacity = 0.6;
-    diameterEngPsych.material.opacity = 0.6;
-    equator2Line.material.opacity = 0.6;
-    equator3Line.material.opacity = 0.6;
-    sphereMesh.material.opacity = 1;
-    wireMesh.material.opacity = 0.12;
-    camera.position.copy(END_CAM);
-    camera.lookAt(0, 0, 0);
-    CONCEPTS.forEach(concept => {
-        concept.reveal = 1;
-        concept.dispOpacity = 1;
-        concept.arrow.line.material.opacity = 1;
-        concept.arrow.cone.material.opacity = 1;
-        concept.labelObj.element.style.opacity = '1';
-    });
-}
-
-if (reduceMotion) {
-    setFinalState();
-    enableOrbit();
-    scrollCue.classList.add('hidden');
-} else {
+{
     let ORBIT_ENABLE_PROGRESS = 1;
 
     const tl = gsap.timeline({

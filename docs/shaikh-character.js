@@ -1,5 +1,5 @@
 (function () {
-  if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+  const isTouch = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
 
   const FRAME = 48, SCALE = 2, SIZE = FRAME * SCALE;
   const WALK_STRIDE_PX = 13;
@@ -11,6 +11,7 @@
   const BODY_HALF = 26;
   const BUILD_COMPLETE_AT = 0.55;
   const BUILD_REWIND_AT = 0.10;
+  const TOUCH_HINT_CLEARANCE = 48;
   const ROTATE_HINT = 'Hold E and steer to spin the globe.';
 
   const DIR_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"];
@@ -203,7 +204,7 @@
   const MOVE_KEYS = new Set(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'W', 'A', 'S', 'D']);
   let eDown = false, eMoved = false;
 
-  window.addEventListener('keydown', e => {
+  if (!isTouch) window.addEventListener('keydown', e => {
     if (e.key === 'e' || e.key === 'E') {
       dismissHint();
       if (!eDown) { eDown = true; eMoved = false; }
@@ -215,7 +216,7 @@
     dismissHint();
   }, { passive: false });
 
-  window.addEventListener('keyup', e => {
+  if (!isTouch) window.addEventListener('keyup', e => {
     if (e.key === 'e' || e.key === 'E') {
       if (eDown && !eMoved) tapAction();
       eDown = false;
@@ -233,6 +234,16 @@
   }, { passive: false });
 
   window.addEventListener('blur', () => { held.clear(); eDown = false; });
+
+  if (isTouch) window.addEventListener('scroll', () => { if (window.scrollY > 4) dismissHint(); }, { passive: true });
+
+  function followScroll() {
+    const bottom = Math.max(topBorder(), botBorder() - TOUCH_HINT_CLEARANCE);
+    const target = topBorder() + clamp(window.scrollY / maxScroll(), 0, 1) * (bottom - topBorder());
+    const dir = Math.sign(target - y);
+    y = clamp(target, topBorder(), botBorder());
+    return dir;
+  }
 
   function inputVector() {
     let dx = 0, dy = 0;
@@ -270,7 +281,9 @@
       wheelAccum = 0;
     }
 
-    if (!inSubPage()) {
+    if (isTouch) {
+      if (!inSubPage()) wheelDir = followScroll();
+    } else if (!inSubPage()) {
       if (!built) {
         applyBuildBinding();
         if (normY() >= BUILD_COMPLETE_AT) {
@@ -299,7 +312,7 @@
       while (distAcc >= WALK_STRIDE_PX) { distAcc -= WALK_STRIDE_PX; frame = (frame + 1) % 8; }
     } else { frame = 0; distAcc = 0; }
 
-    if (!hintUp && !eDown) {
+    if (!isTouch && !hintUp && !eDown) {
       if (targetOverlap(linkSel())) setPrompt('link');
       else if (inSubPage() && targetOverlap('.zoom-page-back')) setPrompt('back');
       else setPrompt(null);
@@ -313,7 +326,8 @@
     y = clamp(y, topBorder(), botBorder());
   });
 
+  if (isTouch) followScroll();
   draw();
   requestAnimationFrame(tick);
-  sayHint('Welcome! Press down arrow, S, or scroll down.', { dismissOnInput: true });
+  sayHint(isTouch ? 'Welcome! Scroll down.' : 'Welcome! Press down arrow, S, or scroll down.', { dismissOnInput: true });
 })();
