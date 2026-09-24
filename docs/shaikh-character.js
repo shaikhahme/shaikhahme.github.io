@@ -142,7 +142,7 @@
 
   function linkSel() {
     return inSubPage()
-      ? '.zoom-page .project-row, .zoom-page .relevant-note-source, .zoom-page .virtues-content a, .zoom-page .mindmap-sidebar-header a, .zoom-page .relevant-note a'
+      ? '.zoom-page .project-row, .zoom-page .virtues-content a, .zoom-page .mindmap-sidebar-header a, .zoom-page .relevant-note a'
       : '.label3d';
   }
   function clickSel() {

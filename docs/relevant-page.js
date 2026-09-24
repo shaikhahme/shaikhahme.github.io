@@ -147,7 +147,7 @@ function relevantPagePlainText(html) {
 }
 
 function relevantPageShaikhSays(container, parts) {
-    const text = parts.filter(Boolean).join(' ');
+    const text = parts.filter(Boolean).map(part => /[.!?\u201d"]$/.test(part) ? part : part + '.').join(' ');
     if (text && container.isConnected && typeof window.shaikhEnterSubPage === 'function') window.shaikhEnterSubPage(text);
 }
 
@@ -390,15 +390,12 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const virtuesData = await virtuesRes.json();
         const topicNote = virtuesData.notes && virtuesData.notes.items[label];
         if (topicNote) {
-            note.innerHTML = `<a href="#" class="relevant-note-source">extracted from Shaikh's Virtues</a>`;
-            const source = note.querySelector('.relevant-note-source');
-            if (source) {
-                source.addEventListener('click', event => {
-                    event.preventDefault();
-                    if (typeof window.openVirtuesPage === 'function') window.openVirtuesPage();
-                });
-            }
-            relevantPageShaikhSays(container, [relevantPagePlainText(topicNote), relevantPagePlainText(virtuesData.human.authorNote)]);
+            note.remove();
+            relevantPageShaikhSays(container, [
+                relevantPagePlainText(topicNote),
+                relevantPagePlainText(virtuesData.human.authorNote),
+                relevantPagePlainText(virtuesData.notes.aiDisclosure)
+            ]);
         }
     } catch (e) {  }
 

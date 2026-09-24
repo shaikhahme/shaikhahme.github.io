@@ -477,12 +477,6 @@ function onLabelActivate(text, _el) {
     openOverlayPage(originPct, text, isLifeTimeline);
 }
 
-window.openVirtuesPage = async () => {
-    if (transitioning) return;
-    if (overlayEl) await closeOverlayPage();
-    openOverlayPage({ xPct: 50, yPct: 50 }, "Shaikh's Virtues", true);
-};
-
 window.shaikhRotateGlobe = (dazDeg, dpolDeg) => {
     if (!interactive) return false;
     const offset = camera.position.clone().sub(controls.target);
