@@ -460,6 +460,7 @@ async function openOverlayPage(originPct, label, isLifeTimeline) {
 
 async function closeOverlayPage() {
     if (!overlayEl) return;
+    if (typeof window.shaikhLeaveSubPage === 'function') window.shaikhLeaveSubPage();
     const el = overlayEl;
     overlayEl = null;
     const [xPct, yPct] = el.style.transformOrigin.split(' ').map(parseFloat);

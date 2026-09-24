@@ -196,11 +196,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     margin: 0 0 28px;
 }
 
-.relevant-note-disclosure {
-    color: var(--ink-dim);
-    font-style: italic;
-    font-size: 13px;
-}
 
 .relevant-note-source {
     color: var(--accent);
@@ -276,12 +271,6 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     color: var(--accent);
 }
 
-.virtues-author-note {
-    color: var(--ink-dim);
-    font-size: 13px;
-    line-height: var(--rule);
-    margin: 0 0 var(--rule);
-}
 
 .virtues-heading {
     font-size: 19px;
@@ -313,18 +302,7 @@ html::-webkit-scrollbar, body::-webkit-scrollbar {
     margin: 0 0 35px;
 }
 
-.virtues-relationship {
-    line-height: var(--rule);
-    margin: 0 0 var(--rule);
-}
 
-.virtues-ai-disclosure {
-    color: var(--ink-dim);
-    font-size: 13px;
-    font-style: italic;
-    line-height: var(--rule);
-    margin: var(--rule) 0 0;
-}
 
 .projects-empty {
     font-family: 'Special Elite', 'Courier New', monospace;

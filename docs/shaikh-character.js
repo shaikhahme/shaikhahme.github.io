@@ -12,6 +12,9 @@
   const BUILD_COMPLETE_AT = 0.55;
   const BUILD_REWIND_AT = 0.10;
   const TOUCH_HINT_CLEARANCE = 48;
+  const DASH_SPEED = 36;
+  const DASH_STRIDE_PX = 30;
+  const SUB_PAGE_BUBBLE_MS = 6000;
   const ROTATE_HINT = 'Hold E and steer to spin the globe.';
 
   const DIR_ORDER = ["south", "south-east", "east", "north-east", "north", "north-west", "west", "south-west"];
@@ -197,7 +200,47 @@
   }
 
   function scheduleRotateHint() {
-    setTimeout(() => { sayHint(ROTATE_HINT, { autoMs: 4000 }); }, 800);
+    setTimeout(() => { if (!home && !inSubPage()) sayHint(ROTATE_HINT, { autoMs: 4000 }); }, 800);
+  }
+
+  let home = null, dash = null;
+
+  window.shaikhEnterSubPage = text => {
+    if (!home) home = dash && dash.returning ? { x: dash.tx, y: dash.ty } : { x, y };
+    hideBubble();
+    hintUp = false;
+    dash = { tx: Math.max(0, window.innerWidth - SIZE), ty: topBorder(), returning: false, text };
+  };
+
+  window.shaikhLeaveSubPage = () => {
+    if (!home) return;
+    clearTimeout(hintAutoHide);
+    hideBubble();
+    hintUp = false;
+    dash = { tx: home.x, ty: home.y, returning: true };
+    home = null;
+  };
+
+  function stepDash() {
+    const ddx = dash.tx - x, ddy = dash.ty - y;
+    const dist = Math.hypot(ddx, ddy);
+    if (dist <= DASH_SPEED) {
+      x = dash.tx; y = dash.ty;
+      frame = 0; distAcc = 0;
+      row = DIR_ORDER.indexOf('south');
+      const text = dash.text;
+      dash = null;
+      if (text) sayHint(text, { autoMs: text.length * 42 + SUB_PAGE_BUBBLE_MS });
+    } else {
+      x += ddx / dist * DASH_SPEED;
+      y += ddy / dist * DASH_SPEED;
+      const r = dirRowFromVector(Math.abs(ddx) > 1 ? Math.sign(ddx) : 0, Math.abs(ddy) > 1 ? Math.sign(ddy) : 0);
+      if (r !== null) row = r;
+      distAcc += DASH_SPEED;
+      while (distAcc >= DASH_STRIDE_PX) { distAcc -= DASH_STRIDE_PX; frame = (frame + 1) % 8; }
+    }
+    setPrompt(null);
+    draw();
   }
 
   const held = new Set();
@@ -256,6 +299,7 @@
 
   function tick() {
     requestAnimationFrame(tick);
+    if (dash) { stepDash(); return; }
     const { dx, dy } = inputVector();
     const anyInput = dx !== 0 || dy !== 0;
 

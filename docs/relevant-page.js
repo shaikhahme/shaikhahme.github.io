@@ -140,13 +140,19 @@ function relevantPageRenderVirtuesBlock(block) {
     return el;
 }
 
+function relevantPagePlainText(html) {
+    const el = document.createElement('div');
+    el.innerHTML = html;
+    return el.textContent.trim();
+}
+
+function relevantPageShaikhSays(container, parts) {
+    const text = parts.filter(Boolean).join(' ');
+    if (text && container.isConnected && typeof window.shaikhEnterSubPage === 'function') window.shaikhEnterSubPage(text);
+}
+
 function relevantPageRenderVirtuesContent(container, data) {
     container.innerHTML = '';
-
-    const authorNote = document.createElement('p');
-    authorNote.className = 'virtues-author-note';
-    authorNote.innerHTML = data.human.authorNote;
-    container.appendChild(authorNote);
 
     data.human.blocks.forEach(block => {
         container.appendChild(relevantPageRenderVirtuesBlock(block));
@@ -370,6 +376,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
             const res = await fetch('/data/virtues.json');
             const virtuesData = await res.json();
             relevantPageRenderVirtuesContent(virtuesContent, virtuesData);
+            relevantPageShaikhSays(container, [relevantPagePlainText(virtuesData.human.authorNote)]);
         } catch (e) {
             virtuesContent.textContent = 'Failed to load content.';
         }
@@ -383,7 +390,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
         const virtuesData = await virtuesRes.json();
         const topicNote = virtuesData.notes && virtuesData.notes.items[label];
         if (topicNote) {
-            note.innerHTML = `${topicNote}<br><a href="#" class="relevant-note-source">extracted from Shaikh's Virtues</a>`;
+            note.innerHTML = `<a href="#" class="relevant-note-source">extracted from Shaikh's Virtues</a>`;
             const source = note.querySelector('.relevant-note-source');
             if (source) {
                 source.addEventListener('click', event => {
@@ -391,6 +398,7 @@ async function renderRelevantPage(container, onBack, label, isLifeTimeline) {
                     if (typeof window.openVirtuesPage === 'function') window.openVirtuesPage();
                 });
             }
+            relevantPageShaikhSays(container, [relevantPagePlainText(topicNote), relevantPagePlainText(virtuesData.human.authorNote)]);
         }
     } catch (e) {  }
 
